@@ -1,0 +1,12 @@
+Package: BlackBox
+Type: Package
+Title: Data exploration with multiple machine learning algorithms
+Version: 0.1
+Date: 2016-01-28
+Author: Zachary Davies, Boris Guennewig
+Maintainer: Boris Guennewig <b.guennewig@garvan.org.au>
+Description: Allows data to be processed by multiple machine learning algorithms at the same time, enables feature selection of data by single a algorithm or combinations of multiple. Easy to use tool for k-fold cross validation and nested cross validation.
+License: PLACEHOLDER
+LazyData: TRUE
+NeedsCompilation: no
+Packaged: 2016-04-27 22:19:09 UTC; Davies
