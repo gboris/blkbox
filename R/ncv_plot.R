@@ -1,0 +1,122 @@
+#' Nested Crossfold Validation Performance Plot
+#'
+#' @author Zachary Davies, Boris Guennewig
+#' @description Compares the performance of each algorithm in a boxplot. Each holdout will contribute at least one data point to each algorithms boxplot.
+#' @param obj An object produced by the BlackBocCV function.
+#' @param metric Which metric you wish to plot, can only plot those specified to the BlackBoxNCV function at time of running.
+#' @param y_ranges is the y axis limits for the plot, defaults to c(0,1). Must be a numeric vector with two entries.
+#' @param title the title to be adhered to the plot. Default is no title.
+#' @keywords NCV, Plot, ggplot2, boxplot
+#' @export
+ncv.plot <- function(obj, metric, y_ranges, title){
+
+  #ONLY SUPPORTS 1 ALGORITHM FEATURE SELECTION CURRENTLY
+
+  if(!hasArg(metric)){
+    metric = obj$HoldoutPerfMerged$metric[1]
+  }
+
+  algs = names(obj$HoldoutPerf$holdout_1$Performance[[metric]])
+  values = NULL
+  outerfolds = length(names(obj$HoldoutPerf))
+
+  if(!hasArg(y_ranges)){
+    y_ranges = c(0,1)
+  }
+
+  if(!hasArg(title)){
+    title = ""
+  }
+
+  c = 0
+  for(a in 1:length(algs)){
+    for(i in 1:outerfolds){
+      c = c + 1
+      values[c] = obj$HoldoutPerf[[i]]$Performance[[metric]][[algs[a]]]
+    }
+  }
+
+  df = data.frame(matrix(values, ncol = length(algs)))
+  colnames(df) = algs
+
+  library(reshape2)
+  df_melt = melt(df)
+  library(ggplot2)
+  ggplot(df_melt, aes(x=factor(variable), y=value, fill = variable)) + geom_boxplot() +  theme_bw() + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5), legend.key = element_blank(), plot.title = element_text(lineheight=.9, face="bold", size = 16)) + xlab("Algorithms") + ylab(paste(metric)) + ylim(y_ranges) + geom_hline(yintercept=0.5,  linetype="dotted", size = 1) + ggtitle(paste(title))
+
+}
+
+
+#' Crossfold Validation Performance Plot
+#'
+#' @author Zachary Davies, Boris Guennewig
+#' @description Compares the performance of each algorithm in a boxplot OR barplot. Each holdout will contribute at least one data point to each algorithm.
+#' @param obj An object produced by the BlackBocCV function.
+#' @param metric Which metric you wish to plot, can only plot those specified to the BlackBoxCV function at time of running.
+#' @param y_ranges is the y axis limits for the plot, defaults to c(0,1). Must be a numeric vector with two entries.
+#' @param title the title to be adhered to the plot. Default is no title.
+#' @param type The plot can be either a barplot or boxplot. For the barplot the consensus performance is used, for a boxplot consensus is false. If only one performance measure is found for each algorithm then it will be forced to a barplot.
+#' @keywords CV, Plot, ggplot2, boxplot, barplot
+#' @export
+cv.plot <- function(obj, metric, y_ranges, title, type){
+
+  repeats = dim(obj$algorithm.votes[[1]])[1]
+
+  if(!hasArg(y_ranges)){
+    y_ranges = c(0,1)
+  }
+
+  if(!hasArg(title)){
+    title = ""
+  }
+
+  if(!hasArg(metric)){
+    metric = "AUROC"
+  }
+
+  if(!((type == "boxplot") | (type == "barplot"))){
+    stop("Invalid plot type.")
+  }
+  if(type == "boxplot"){
+   obj = Performance(obj, consensus = F, metric = metric)
+  } else {
+   obj = Performance(obj, consensus = T, metric = metric)
+  }
+
+  if(length(obj$Performance[[1]][[1]]) == 1){
+    plot.type = "barplot"
+    dim_h = 1
+    if(plot.type != type){
+      message("type of plot was changed to barplot. Not enough data points.")
+      plot.type = "barplot"
+    }
+  } else {
+    plot.type = "boxplot"
+    dim_h = repeats
+  }
+
+  algs = names(obj$Performance[[metric[1]]])
+  values = NULL
+
+  c = 0
+  for(a in algs){
+    for(i in 1:repeats){
+      c = c + 1
+      values[c] = obj$Performance[[metric]][[a]]
+    }
+  }
+
+  df = data.frame(matrix(values, ncol = length(algs)))
+  colnames(df) = algs
+  library(reshape2)
+  return(df_melt = melt(df))
+  library(ggplot2)
+  #return(df_melt)
+  if(plot.type == "boxplot"){
+    print(ggplot(df_melt, aes(x=factor(variable), y=value, fill = variable)) + geom_boxplot() +  theme_bw() + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5), legend.key = element_blank(), plot.title = element_text(lineheight=.9, face="bold", size = 16)) + xlab("Algorithms") + ylab(paste(metric)) + ylim(y_ranges) + geom_hline(yintercept=0.5,  linetype="dotted", size = 1) + ggtitle(paste(title)))
+  } else {
+    print(qplot(x=variable, y=value, fill=variable, data=df_melt, geom="bar", stat="identity", position="dodge") +  theme_bw() + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5), legend.key = element_blank(), plot.title = element_text(lineheight=.9, face="bold", size = 16)) + xlab("Algorithms") + ylab(paste(metric)) + ylim(y_ranges) + geom_hline(yintercept=0.5,  linetype="dotted", size = 1) + ggtitle(paste(title)))
+  }
+
+}
+
