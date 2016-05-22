@@ -1,4 +1,4 @@
-# blackBox
+# blkbox
 
 ##Data exploration with multiple machine learning algorithms 
 
@@ -8,20 +8,20 @@
 
 ###Installation
 
-R-package blackBox can be installed:
+R-package blkbox can be installed:
 
     library(devtools)
-    install_github("gboris/backbox")
+    install_github("gboris/blackbox")
 
 After installation, the package can be loaded into R.
 
-    library(blackBox)
+    library(blkbox)
 
 Using rnaseqcomp
 
 Details of how to use this package, please see the vignette.
 
-**Package**: BlackBox
+**Package**: blkbox
 
 **Type**: Package
 
@@ -29,7 +29,7 @@ Details of how to use this package, please see the vignette.
 
 **Version**: 0.1
 
-**Date**: 2016-01-28
+**Date**: 2016-05-23
 
 **Author**: Zachary Davies, Boris Guennewig
 
