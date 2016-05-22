@@ -7,7 +7,7 @@
 ncv.venn(results)
 }
 \arguments{
-\item{results}{An object produced by the BlackBocNCV function.}
+\item{results}{An object produced by the blkboxNCV function.}
 }
 \description{
 Compares the features used in the holdouts of nested cross fold validation, this will tell you how much variataion in features selected there is between holdouts.
@@ -15,9 +15,9 @@ Compares the features used in the holdouts of nested cross fold validation, this
 \author{
 Zachary Davies, Boris Guennewig
 }
-\keyword{BlackBox,}
 \keyword{NCV}
 \keyword{Nested,}
 \keyword{Venn,}
 \keyword{Venndiagram,}
+\keyword{blkbox,}
 

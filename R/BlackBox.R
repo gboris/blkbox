@@ -13,14 +13,14 @@
 #' @param exclude
 #' @examples
 #'
-#' library(BlackBox)
+#' library(blkbox)
 #' options(java.parameters = "-Xmx8000m" )
-#' bb_res = BlackBox(data = , labels = , holdout = , holdout.labels = , exclude = c(1:7))
+#' bb_res = blkbox(data = , labels = , holdout = , holdout.labels = , exclude = c(1:7))
 #' Performance(bb_res, metric = "AUROC", consensus = T)
 #'
-#' @keywords Machine Learning, BlackBox, Training, Testing
+#' @keywords Machine Learning, blkbox, Training, Testing
 #' @export
-BlackBox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, Gamma, exclude){
+blkbox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, Gamma, exclude){
 
   if(!hasArg(data)){
     stop("Ensemble cannot run without data, provide data.frame of samples by features")
@@ -30,7 +30,7 @@ BlackBox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel
     stop("Ensemble cannot run without class, provide to 'labels' parameter")
   } else {
     if(length(levels(as.factor(labels))) > 2){
-      stop("BlackBox does not support non-binary classification tasks")
+      stop("blkbox does not support non-binary classification tasks")
     }
   }
 
@@ -66,12 +66,12 @@ BlackBox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel
   if(ncol(class.data) > 4001){
     tree.method = 1
     if(1 %in% exclude == FALSE){
-      cat("Large number of features detected, using the bigrf package", "\n")
+      #message("Large number of features detected, using the bigrf package", "\n")
     }
   } else {
     tree.method = 0
     if(1 %in% exclude == FALSE){
-      cat("Using randomForest package", "\n")
+      #message("Using randomForest package", "\n")
     }
   }
 
@@ -81,7 +81,6 @@ BlackBox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel
     svm.kernel = Kernel
   } else {
     svm.kernel = "linear"
-    cat("No kernel provided, using linear kernel from e1071 package", "\n")
   }
   if(hasArg(Gamma)){
     svm.gamma = Gamma

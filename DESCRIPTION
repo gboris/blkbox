@@ -1,4 +1,4 @@
-Package: BlackBox
+Package: blkbox
 Type: Package
 Title: Data exploration with multiple machine learning algorithms
 Version: 0.1
@@ -8,5 +8,8 @@ Maintainer: Boris Guennewig <b.guennewig@garvan.org.au>
 Description: Allows data to be processed by multiple machine learning algorithms at the same time, enables feature selection of data by single a algorithm or combinations of multiple. Easy to use tool for k-fold cross validation and nested cross validation.
 License: PLACEHOLDER
 LazyData: TRUE
+Imports: dplyr, plyr, magrittr, tidyr, caret, glmnet, foreach,
+        Vennerable, ggplot2, reshape2, randomForest, kknn, pamr, nnet,
+        party, rJava, bartMachine, bigrf, e1071, pROC,
 NeedsCompilation: no
-Packaged: 2016-04-27 22:19:09 UTC; Davies
+Packaged: 2016-05-22 14:47:57 UTC; Davies

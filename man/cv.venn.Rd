@@ -7,7 +7,7 @@
 cv.venn(results)
 }
 \arguments{
-\item{results}{An object produced by the BlackBocCV function.}
+\item{results}{An object produced by the blkboxcCV function.}
 }
 \description{
 This relies on numerous methods being used for feature selection in BlackBoxCV. It will construct a venn diagram to compare the features selected by various algorithms based on feature importance.
@@ -15,9 +15,9 @@ This relies on numerous methods being used for feature selection in BlackBoxCV. 
 \author{
 Zachary Davies, Boris Guennewig
 }
-\keyword{BlackBox,}
 \keyword{CV}
 \keyword{Venn,}
 \keyword{Venndiagram,}
+\keyword{blkbox,}
 \keyword{crossfold,}
 

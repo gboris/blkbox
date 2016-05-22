@@ -1,7 +1,7 @@
-#' Nested cross fold validation with BlackBox
+#' Nested cross fold validation with blkbox
 #'
 #' @author Zachary Davies, Boris Guennewig
-#' @description A function that builds upon the BlackBox and BlackBoxNCV function and performs nested k-fold cross validation and then provides votes for each fold as well as the importance of each feature in the models.
+#' @description A function that builds upon the blkbox and blkboxNCV function and performs nested k-fold cross validation and then provides votes for each fold as well as the importance of each feature in the models. Provides feature importance tables and details for each inner and outerfold run.
 #' @param data A data.frame where the columns correspond to features and the rows are samples. The dataframe will be shuffled and split into k folds for downstream analysis.
 #' @param labels A character or numeric vector of the class indetifiers that each sample belongs.
 #' @param outerfolds The number of folds that will be in the first k-fold loop, this determines the number of holdouts.
@@ -16,9 +16,9 @@
 #' @param Method The algorithm used to feature select the data. Uses the feature importance from the algorithms to rank and remove anything below the AUC threshold.
 #' @param AUC Area under the curve selection measure. The relative importance of features is calculated and then ranked. The features responsible for the most importance are therefore desired, the AUC value is the percentile in which to keep features above. 0.5 keeps the highest ranked features responsible for 50 percent of the cumulative importance.
 #' @param metric A character string to determine which performance metric will be passed on to the Performance() function. Refer to Perfromance() documentation.
-#' @keywords Cross Validation, k-fold, BlackBox, AUC, feature selection
+#' @keywords Cross Validation, k-fold, blkbox, AUC, feature selection
 #' @export
-BlackBoxNCV <- function(data, labels, outerfolds, innerfolds, ntrees, mTry, Kernel, Gamma, exclude, inn.exclude, Method, AUC, metric){
+blkboxNCV <- function(data, labels, outerfolds, innerfolds, ntrees, mTry, Kernel, Gamma, exclude, inn.exclude, Method, AUC, metric){
 
   labels = as.numeric(factor(x = labels, labels = c(1,2)))
   class = data.frame(y = (c(labels)))
@@ -32,7 +32,7 @@ BlackBoxNCV <- function(data, labels, outerfolds, innerfolds, ntrees, mTry, Kern
 
 
   inner.feature.selection = list()
-  inner.blackbox = list()
+  inner.blkbox = list()
   inner.performance = list()
   holdout.result = list()
   holdout.result = list()
@@ -63,15 +63,15 @@ BlackBoxNCV <- function(data, labels, outerfolds, innerfolds, ntrees, mTry, Kern
       }
     }
   }
-  cat("Folds was reshufled", re.shuffle.counter, "times.\n")
+  message("Folds were reshufled ", re.shuffle.counter, " times.")
   if((nfolds1*nsize1 + nfolds2*nsize2) == nrow(class.data)){
     if(nfolds1 == 0){
-      cat(nk, "nested fold cross validation, fold size:", nsize2, "\n")
+      message(nk, " nested fold cross validation, fold size: ", nsize2)
     } else {
-      cat(nk, "nested fold cross validation with", nfolds1, "folds of", nsize1, "and", nfolds2, "folds of", nsize2, "\n")
+      message(nk, " nested fold cross validation with ", nfolds1, " folds of ", nsize1, " and ", nfolds2, " folds of ", nsize2)
     }
   } else {
-    stop("error in cross validation, set folds parameter","\n")
+    stop("error in cross validation, set folds parameter")
   }
   #########################
   if(!hasArg(data)){
@@ -81,7 +81,7 @@ BlackBoxNCV <- function(data, labels, outerfolds, innerfolds, ntrees, mTry, Kern
     stop("Ensemble cannot run without class, provide to 'labels' parameter")
   } else {
     if(length(levels(as.factor(labels))) > 2){
-      #stop("BlackBox does not support non-binary classification tasks")
+      #stop("blkbox does not support non-binary classification tasks")
     }
   }
   if(hasArg(Gamma)){
@@ -115,11 +115,11 @@ BlackBoxNCV <- function(data, labels, outerfolds, innerfolds, ntrees, mTry, Kern
     svm.kernel = Kernel
   } else {
     svm.kernel = "linear"
-    cat("No kernel provided, using linear kernel from e1071 package", "\n")
+    #("No kernel provided, using linear kernel from e1071 package", "\n")
   }
   if(!hasArg(metric)){
     metric = "AUROC"
-    cat("No metric chosen, defaulting to AUROC", "\n")
+    message("No metric chosen, defaulting to AUROC")
   }
   ########
 
@@ -136,23 +136,23 @@ BlackBoxNCV <- function(data, labels, outerfolds, innerfolds, ntrees, mTry, Kern
     nclasstr = data.frame(condition = (factor(class.data$y[-subset])))
     nclassts = data.frame(condition = (factor(class.data$y[subset])))
 
-    #we take nk-1 data portion and give to blackbox functions
-    #BlackBoxFS to reduce the data nk times)
-    inner.feature.selection[[paste0("holdout_",i)]] = BlackBoxCV(data = ncv.train[,-ncol(ncv.train)], labels = nclasstr$condition, folds = k, Method = Method, AUC = AUC, Gamma = svm.gamma, exclude = exclude)
-    #BlackBox standard and performance to determine the inner loop performances
-    inner.blackbox[[paste0("holdout_",i)]] = BlackBoxCV(data = inner.feature.selection[[paste0("holdout_",i)]]$Feature_Selection$FS.data, labels = nclasstr$condition, folds = k, exclude = exclude)
-    inner.performance[[paste0("holdout_",i)]] = Performance(inner.blackbox[[paste0("holdout_",i)]], metric = metric, consensus = TRUE)
+    #we take nk-1 data portion and give to blkbox functions
+    #blkboxFS to reduce the data nk times)
+    inner.feature.selection[[paste0("holdout_",i)]] = blkboxCV(data = ncv.train[,-ncol(ncv.train)], labels = nclasstr$condition, folds = k, Method = Method, AUC = AUC, Gamma = svm.gamma, exclude = exclude)
+    #blkbox standard and performance to determine the inner loop performances
+    inner.blkbox[[paste0("holdout_",i)]] = blkboxCV(data = inner.feature.selection[[paste0("holdout_",i)]]$Feature_Selection$FS.data, labels = nclasstr$condition, folds = k, exclude = exclude)
+    inner.performance[[paste0("holdout_",i)]] = Performance(inner.blkbox[[paste0("holdout_",i)]], metric = metric, consensus = TRUE)
     #Store results feature selected subset, their importance, the inner fold performance
 
-    #BlackBoxTrain on all BB_AFS$FS.data selected data and then BlackBoxPredict on ncv.test
-    holdout.result[[paste0("holdout_",i)]] = BlackBox(data = inner.feature.selection[[paste0("holdout_",i)]]$Feature_Selection$FS.data, holdout = ncv.test, labels = nclasstr$condition, holdout.labels = nclassts$condition, Kernel = svm.kernel, Gamma = svm.gamma, mTry = m.try, ntrees = nTrees, exclude = inn.exclude)
-    #performance of BlackBoxPredict result
+    #blkboxTrain on all BB_AFS$FS.data selected data and then blkboxPredict on ncv.test
+    holdout.result[[paste0("holdout_",i)]] = blkbox(data = inner.feature.selection[[paste0("holdout_",i)]]$Feature_Selection$FS.data, holdout = ncv.test, labels = nclasstr$condition, holdout.labels = nclassts$condition, Kernel = svm.kernel, Gamma = svm.gamma, mTry = m.try, ntrees = nTrees, exclude = inn.exclude)
+    #performance of blkboxPredict result
     holdout.performance[[paste0("holdout_",i)]] = Performance(holdout.result[[paste0("holdout_",i)]], metric = metric, consensus = TRUE)
   }
 
   #Neaten up the performance of each holdout
 
-  #Build table of importance of each feature average from each nested subset and then weight them by the performance of the holdout
+  # TO DO Build table of importance of each feature average from each nested subset and then weight them by the performance of the holdout
 
   #for each algorithm, make a table
   #table will be calculated by going through each
@@ -200,11 +200,26 @@ BlackBoxNCV <- function(data, labels, outerfolds, innerfolds, ntrees, mTry, Kern
 
   #performance
   ncv_votes = list("algorithm.votes" = merged_votes, "input.data" = list("labels" = data.frame(labels)))
-  ncv.perf = BlackBox::Performance(ncv_votes, metric = metric, consensus = F)
+  ncv.perf = blkbox::Performance(ncv_votes, metric = metric, consensus = F)
 
+  list_tabs = lapply(X = 1:length(temp_table1), y = temp_table1, function(X, y){
+    names_c = names(y)
+    y = data.frame(t(y[[X]]))
+    colnames(y) = paste0("Holdout_", 1:length(y))
+    y = add_rownames(y, var = "feature") %>%
+      mutate(algorithm = names_c[X]) %>%
+      gather_("Holdout", "Importance", c(paste0("Holdout_", c(1:outerfolds)))) %>%
+      mutate(Holdout = gsub("Holdout_", "", Holdout),
+             Importance = Importance/max(Importance)) #%>%
+    return(y)
+  })
 
+  list_tabs = Reduce(rbind, list_tabs)
+  list_tabs_summarised = list_tabs %>%
+    group_by(algorithm, feature) %>%
+    dplyr::summarise(Importance = mean(Importance, na.rm = T))
 
   #Output
-  return(list("InnerFS" = inner.feature.selection, "InnerBB" = inner.blackbox, "InnerPerf" = inner.performance, "HoldoutRes" = holdout.result, "HoldoutPerf" = holdout.performance, "HoldoutPerfMerged" = ncv.perf, "FeatureTables" = temp_table1, "WeightedAverageImportance" = temp_list1, repeat.num = repea))
+  return(list("InnerFS" = inner.feature.selection, "InnerBB" = inner.blkbox, "InnerPerf" = inner.performance, "HoldoutRes" = holdout.result, "HoldoutPerf" = holdout.performance, "HoldoutPerfMerged" = ncv.perf, "FeatureTable" = list_tabs, "MeanFeatureTable" = list_tabs_summarised, "WeightedAverageImportance" = temp_list1))
 
 }

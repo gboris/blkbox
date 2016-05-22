@@ -9,13 +9,12 @@
   return(multi.plot.info)
 }
 
-
 #' Nested Crossfold Validation Venn Diagrams
 #'
 #' @author Zachary Davies, Boris Guennewig
 #' @description Compares the features used in the holdouts of nested cross fold validation, this will tell you how much variataion in features selected there is between holdouts.
-#' @param results An object produced by the BlackBocNCV function.
-#' @keywords Venndiagram, Venn, Nested, BlackBox, NCV
+#' @param results An object produced by the blkboxNCV function.
+#' @keywords Venndiagram, Venn, Nested, blkbox, NCV
 #' @export
 #ncv venn plot function
 ncv.venn <- function(results){
@@ -26,14 +25,12 @@ ncv.venn <- function(results){
   })
 }
 
-
-
 #' Crossfold Validation Venn Diagrams
 #'
 #' @author Zachary Davies, Boris Guennewig
 #' @description This relies on numerous methods being used for feature selection in BlackBoxCV. It will construct a venn diagram to compare the features selected by various algorithms based on feature importance.
-#' @param results An object produced by the BlackBocCV function.
-#' @keywords Venndiagram, Venn, crossfold, BlackBox, CV
+#' @param results An object produced by the blkboxcCV function.
+#' @keywords Venndiagram, Venn, crossfold, blkbox, CV
 #' @export
 #cv venn plot function
 cv.venn <- function(results){

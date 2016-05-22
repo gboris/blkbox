@@ -2,7 +2,7 @@
 % Please edit documentation in R/BlackBoxPerformance.R
 \name{Performance}
 \alias{Performance}
-\title{BlackBox Performance}
+\title{blkbox Performance}
 \usage{
 Performance(object, metric, consensus)
 }
@@ -14,7 +14,7 @@ Performance(object, metric, consensus)
 \item{consensus}{if the process was repeated it will calculate the consensus vote for each sample across the repititons before then calculating the performance across all samples. Default is False.}
 }
 \description{
-Determines the performance of each model within the BlackBox or BlackBoxCV output. Can choose from a range of performance metrics.
+Determines the performance of each model within the blkbox or blkboxCV output. Can choose from a range of performance metrics.
 }
 \author{
 Zachary Davies, Boris Guennewig
@@ -24,6 +24,6 @@ Zachary Davies, Boris Guennewig
 \keyword{ERR,}
 \keyword{F-1,}
 \keyword{MCC,}
-\keyword{blackbox,}
+\keyword{blkbox,}
 \keyword{performance,}
 

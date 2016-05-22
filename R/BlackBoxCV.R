@@ -1,7 +1,7 @@
-#' k-fold cross validation with BlackBox
+#' k-fold cross validation with blkbox
 #'
 #' @author Zachary Davies, Boris Guennewig
-#' @description A function that builds upon the BlackBox function and performs k-fold cross validation and then provides votes for each fold as well as the importance of each feature in the models.
+#' @description A function that builds upon the blkbox function and performs k-fold cross validation and then provides votes for each fold as well as the importance of each feature in the models.
 #' @param data A data.frame where the columns correspond to features and the rows are samples. The dataframe will be shuffled and split into k folds for downstream analysis.
 #' @param labels A character or numeric vector of the class indetifiers that each sample belongs.
 #' @param folds The number of times the data set will be subsectioned (number of samples / k, if modulo exists the groups will be as close to the same size as possible). Each data subsection will be used as a holdout portion. Default = 10.
@@ -14,9 +14,9 @@
 #' @param exclude removes certain algorithms from analysis - to exclude random forest which you would set exclude = c(1). To only run GLM you would set exclude = c(1:4,6:8). The algorithms each have their own numeric identifier. randomforest = 1, knn = 2, bartmachine = 3, party = 4, glm = 5, pam = 6, nnet = 7, svm = 8.
 #' @param Method The algorithm used to feature select the data. Uses the feature importance from the algorithms to rank and remove anything below the AUC threshold.
 #' @param AUC Area under the curve selection measure. The relative importance of features is calculated and then ranked. The features responsible for the most importance are therefore desired, the AUC value is the percentile in which to keep features above. 0.5 keeps the highest ranked features responsible for 50 percent of the cumulative importance.
-#' @keywords Cross Validation, k-fold, BlackBox, AUC, feature selection,
+#' @keywords Cross Validation, k-fold, blkbox, AUC, feature selection,
 #' @export
-BlackBoxCV <- function(data, labels, folds, seeds, ntrees, mTry, repeats, Kernel, Gamma, exclude, Method, AUC){
+blkboxCV <- function(data, labels, folds, seeds, ntrees, mTry, repeats, Kernel, Gamma, exclude, Method, AUC){
   labels = as.numeric(factor(x = labels, labels = c(1,2)))
   class = data.frame(y = (c(labels)))
   class.data = cbind(data, class)
@@ -33,7 +33,7 @@ BlackBoxCV <- function(data, labels, folds, seeds, ntrees, mTry, repeats, Kernel
     stop("Ensemble cannot run without class, provide to 'labels' parameter")
   } else {
     if(length(levels(as.factor(labels))) > 2){
-      stop("BlackBox does not support non-binary classification tasks")
+      stop("blkbox does not support non-binary classification tasks")
     }
   }
 
@@ -49,12 +49,12 @@ BlackBoxCV <- function(data, labels, folds, seeds, ntrees, mTry, repeats, Kernel
     size2 = floor(nrow(class.data)/k)
     if((folds1*size1 + folds2*size2) == nrow(class.data)){
       if(folds1 == 0){
-        cat(k, "fold cross validation, fold size:", size2, "\n")
+        message(k, " fold cross validation, fold size: ", size2)
       } else {
-        cat(k, "fold cross validation with", folds1, "folds of", size1, "and", folds2, "folds of", size2, "\n")
+        message(k, " fold cross validation with ", folds1, " folds of ", size1, " and ", folds2, " folds of ", size2)
       }
     } else {
-      stop("error in cross validation, set folds parameter","\n")
+      stop("error in cross validation, set folds parameter")
     }
     fold_intervals = c(seq(from = 0, to = folds1*size1, by = size1), seq(from = ((folds1*size1)+size2), to = (folds1*size1 + folds2*size2), by = size2))
   }
@@ -68,7 +68,7 @@ BlackBoxCV <- function(data, labels, folds, seeds, ntrees, mTry, repeats, Kernel
   } else {
     set.seed(runif(1,1,10000))
     seed.list = runif(repeats, 1, 100)
-    cat("No seed list provided, seeds are:", seed.list[1:repeats], "\n")
+    message("No seed list provided, seeds are: ", seed.list[1:repeats])
   }
 
   if(hasArg(ntrees)){
@@ -87,7 +87,7 @@ BlackBoxCV <- function(data, labels, folds, seeds, ntrees, mTry, repeats, Kernel
     svm.kernel = Kernel
   } else {
     svm.kernel = "linear"
-    cat("No kernel provided, using linear kernel from e1071 package", "\n")
+    #message("No kernel provided, using linear kernel from e1071 package")
   }
 
   if(hasArg(Gamma)){
@@ -127,7 +127,7 @@ BlackBoxCV <- function(data, labels, folds, seeds, ntrees, mTry, repeats, Kernel
       classtr = data.frame(condition = (factor(class.data$y[-subset])))
       classts = data.frame(condition = (factor(class.data$y[subset])))
 
-      BB_S = BlackBox(data = cv.train, labels = classtr$condition, holdout = cv.test, holdout.labels = classts$condition, ntrees = nTrees, mTry = m.try, Kernel = svm.kernel, Gamma = svm.gamma, exclude = exclude)
+      BB_S = blkbox(data = cv.train, labels = classtr$condition, holdout = cv.test, holdout.labels = classts$condition, ntrees = nTrees, mTry = m.try, Kernel = svm.kernel, Gamma = svm.gamma, exclude = exclude)
 
       for(q in 1:length(names(BB_S$algorithm.votes))){
 
@@ -164,7 +164,7 @@ BlackBoxCV <- function(data, labels, folds, seeds, ntrees, mTry, repeats, Kernel
           }
         }
       }
-      cat("Shuffle:",RunThrough, "of", repeats ," ","Fold:",i,"\n")
+      message("Shuffle: ",RunThrough, " of ", repeats ," ","Fold: ",i)
     }
   }
 

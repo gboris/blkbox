@@ -9,9 +9,9 @@ cv.plot(obj, metric, y_ranges, title, type)
 \arguments{
 \item{obj}{An object produced by the BlackBocCV function.}
 
-\item{metric}{Which metric you wish to plot, can only plot those specified to the BlackBoxCV function at time of running.}
+\item{metric}{Which metric you wish to plot, can only plot those specified to the blkboxCV function at time of running.}
 
-\item{y_ranges}{is the y axis limits for the plot, defaults to c(0,1). Must be a numeric vector with two entries.}
+\item{y_ranges}{is the y axis limits for the plot, defaults to c(0,1). Must be a numeric vector with two entries. Invalid for barplots.}
 
 \item{title}{the title to be adhered to the plot. Default is no title.}
 
