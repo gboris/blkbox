@@ -39,9 +39,7 @@ ncv.plot <- function(obj, metric, y_ranges, title){
   df = data.frame(matrix(values, ncol = length(algs)))
   colnames(df) = algs
 
-  library(reshape2)
   df_melt = melt(df)
-  library(ggplot2)
   ggplot(df_melt, aes(x=factor(variable), y=value, fill = variable)) + geom_boxplot() +  theme_bw() + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5), legend.key = element_blank(), plot.title = element_text(lineheight=.9, face="bold", size = 16)) + xlab("Algorithms") + ylab(paste(metric)) + ylim(y_ranges) + geom_hline(yintercept=0.5,  linetype="dotted", size = 1) + ggtitle(paste(title))
 
 }
@@ -113,9 +111,7 @@ cv.plot <- function(obj, metric, y_ranges, title, type){
 
   df = data.frame(matrix(values, ncol = length(algs)))
   colnames(df) = algs
-  library(reshape2)
   df_melt = melt(df)
-  library(ggplot2)
   #return(df_melt)
   if(plot.type == "boxplot"){
     x = (ggplot(df_melt, aes(x=factor(variable), y=value, fill = variable)) + geom_boxplot() +  theme_bw() + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5), legend.key = element_blank(), plot.title = element_text(lineheight=.9, face="bold", size = 16)) + xlab("Algorithms") + ylab(paste(metric)) + ylim(y_ranges) + geom_hline(yintercept=0.5,  linetype="dotted", size = 1) + ggtitle(paste(title)))

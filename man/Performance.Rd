@@ -7,7 +7,7 @@
 Performance(object, metric, consensus)
 }
 \arguments{
-\item{object}{}
+\item{object}{the blkboxCV or blkbox output}
 
 \item{metric}{Which metric will be used for performance. Area under the Receiver operating curve = "AUROC", Accuracy = "ACC", Error rate = "ERR", Matthews correlation coeffecient = "MCC", F-1 score = "F-1".}
 

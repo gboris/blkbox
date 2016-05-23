@@ -6,7 +6,6 @@
 #' @param labels A character or numeric vector of the class indetifiers that each sample belongs.
 #' @param outerfolds The number of folds that will be in the first k-fold loop, this determines the number of holdouts.
 #' @param innerfolds The number of folds that occur in the internal feature selection cross fold validation before testing on the corresponding holdout.
-#' @param seeds A numeric vector
 #' @param ntrees The number of trees used in the ensemble based learners (randomforest, bigrf, party, bartmachine). default = 500.
 #' @param mTry The number of features sampled at each node in the trees of ensemble based learners (randomforest, bigrf, party, bartmachine). default = sqrt(number of features).
 #' @param Kernel The type of kernel used in the support vector machine algorithm (linear, radial, sigmoid, polynomial). default = "linear".
@@ -84,6 +83,9 @@ blkboxNCV <- function(data, labels, outerfolds, innerfolds, ntrees, mTry, Kernel
       #stop("blkbox does not support non-binary classification tasks")
     }
   }
+  if(!hasArg(Method)){
+    stop("Method must be specificed for NCV")
+  }
   if(hasArg(Gamma)){
     svm.gamma = Gamma
   } else {
@@ -109,7 +111,7 @@ blkboxNCV <- function(data, labels, outerfolds, innerfolds, ntrees, mTry, Kernel
     exclude = c(0)
   }
   if(!hasArg(inn.exclude)){
-    inn.exclude = c(0)
+    inn.exclude = c(1:8)[-which(Method == c("randomforest", "kknn", "bartmachine", "party", "GLM", "PamR", "nnet", "SVM"))]
   }
   if(hasArg(Kernel)){
     svm.kernel = Kernel

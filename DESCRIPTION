@@ -9,7 +9,7 @@ Description: Allows data to be processed by multiple machine learning algorithms
 License: PLACEHOLDER
 LazyData: TRUE
 Imports: dplyr, plyr, magrittr, tidyr, caret, glmnet, foreach,
-        Vennerable, ggplot2, reshape2, randomForest, kknn, pamr, nnet,
-        party, rJava, bartMachine, bigrf, e1071, pROC,
+        Vennerable, parallel, ggplot2, reshape2, randomForest, kknn,
+        pamr, nnet, party, rJava, bartMachine, bigrf, e1071, pROC,
 NeedsCompilation: no
-Packaged: 2016-05-22 14:47:57 UTC; Davies
+Packaged: 2016-05-23 14:15:16 UTC; Davies

@@ -24,16 +24,18 @@ blkbox(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, Gamma,
 
 \item{Gamma}{Advanced parameter, defines the distance of which a single training example reaches. Low gamma will produce a SVM with softer boundries, as Gamma increases the boundries will eventually become restricted to their singular support vector.}
 
-\item{exclude}{}
+\item{exclude}{removes certain algorithms from analysis - to exclude random forest which you would set exclude = c(1). To only run GLM you would set exclude = c(1:4,6:8). The algorithms each have their own numeric identifier. randomforest = 1, knn = 2, bartmachine = 3, party = 4, glm = 5, pam = 6, nnet = 7, svm = 8.}
 }
 \description{
 This standard function will allow multiple machine learning algorithms to ulitilsed on the same data to determine which may be the most appropriate.
 }
 \examples{
+\donttest{
 library(blkbox)
 options(java.parameters = "-Xmx8000m" )
 bb_res = blkbox(data = , labels = , holdout = , holdout.labels = , exclude = c(1:7))
 Performance(bb_res, metric = "AUROC", consensus = T)
+}
 }
 \author{
 Zachary Davies, Boris Guennewig

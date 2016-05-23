@@ -2,7 +2,7 @@
 #'
 #' @author Zachary Davies, Boris Guennewig
 #' @description Determines the performance of each model within the blkbox or blkboxCV output. Can choose from a range of performance metrics.
-#' @param object
+#' @param object the blkboxCV or blkbox output
 #' @param metric Which metric will be used for performance. Area under the Receiver operating curve = "AUROC", Accuracy = "ACC", Error rate = "ERR", Matthews correlation coeffecient = "MCC", F-1 score = "F-1".
 #' @param consensus if the process was repeated it will calculate the consensus vote for each sample across the repititons before then calculating the performance across all samples. Default is False.
 #' @keywords performance, blkbox, AUROC, F-1, ERR, MCC, ACC.

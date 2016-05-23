@@ -33,8 +33,6 @@ blkboxNCV(data, labels, outerfolds, innerfolds, ntrees, mTry, Kernel, Gamma,
 \item{AUC}{Area under the curve selection measure. The relative importance of features is calculated and then ranked. The features responsible for the most importance are therefore desired, the AUC value is the percentile in which to keep features above. 0.5 keeps the highest ranked features responsible for 50 percent of the cumulative importance.}
 
 \item{metric}{A character string to determine which performance metric will be passed on to the Performance() function. Refer to Perfromance() documentation.}
-
-\item{seeds}{A numeric vector}
 }
 \description{
 A function that builds upon the blkbox and blkboxNCV function and performs nested k-fold cross validation and then provides votes for each fold as well as the importance of each feature in the models. Provides feature importance tables and details for each inner and outerfold run.

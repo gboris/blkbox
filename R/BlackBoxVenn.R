@@ -18,7 +18,6 @@
 #' @export
 #ncv venn plot function
 ncv.venn <- function(results){
-  library(Vennerable)
   plot.names = names(results$InnerFS$holdout_1$Feature_Selection$FS.surviving.features)
   out = sapply(X = seq_along(plot.names), results = results, FUN = function(X, results){
     .mpi(results, X)
@@ -34,7 +33,6 @@ ncv.venn <- function(results){
 #' @export
 #cv venn plot function
 cv.venn <- function(results){
-  library(Vennerable)
   plot(Venn(results$Feature_Selection$FS.surviving.features), doWeights = FALSE)
   grid.text("CV Feature Selection - Method Overlap", x=.5, y=.93)
 }
