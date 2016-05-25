@@ -37,7 +37,7 @@ Details of how to use this package, please see the vignette.
 
 **Description**: Allows data to be processed by multiple machine learning algorithms at the same time, enables feature selection of data by single a algorithm or combinations of multiple. Easy to use tool for k-fold cross validation and nested cross validation.
 
-**License**: PLACEHOLDER
+**License**: GPL (>= 2)
 
 **LazyData**: TRUE
 
