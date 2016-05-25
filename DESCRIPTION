@@ -10,6 +10,7 @@ License: GPL (>= 2)
 LazyData: TRUE
 Depends: dplyr, plyr, pryr, magrittr, tidyr, caret, glmnet, foreach,
         Vennerable, parallel, ggplot2, reshape2, randomForest, kknn,
-        pamr, nnet, party, rJava, bartMachine, bigrf, e1071, pROC, stringr
+        pamr, nnet, party, rJava, bartMachine, bigrf, e1071, pROC,
+        stringr
 NeedsCompilation: no
-Packaged: 2016-05-25 21:40:18 UTC; Davies
+Packaged: 2016-05-25 22:04:29 UTC; Davies

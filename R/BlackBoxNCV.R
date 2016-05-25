@@ -204,22 +204,16 @@ blkboxNCV <- function(data, labels, outerfolds, innerfolds, ntrees, mTry, Kernel
 
 
   holdout.performance = lapply(seq_along(holdout.performance), function(x){
-
-    df = cbind(data.frame(temp_name = unlist(holdout.performance[[x]]$Performance)),
-               t(data.frame(str_split(as.character(mapply(gsub, "[.]", "_", rownames(test))), "_", 2))),
+    df = data.frame(temp_name = unlist(holdout.performance[[x]]$Performance))
+    df = cbind(df, t(data.frame(str_split(as.character(mapply(gsub, "[.]", "_", rownames(df))), "_", 2))),
                rep(names(holdout.performance[x]), length(unlist(holdout.performance[[x]]$Performance))))
     colnames(df) = c("Performance", "Metric", "Algorithm", "Holdout")
     rownames(df) = NULL
     return(df)
-
   }) %>%
     Reduce(rbind, .) %>%
     select(Algorithm, Holdout, Metric, Performance) %>%
     arrange(Holdout)
-
-
-
-
 
 
   list_tabs = lapply(X = 1:length(temp_table1), y = temp_table1, function(X, y){
