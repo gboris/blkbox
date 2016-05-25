@@ -13,12 +13,8 @@ ncv.plot <- function(obj, metric, y_ranges, title){
   #ONLY SUPPORTS 1 ALGORITHM FEATURE SELECTION CURRENTLY
 
   if(!hasArg(metric)){
-    metric = obj$HoldoutPerfMerged$metric[1]
+    metric = unique(obj$HoldoutPerf$Metric)[1]
   }
-
-  algs = names(obj$HoldoutPerf$holdout_1$Performance[[metric]])
-  values = NULL
-  outerfolds = length(names(obj$HoldoutPerf))
 
   if(!hasArg(y_ranges)){
     y_ranges = c(0,1)
@@ -28,19 +24,9 @@ ncv.plot <- function(obj, metric, y_ranges, title){
     title = ""
   }
 
-  c = 0
-  for(a in 1:length(algs)){
-    for(i in 1:outerfolds){
-      c = c + 1
-      values[c] = obj$HoldoutPerf[[i]]$Performance[[metric]][[algs[a]]]
-    }
-  }
 
-  df = data.frame(matrix(values, ncol = length(algs)))
-  colnames(df) = algs
-
-  df_melt = melt(df)
-  ggplot(df_melt, aes(x=factor(variable), y=value, fill = variable)) + geom_boxplot() +  theme_bw() + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5), legend.key = element_blank(), plot.title = element_text(lineheight=.9, face="bold", size = 16)) + xlab("Algorithms") + ylab(paste(metric)) + ylim(y_ranges) + geom_hline(yintercept=0.5,  linetype="dotted", size = 1) + ggtitle(paste(title))
+  data = obj$HoldoutPerf %>% filter(Metric == metric)
+  ggplot(data, aes(x=factor(Algorithm), y=Performance, fill = Algorithm)) + geom_boxplot() +  theme_bw() + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5), legend.key = element_blank(), plot.title = element_text(lineheight=.9, face="bold", size = 16)) + xlab("Algorithms") + ylab(paste(metric)) + ylim(y_ranges) + geom_hline(yintercept=0.5,  linetype="dotted", size = 1) + ggtitle(paste(title))
 
 }
 

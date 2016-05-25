@@ -143,14 +143,14 @@ blkboxNCV <- function(data, labels, outerfolds, innerfolds, ntrees, mTry, Kernel
 
     #we take nk-1 data portion and give to blkbox functions
     #blkboxFS to reduce the data nk times)
-    inner.feature.selection[[paste0("holdout_",i)]] = blkboxCV(data = ncv.train[,-ncol(ncv.train)], labels = nclasstr$condition, folds = k, Method = Method, AUC = AUC, Gamma = svm.gamma, exclude = exclude)
+    inner.feature.selection[[paste0("holdout_",i)]] = blkboxCV(data = ncv.train[,-ncol(ncv.train)], labels = nclasstr$condition, folds = k, Method = Method, AUC = AUC, Gamma = svm.gamma, exclude = inn.exclude)
     #blkbox standard and performance to determine the inner loop performances
-    inner.blkbox[[paste0("holdout_",i)]] = blkboxCV(data = inner.feature.selection[[paste0("holdout_",i)]]$Feature_Selection$FS.data, labels = nclasstr$condition, folds = k, exclude = exclude)
+    inner.blkbox[[paste0("holdout_",i)]] = blkboxCV(data = inner.feature.selection[[paste0("holdout_",i)]]$Feature_Selection$FS.data, labels = nclasstr$condition, folds = k, exclude = inn.exclude)
     inner.performance[[paste0("holdout_",i)]] = Performance(inner.blkbox[[paste0("holdout_",i)]], metric = metric, consensus = TRUE)
     #Store results feature selected subset, their importance, the inner fold performance
 
     #blkboxTrain on all BB_AFS$FS.data selected data and then blkboxPredict on ncv.test
-    holdout.result[[paste0("holdout_",i)]] = blkbox(data = inner.feature.selection[[paste0("holdout_",i)]]$Feature_Selection$FS.data, holdout = ncv.test, labels = nclasstr$condition, holdout.labels = nclassts$condition, Kernel = svm.kernel, Gamma = svm.gamma, mTry = m.try, ntrees = nTrees, exclude = inn.exclude)
+    holdout.result[[paste0("holdout_",i)]] = blkbox(data = inner.feature.selection[[paste0("holdout_",i)]]$Feature_Selection$FS.data, holdout = ncv.test, labels = nclasstr$condition, holdout.labels = nclassts$condition, Kernel = svm.kernel, Gamma = svm.gamma, mTry = m.try, ntrees = nTrees, exclude = exclude)
     #performance of blkboxPredict result
     holdout.performance[[paste0("holdout_",i)]] = Performance(holdout.result[[paste0("holdout_",i)]], metric = metric, consensus = TRUE)
   }
@@ -177,35 +177,50 @@ blkboxNCV <- function(data, labels, outerfolds, innerfolds, ntrees, mTry, Kernel
   }
 
   merged_votes = list()
-  for(q in 1:(8 - length(inn.exclude))){
-
+  for(q in 1:(8 - length(exclude))){
     for(i in 1:nk){
-
       if(i == 1){
-
         merged_votes[[names(holdout.result[[paste0("holdout_",i)]]$algorithm.votes)[q]]] = holdout.result[[paste0("holdout_",i)]]$algorithm.votes[[q]]
-
       } else {
-
         #bind
         merged_votes[[names(holdout.result[[paste0("holdout_",i)]]$algorithm.votes)[q]]] = cbind(merged_votes[[names(holdout.result[[paste0("holdout_",i)]]$algorithm.votes)[q]]], holdout.result[[paste0("holdout_",i)]]$algorithm.votes[[q]])
-
         if(i == nk){
-
           #order
           merged_votes[[names(holdout.result[[paste0("holdout_",i)]]$algorithm.votes)[q]]] = t(as.matrix(merged_votes[[names(holdout.result[[paste0("holdout_",i)]]$algorithm.votes)[q]]][, match(rownames(data), colnames(merged_votes[[names(holdout.result[[paste0("holdout_",i)]]$algorithm.votes)[q]]]))]))
-
         }
-
       }
-
     }
-
   }
 
   #performance
   ncv_votes = list("algorithm.votes" = merged_votes, "input.data" = list("labels" = data.frame(labels)))
   ncv.perf = blkbox::Performance(ncv_votes, metric = metric, consensus = F)
+
+  ncv.perf = lapply(seq_along(ncv.perf$Performance), function(x){
+    df = data.frame(unlist(ncv.perf$Performance[[x]]))
+    colnames(df) = names(ncv.perf$Performance[x])
+    return(df)
+  }) %>% Reduce(cbind, .)
+
+
+  holdout.performance = lapply(seq_along(holdout.performance), function(x){
+
+    df = cbind(data.frame(temp_name = unlist(holdout.performance[[x]]$Performance)),
+               t(data.frame(str_split(as.character(mapply(gsub, "[.]", "_", rownames(test))), "_", 2))),
+               rep(names(holdout.performance[x]), length(unlist(holdout.performance[[x]]$Performance))))
+    colnames(df) = c("Performance", "Metric", "Algorithm", "Holdout")
+    rownames(df) = NULL
+    return(df)
+
+  }) %>%
+    Reduce(rbind, .) %>%
+    select(Algorithm, Holdout, Metric, Performance) %>%
+    arrange(Holdout)
+
+
+
+
+
 
   list_tabs = lapply(X = 1:length(temp_table1), y = temp_table1, function(X, y){
     names_c = names(y)
@@ -228,6 +243,11 @@ blkboxNCV <- function(data, labels, outerfolds, innerfolds, ntrees, mTry, Kernel
   endMem = mem_used()
   diffMem = endMem - startMem
   elapsedTime = endTime - startTime
+
+  #Output summary message
+  cat("Overall Performance:\n")
+  print(ncv.perf)
+
 
   #Output
   return(list("InnerFS" = inner.feature.selection, "InnerBB" = inner.blkbox, "InnerPerf" = inner.performance, "HoldoutRes" = holdout.result, "HoldoutPerf" = holdout.performance, "HoldoutPerfMerged" = ncv.perf, "FeatureTable" = list_tabs, "MeanFeatureTable" = list_tabs_summarised, "WeightedAverageImportance" = temp_list1, benchmarks = list("time" = elapsedTime, "memory.used" = diffMem)))
