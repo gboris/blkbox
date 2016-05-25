@@ -12,4 +12,4 @@ Imports: dplyr, plyr, magrittr, tidyr, caret, glmnet, foreach,
         Vennerable, parallel, ggplot2, reshape2, randomForest, kknn,
         pamr, nnet, party, rJava, bartMachine, bigrf, e1071, pROC,
 NeedsCompilation: no
-Packaged: 2016-05-23 14:15:16 UTC; Davies
+Packaged: 2016-05-25 00:24:41 UTC; Davies

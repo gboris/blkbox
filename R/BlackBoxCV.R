@@ -17,6 +17,10 @@
 #' @keywords Cross Validation, k-fold, blkbox, AUC, feature selection,
 #' @export
 blkboxCV <- function(data, labels, folds, seeds, ntrees, mTry, repeats, Kernel, Gamma, exclude, Method, AUC){
+
+  startMem = mem_used()
+  startTime = Sys.time()
+
   labels = as.numeric(factor(x = labels, labels = c(1,2)))
   class = data.frame(y = (c(labels)))
   class.data = cbind(data, class)
@@ -211,10 +215,15 @@ blkboxCV <- function(data, labels, folds, seeds, ntrees, mTry, repeats, Kernel, 
     }
   }
 
+  endTime = Sys.time()
+  endMem = mem_used()
+  diffMem = endMem - startMem
+  elapsedTime = endTime - startTime
+
   if(AUC != "NA"){
-    return(list("algorithm.votes" = algorithm.votes, "algorithm.importance" = algorithm.importance, "input.data" = list("Data" = class.data ,"labels" = actual.label), "Feature_Selection" = list("FS.data" = FS.data, "FS.surviving.features" = surviving.features, "FS.surviving.features.importance" = surviving.features.importance, "algorithm.importance" = Output, "importance.cutoff" = imp.auc.cutoff)))
+    return(list("algorithm.votes" = algorithm.votes, "algorithm.importance" = algorithm.importance, "input.data" = list("Data" = class.data ,"labels" = actual.label), "Feature_Selection" = list("FS.data" = FS.data, "FS.surviving.features" = surviving.features, "FS.surviving.features.importance" = surviving.features.importance, "algorithm.importance" = Output, "importance.cutoff" = imp.auc.cutoff), benchmarks = list("time" = elapsedTime, "memory.used" = diffMem)))
   } else {
-    return(list("algorithm.votes" = algorithm.votes, "algorithm.importance" = algorithm.importance, "input.data" = list("Data" = class.data ,"labels" = actual.label)))
+    return(list("algorithm.votes" = algorithm.votes, "algorithm.importance" = algorithm.importance, "input.data" = list("Data" = class.data ,"labels" = actual.label), benchmarks = list("time" = elapsedTime, "memory.used" = diffMem)))
   }
 
 }

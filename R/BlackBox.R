@@ -22,6 +22,9 @@
 #' @export
 blkbox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, Gamma, exclude){
 
+  startMem = mem_used()
+  startTime = Sys.time()
+
   if(!hasArg(data)){
     stop("Ensemble cannot run without data, provide data.frame of samples by features")
   }
@@ -137,7 +140,10 @@ blkbox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, 
     algorithm.votes[[names(algorithm_list)[q]]] = as.matrix(algorithm_list[[q]]$VOTE)
   }
 
-
-  return(list("algorithm.votes" = algorithm.votes, "algorithm.importance" = algorithm.importance, "input.data" = list("Data" = class.data ,"labels" = classts)))
+  endTime = Sys.time()
+  endMem = mem_used()
+  diffMem = endMem - startMem
+  elapsedTime = endTime - startTime
+  return(list("algorithm.votes" = algorithm.votes, "algorithm.importance" = algorithm.importance, "input.data" = list("Data" = class.data ,"labels" = classts), benchmarks = list("time" = elapsedTime, "memory.used" = diffMem)))
 
 }

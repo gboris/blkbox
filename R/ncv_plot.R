@@ -3,7 +3,7 @@
 #' @author Zachary Davies, Boris Guennewig
 #' @description Compares the performance of each algorithm in a boxplot. Each holdout will contribute at least one data point to each algorithms boxplot.
 #' @param obj An object produced by the blkboxCV function.
-#' @param metric Which metric you wish to plot, can only plot those specified to the blkboxNCV function at time of running.
+#' @param metric Which metric you wish to plot, can only plot those specified to the blkboxNCV function at time of running. Area under the Receiver operating curve = "AUROC", Accuracy = "ACC", Error rate = "ERR", Matthews correlation coeffecient = "MCC", F-1 score = "F-1".
 #' @param y_ranges is the y axis limits for the plot, defaults to c(0,1). Must be a numeric vector with two entries.
 #' @param title the title to be adhered to the plot. Default is no title.
 #' @keywords NCV, Plot, ggplot2, boxplot
@@ -50,7 +50,7 @@ ncv.plot <- function(obj, metric, y_ranges, title){
 #' @author Zachary Davies, Boris Guennewig
 #' @description Compares the performance of each algorithm in a boxplot OR barplot. Each holdout will contribute at least one data point to each algorithm.
 #' @param obj An object produced by the BlackBocCV function.
-#' @param metric Which metric you wish to plot, can only plot those specified to the blkboxCV function at time of running.
+#' @param metric Which metric you wish to plot. Area under the Receiver operating curve = "AUROC", Accuracy = "ACC", Error rate = "ERR", Matthews correlation coeffecient = "MCC", F-1 score = "F-1".
 #' @param y_ranges is the y axis limits for the plot, defaults to c(0,1). Must be a numeric vector with two entries. Invalid for barplots.
 #' @param title the title to be adhered to the plot. Default is no title.
 #' @param type The plot can be either a barplot or boxplot. For the barplot the consensus performance is used, for a boxplot consensus is false. If only one performance measure is found for each algorithm then it will be forced to a barplot.

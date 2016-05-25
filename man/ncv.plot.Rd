@@ -9,7 +9,7 @@ ncv.plot(obj, metric, y_ranges, title)
 \arguments{
 \item{obj}{An object produced by the blkboxCV function.}
 
-\item{metric}{Which metric you wish to plot, can only plot those specified to the blkboxNCV function at time of running.}
+\item{metric}{Which metric you wish to plot, can only plot those specified to the blkboxNCV function at time of running. Area under the Receiver operating curve = "AUROC", Accuracy = "ACC", Error rate = "ERR", Matthews correlation coeffecient = "MCC", F-1 score = "F-1".}
 
 \item{y_ranges}{is the y axis limits for the plot, defaults to c(0,1). Must be a numeric vector with two entries.}
 

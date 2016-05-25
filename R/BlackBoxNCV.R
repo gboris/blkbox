@@ -19,6 +19,9 @@
 #' @export
 blkboxNCV <- function(data, labels, outerfolds, innerfolds, ntrees, mTry, Kernel, Gamma, exclude, inn.exclude, Method, AUC, metric){
 
+  startMem = mem_used()
+  startTime = Sys.time()
+
   labels = as.numeric(factor(x = labels, labels = c(1,2)))
   class = data.frame(y = (c(labels)))
   class.data = cbind(data, class)
@@ -221,7 +224,12 @@ blkboxNCV <- function(data, labels, outerfolds, innerfolds, ntrees, mTry, Kernel
     group_by(algorithm, feature) %>%
     dplyr::summarise(Importance = mean(Importance, na.rm = T))
 
+  endTime = Sys.time()
+  endMem = mem_used()
+  diffMem = endMem - startMem
+  elapsedTime = endTime - startTime
+
   #Output
-  return(list("InnerFS" = inner.feature.selection, "InnerBB" = inner.blkbox, "InnerPerf" = inner.performance, "HoldoutRes" = holdout.result, "HoldoutPerf" = holdout.performance, "HoldoutPerfMerged" = ncv.perf, "FeatureTable" = list_tabs, "MeanFeatureTable" = list_tabs_summarised, "WeightedAverageImportance" = temp_list1))
+  return(list("InnerFS" = inner.feature.selection, "InnerBB" = inner.blkbox, "InnerPerf" = inner.performance, "HoldoutRes" = holdout.result, "HoldoutPerf" = holdout.performance, "HoldoutPerfMerged" = ncv.perf, "FeatureTable" = list_tabs, "MeanFeatureTable" = list_tabs_summarised, "WeightedAverageImportance" = temp_list1, benchmarks = list("time" = elapsedTime, "memory.used" = diffMem)))
 
 }
