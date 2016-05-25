@@ -11,7 +11,7 @@
 R-package blkbox can be installed:
 
     library(devtools)
-    install_github("gboris/blackbox")
+    install_github("gboris/blkbox")
 
 After installation, the package can be loaded into R.
 
