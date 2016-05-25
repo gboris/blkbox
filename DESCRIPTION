@@ -6,10 +6,10 @@ Date: 2016-01-28
 Author: Zachary Davies, Boris Guennewig
 Maintainer: Boris Guennewig <b.guennewig@garvan.org.au>
 Description: Allows data to be processed by multiple machine learning algorithms at the same time, enables feature selection of data by single a algorithm or combinations of multiple. Easy to use tool for k-fold cross validation and nested cross validation.
-License: PLACEHOLDER
+License: GPL (>= 2)
 LazyData: TRUE
 Depends: dplyr, plyr, pryr, magrittr, tidyr, caret, glmnet, foreach,
         Vennerable, parallel, ggplot2, reshape2, randomForest, kknn,
         pamr, nnet, party, rJava, bartMachine, bigrf, e1071, pROC,
 NeedsCompilation: no
-Packaged: 2016-05-25 15:40:01 UTC; Davies
+Packaged: 2016-05-25 21:40:18 UTC; Davies
