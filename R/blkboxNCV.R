@@ -189,7 +189,7 @@ blkboxNCV <- function(data, labels, outerfolds, innerfolds, ntrees, mTry, Kernel
   }
 
   merged_votes = list()
-  for(q in 1:(8 - length(exclude))){
+  for(q in 1:(9 - length(exclude))){
     for(i in 1:nk){
       if(i == 1){
         merged_votes[[names(holdout.result[[paste0("holdout_",i)]]$algorithm.votes)[q]]] = holdout.result[[paste0("holdout_",i)]]$algorithm.votes[[q]]
