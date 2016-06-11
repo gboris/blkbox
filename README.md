@@ -17,8 +17,6 @@ After installation, the package can be loaded into R.
 
     library(blkbox)
 
-Using rnaseqcomp
-
 Details of how to use this package, please see the vignette.
 
 **Package**: blkbox
