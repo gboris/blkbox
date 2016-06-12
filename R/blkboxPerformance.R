@@ -12,6 +12,7 @@ Performance <- function(object, metric, consensus){
   output = list()
   avg.predicted = list()
   metrics = list()
+  nums = list()
 
   if(hasArg(object) & (names(object)[1] == "algorithm.votes")){
     results = list()
@@ -46,8 +47,11 @@ Performance <- function(object, metric, consensus){
           avg.predicted[[q]] = colMeans(votes[[i]])
         }
         if(metric[m] == "AUROC"){
+
           ROC = pROC::roc(predictor = as.numeric(as.matrix(avg.predicted[[q]])), response = labels, auc = TRUE, ci = TRUE)
           performance[q] = ROC$auc
+          nums[[names(votes)[i]]] = cbind(Algorithm = rep(names(votes)[i], length(ROC$specificities)), data.frame(cbind(rev(ROC$specificities), rev(ROC$sensitivities))))
+
         } else {
           TP = length(which((round(avg.predicted[[q]])[which(as.numeric(round(avg.predicted[[q]])) == labels)]) == levels(as.factor(labels))[1]))
           FP = length(which((round(avg.predicted[[q]])[which(as.numeric(round(avg.predicted[[q]])) != labels)]) == levels(as.factor(labels))[2]))
@@ -72,6 +76,10 @@ Performance <- function(object, metric, consensus){
     }
     metrics[[(metric[m])]] = output
   }
-
-  return(list("Performance" = metrics, "metric" = metric))
+  if("AUROC" %in% metric){
+    nums = Reduce(rbind, nums)
+    return(list("Performance" = metrics, "metric" = metric, "roc.values" = nums))
+  } else {
+    return(list("Performance" = metrics, "metric" = metric))
+  }
 }

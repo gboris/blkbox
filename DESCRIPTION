@@ -13,4 +13,4 @@ Depends: dplyr, plyr, pryr, magrittr, tidyr, caret, glmnet, foreach,
         pamr, nnet, party, rJava, bartMachine, bigrf, e1071, pROC,
         stringr
 NeedsCompilation: no
-Packaged: 2016-06-10 07:08:25 UTC; Davies
+Packaged: 2016-06-12 13:08:41 UTC; Davies
