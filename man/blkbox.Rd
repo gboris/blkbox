@@ -5,7 +5,7 @@
 \title{Train and Test datasets.}
 \usage{
 blkbox(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, Gamma,
-  exclude)
+  exclude, keep.input)
 }
 \arguments{
 \item{data}{a data frame of training data where the features correspond to columns and the samples are rows. As data size increases the memory required and run time of some algorithms may compound exponentially.}
@@ -28,14 +28,6 @@ blkbox(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, Gamma,
 }
 \description{
 This standard function will allow multiple machine learning algorithms to be utilized on the same data to determine, which algorithm may be the most appropriate.
-}
-\examples{
-\donttest{
-library(blkbox)
-options(java.parameters = "-Xmx8000m" )
-bb_res = blkbox(data = , labels = , holdout = , holdout.labels = , exclude = c(1:7))
-Performance(bb_res, metric = "AUROC", consensus = T)
-}
 }
 \author{
 Zachary Davies, Boris Guennewig

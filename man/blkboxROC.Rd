@@ -4,10 +4,12 @@
 \alias{blkboxROC}
 \title{ROC plots for blkbox}
 \usage{
-blkboxROC(results)
+blkboxROC(results, title)
 }
 \arguments{
 \item{results}{The output of blkbox Performance that had "AUROC" as one of the specified metrics.}
+
+\item{title}{The title of the plot. Default is "ROC".}
 }
 \description{
 will plot ROC curves for output from Performance function if "AUROC" was specified.

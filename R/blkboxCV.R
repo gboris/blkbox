@@ -226,9 +226,9 @@ blkboxCV <- function(data, labels, folds, seeds, ntrees, mTry, repeats, Kernel, 
   elapsedTime = endTime - startTime
 
   if(AUC != "NA"){
-    return(list("algorithm.votes" = algorithm.votes, "algorithm.importance" = algorithm.importance, "input.data" = list("Data" = class.data ,"labels" = actual.label), "Feature_Selection" = list("FS.data" = FS.data, "FS.surviving.features" = surviving.features, "FS.surviving.features.importance" = surviving.features.importance, "algorithm.importance" = Output, "importance.cutoff" = imp.auc.cutoff), benchmarks = list("time" = elapsedTime, "memory.used" = diffMem)))
+    return(list("algorithm.votes" = algorithm.votes, "algorithm.importance" = algorithm.importance, "Feature_Selection" = list("FS.data" = FS.data, "FS.surviving.features" = surviving.features, "FS.surviving.features.importance" = surviving.features.importance, "algorithm.importance" = Output, "importance.cutoff" = imp.auc.cutoff), benchmarks = list("time" = elapsedTime, "memory.used" = diffMem)))
   } else {
-    return(list("algorithm.votes" = algorithm.votes, "algorithm.importance" = algorithm.importance, "input.data" = list("Data" = class.data ,"labels" = actual.label), benchmarks = list("time" = elapsedTime, "memory.used" = diffMem)))
+    return(list("algorithm.votes" = algorithm.votes, "algorithm.importance" = algorithm.importance, benchmarks = list("time" = elapsedTime, "memory.used" = diffMem)))
   }
 
 }

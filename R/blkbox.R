@@ -11,16 +11,9 @@
 #' @param Kernel The type of kernel used in the support vector machine algorithm (linear, radial, sigmoid, polynomial). default = "linear".
 #' @param Advanced parameter, defines the distance of which a single training example reaches. Low gamma will produce a SVM with softer boundaries, as Gamma increases the boundaries will eventually become restricted to their singular support vector. default is 1/(ncol - 1).
 #' @param exclude  removes certain algorithms from analysis - to exclude random forest which you would set exclude = c(1). To only run GLM you would set exclude = c(1:4,6:8). The algorithms each have their own numeric identifier. randomforest = 1, knn = 2, bartmachine = 3, party = 4, glm = 5, pam = 6, nnet = 7, svm = 8.
-#' @examples
-#'\donttest{
-#' library(blkbox)
-#' options(java.parameters = "-Xmx8000m" )
-#' bb_res = blkbox(data = , labels = , holdout = , holdout.labels = , exclude = c(1:7))
-#' Performance(bb_res, metric = "AUROC", consensus = T)
-#'}
 #' @keywords Machine Learning, blkbox, Training, Testing
 #' @export
-blkbox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, Gamma, exclude){
+blkbox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, Gamma, exclude, keep.input){
 
   startMem = mem_used()
   startTime = Sys.time()
@@ -60,8 +53,6 @@ blkbox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, 
   algorithm.votes = list()
   algorithm_list = list()
 
-
-  ##### MESSAGE SAYING EXCLUDING ALGORITHM BLAH
   if(!hasArg(exclude)){
     exclude = c(0)
   }
@@ -144,6 +135,7 @@ blkbox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, 
   endMem = mem_used()
   diffMem = endMem - startMem
   elapsedTime = endTime - startTime
-  return(list("algorithm.votes" = algorithm.votes, "algorithm.importance" = algorithm.importance, "input.data" = list("Data" = class.data ,"labels" = classts), benchmarks = list("time" = elapsedTime, "memory.used" = diffMem)))
+
+  return(list("algorithm.votes" = algorithm.votes, "algorithm.importance" = algorithm.importance, benchmarks = list("time" = elapsedTime, "memory.used" = diffMem)))
 
 }
