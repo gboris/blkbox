@@ -4,8 +4,8 @@
     results$InnerFS[[X]]$Feature_Selection$FS.surviving.features[Y]
   })
   names(multi.plot.info) = paste0(names(results$InnerFS))
-  plot(Venn(multi.plot.info), doWeights = FALSE)
-  grid.text(paste0(names(results$InnerFS[[1]]$Feature_Selection$FS.surviving.features[Y])," NCV Feature Selection"), x=.5, y=.93)
+  Vennerable::plot(Vennerable::Venn(multi.plot.info), doWeights = FALSE)
+  grid::grid.text(paste0(names(results$InnerFS[[1]]$Feature_Selection$FS.surviving.features[Y])," NCV Feature Selection"), x=.5, y=.93)
   return(multi.plot.info)
 }
 
@@ -18,6 +18,11 @@
 #' @export
 #ncv venn plot function
 ncv.venn <- function(results){
+
+  if (!requireNamespace("Vennerable", quietly = TRUE)) {
+    stop("The Vennerable package is not installed. It can be installed by following the instructions at 'https://github.com/js229/Vennerable'")
+  }
+
   plot.names = names(results$InnerFS$holdout_1$Feature_Selection$FS.surviving.features)
   out = sapply(X = seq_along(plot.names), results = results, FUN = function(X, results){
     .mpi(results, X)
@@ -33,7 +38,10 @@ ncv.venn <- function(results){
 #' @export
 #cv venn plot function
 cv.venn <- function(results){
-  plot(Venn(results$Feature_Selection$FS.surviving.features), doWeights = FALSE)
-  grid.text("CV Feature Selection - Method Overlap", x=.5, y=.93)
+  if (!requireNamespace("Vennerable", quietly = TRUE)) {
+    stop("The Vennerable package is not installed. It can be installed by following the instructions at 'github.com/js229/Vennerable'")
+  }
+  Vennerable::plot(Vennerable::Venn(results$Feature_Selection$FS.surviving.features), doWeights = FALSE)
+  grid::grid.text("CV Feature Selection - Method Overlap", x=.5, y=.93)
 }
 

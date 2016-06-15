@@ -3,22 +3,24 @@
 #' @author Zachary Davies, Boris Guennewig
 #' @description A function that builds upon the blkbox function and performs k-fold cross validation and then provides votes for each fold as well as the importance of each feature in the models.
 #' @param data A data.frame where the columns correspond to features and the rows are samples. The dataframe will be shuffled and split into k folds for downstream analysis.
-#' @param A character or numeric vector of the class identifiers that each sample belongs.
+#' @param labels A character or numeric vector of the class identifiers that each sample belongs.
 #' @param folds The number of times the data set will be subsectioned (number of samples / k, if modulo exists the groups will be as close to the same size as possible). Each data subsection will be used as a holdout portion. default = 10.
 #' @param seeds A numeric vector. defaults to a randomly generated set of seeds that are output when run starts.
 #' @param ntrees The number of trees used in the ensemble based learners (randomforest, bigrf, party, bartmachine). default = 500.
 #' @param mTry The number of features sampled at each node in the trees of ensemble based learners (randomforest, bigrf, party, bartmachine). default = sqrt(number of features).
 #' @param repeats repeat the cross validation process. default = 1.
 #' @param Kernel The type of kernel used in the support vector machine algorithm (linear, radial, sigmoid, polynomial). default = "linear".
-#' @param Advanced parameter, defines the distance of which a single training example reaches. Low gamma will produce a SVM with softer boundaries, as Gamma increases the boundaries will eventually become restricted to their singular support vector. default is 1/(ncol - 1).
+#' @param Gamma Advanced parameter, defines the distance of which a single training example reaches. Low gamma will produce a SVM with softer boundaries, as Gamma increases the boundaries will eventually become restricted to their singular support vector. default is 1/(ncol - 1).
 #' @param exclude removes certain algorithms from analysis - to exclude random forest which you would set exclude = c(1). To only run GLM you would set exclude = c(1:4,6:8). The algorithms each have their own numeric identifier. randomforest = 1, knn = 2, bartmachine = 3, party = 4, glm = 5, pam = 6, nnet = 7, svm = 8.
 #' @param Method The algorithm used to feature select the data. Uses the feature importance from the algorithms to rank and remove anything below the AUC threshold. Default is "GLM".
 #' @param AUC Area under the curve selection measure. The relative importance of features is calculated and then ranked. The features responsible for the most importance are therefore desired, the AUC value is the percentile in which to keep features above. 0.5 keeps the highest ranked features responsible for 50 percent of the cumulative importance. Default is NA which means feature are not selected at after CV.
-#' @keywords Cross Validation, k-fold, blkbox, AUC, feature selection,
+#' @keywords Cross Validation, k-fold, blkbox, AUC, feature selection
+#' @importFrom methods hasArg
+#' @importFrom stats runif
 #' @export
 blkboxCV <- function(data, labels, folds, seeds, ntrees, mTry, repeats, Kernel, Gamma, exclude, Method, AUC){
 
-  startMem = mem_used()
+  startMem = pryr::mem_used()
   startTime = Sys.time()
 
   labels = as.numeric(factor(x = labels, labels = c(1,2)))
@@ -221,14 +223,14 @@ blkboxCV <- function(data, labels, folds, seeds, ntrees, mTry, repeats, Kernel, 
   }
 
   endTime = Sys.time()
-  endMem = mem_used()
+  endMem = pryr::mem_used()
   diffMem = endMem - startMem
   elapsedTime = endTime - startTime
 
   if(AUC != "NA"){
-    return(list("algorithm.votes" = algorithm.votes, "algorithm.importance" = algorithm.importance, "Feature_Selection" = list("FS.data" = FS.data, "FS.surviving.features" = surviving.features, "FS.surviving.features.importance" = surviving.features.importance, "algorithm.importance" = Output, "importance.cutoff" = imp.auc.cutoff), benchmarks = list("time" = elapsedTime, "memory.used" = diffMem)))
+    return(list("algorithm.votes" = algorithm.votes, "algorithm.importance" = algorithm.importance, "Feature_Selection" = list("FS.data" = FS.data, "FS.surviving.features" = surviving.features, "FS.surviving.features.importance" = surviving.features.importance, "algorithm.importance" = Output, "importance.cutoff" = imp.auc.cutoff), benchmarks = list("time" = elapsedTime, "memory.used" = diffMem), "input.data" = list("Data" = class.data ,"labels" = actual.label)))
   } else {
-    return(list("algorithm.votes" = algorithm.votes, "algorithm.importance" = algorithm.importance, benchmarks = list("time" = elapsedTime, "memory.used" = diffMem)))
+    return(list("algorithm.votes" = algorithm.votes, "algorithm.importance" = algorithm.importance, benchmarks = list("time" = elapsedTime, "memory.used" = diffMem), "input.data" = list("Data" = class.data ,"labels" = actual.label)))
   }
 
 }

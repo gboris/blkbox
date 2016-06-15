@@ -3,7 +3,7 @@
 #' @author Zachary Davies, Boris Guennewig
 #' @description A function that builds upon the blkbox and blkboxNCV function and performs nested k-fold cross validation and then provides votes for each fold as well as the importance of each feature in the models. Provides feature importance tables and details for each inner and outerfold run.
 #' @param data A data.frame where the columns correspond to features and the rows are samples. The dataframe will be shuffled and split into k folds for downstream analysis.
-#' @param A character or numeric vector of the class identifiers that each sample belongs.
+#' @param labels A character or numeric vector of the class identifiers that each sample belongs.
 #' @param outerfolds The number of folds that will be in the first k-fold loop, this determines the number of holdouts. Default is 5.
 #' @param innerfolds The number of folds that occur in the internal feature selection cross fold validation before testing on the corresponding holdout. Default is 5.
 #' @param ntrees The number of trees used in the ensemble based learners (randomforest, bigrf, party, bartmachine). default = 500.
@@ -14,13 +14,19 @@
 #' @param inn.exclude removes certain algorithms from after feature selection analysis. similar to 'exclude'.
 #' @param Method The algorithm used to feature select the data. Uses the feature importance from the algorithms to rank and remove anything below the AUC threshold. Defaults to "GLM", therefore the inner folds will use "GLM" only unless specified otherwise.
 #' @param AUC Area under the curve selection measure. The relative importance of features is calculated and then ranked. The features responsible for the most importance are therefore desired, the AUC value is the percentile in which to keep features above. 0.5 keeps the highest ranked features responsible for 50 percent of the cumulative importance. default = 0.5.
-#' @param A character string to determine which performance metric will be passed on to the Performance() function. Refer to Performance() documentation. default = c("ERR", "AUROC", "ACC", ”MCC”, ”F-1”)
+#' @param metric A character string to determine which performance metric will be passed on to the Performance() function. Refer to Performance() documentation. default = c("ERR", "AUROC", "ACC", "MCC", "F-1")
 #' @param seed A single numeric value that will determine all subsequent seeds set in NCV.
 #' @keywords Cross Validation, k-fold, blkbox, AUC, feature selection
+#' @importFrom methods hasArg
+#' @importFrom stats runif
+#' @importFrom magrittr "%>%"
+#' @importFrom stats predict
+#' @import ggplot2
 #' @export
 blkboxNCV <- function(data, labels, outerfolds, innerfolds, ntrees, mTry, Kernel, Gamma, exclude, inn.exclude, Method, AUC, metric, seed){
 
-  startMem = mem_used()
+  . <- "cheeky"
+  startMem = pryr::mem_used()
   startTime = Sys.time()
 
   labels = as.numeric(factor(x = labels, labels = c(1,2)))
@@ -124,9 +130,6 @@ blkboxNCV <- function(data, labels, outerfolds, innerfolds, ntrees, mTry, Kernel
   if(hasArg(folds) == FALSE){
     folds = 10
   }
-  if(hasArg(nfolds) == FALSE){
-    folds = 10
-  }
   if(!hasArg(exclude)){
     exclude = c(0)
   }
@@ -219,36 +222,38 @@ blkboxNCV <- function(data, labels, outerfolds, innerfolds, ntrees, mTry, Kernel
 
   holdout.performance = lapply(seq_along(holdout.performance), function(x){
     df = data.frame(temp_name = unlist(holdout.performance[[x]]$Performance))
-    df = cbind(df, t(data.frame(str_split(as.character(mapply(gsub, "[.]", "_", rownames(df))), "_", 2))),
+    df = cbind(df, t(data.frame(stringr::str_split(as.character(mapply(gsub, "[.]", "_", rownames(df))), "_", 2))),
                rep(names(holdout.performance[x]), length(unlist(holdout.performance[[x]]$Performance))))
     colnames(df) = c("Performance", "Metric", "Algorithm", "Holdout")
     rownames(df) = NULL
     return(df)
   }) %>%
     Reduce(rbind, .) %>%
-    select(Algorithm, Holdout, Metric, Performance) %>%
-    arrange(Holdout)
+    dplyr::select_("Algorithm", "Holdout", "Metric", "Performance") %>%
+    dplyr::arrange_("Holdout")
 
 
   list_tabs = lapply(X = 1:length(temp_table1), y = temp_table1, function(X, y){
     names_c = names(y)
     y = data.frame(t(y[[X]]))
     colnames(y) = paste0("Holdout_", 1:length(y))
-    y = add_rownames(y, var = "feature") %>%
-      mutate(algorithm = names_c[X]) %>%
-      gather_("Holdout", "Importance", c(paste0("Holdout_", c(1:outerfolds)))) %>%
-      mutate(Holdout = gsub("Holdout_", "", Holdout),
-             Importance = Importance/max(Importance)) #%>%
+    y = dplyr::add_rownames(y, var = "feature") %>%
+      dplyr::mutate(algorithm = names_c[X]) %>%
+      tidyr::gather_("Holdout", "Importance", c(paste0("Holdout_", c(1:outerfolds)))) %>%
+      dplyr::mutate(Holdout = gsub("Holdout_", "", Holdout),
+             Importance = Importance/max(Importance))
     return(y)
   })
 
+  Holdout <- Importance <- NULL
+
   list_tabs = Reduce(rbind, list_tabs)
   list_tabs_summarised = list_tabs %>%
-    group_by(algorithm, feature) %>%
-    dplyr::summarise(Importance = mean(Importance, na.rm = T))
+    dplyr::group_by_("algorithm", "feature") %>%
+    dplyr::summarise_(Importance = mean("Importance", na.rm = T))
 
   endTime = Sys.time()
-  endMem = mem_used()
+  endMem = pryr::mem_used()
   diffMem = endMem - startMem
   elapsedTime = endTime - startTime
 
@@ -258,6 +263,6 @@ blkboxNCV <- function(data, labels, outerfolds, innerfolds, ntrees, mTry, Kernel
 
 
   #Output
-  return(list("InnerFS" = inner.feature.selection, "InnerBB" = inner.blkbox, "InnerPerf" = inner.performance, "HoldoutRes" = holdout.result, "HoldoutPerf" = holdout.performance, "HoldoutPerfMerged" = ncv.perf, "FeatureTable" = list_tabs, "MeanFeatureTable" = list_tabs_summarised, "WeightedAverageImportance" = temp_list1, benchmarks = list("time" = elapsedTime, "memory.used" = diffMem)))
+  return(list("InnerFS" = inner.feature.selection, "InnerBB" = inner.blkbox, "InnerPerf" = inner.performance, "HoldoutRes" = holdout.result, "HoldoutPerf" = holdout.performance, "HoldoutPerfMerged" = ncv.perf, "FeatureTable" = list_tabs, "MeanFeatureTable" = list_tabs_summarised, "WeightedAverageImportance" = temp_list1, benchmarks = list("time" = elapsedTime, "memory.used" = diffMem), "input.data" = list("Data" = class.data ,"labels" = actual.label)))
 
 }

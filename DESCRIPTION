@@ -5,12 +5,17 @@ Version: 0.1
 Date: 2016-01-28
 Author: Zachary Davies, Boris Guennewig
 Maintainer: Boris Guennewig <b.guennewig@garvan.org.au>
-Description: Allows data to be processed by multiple machine learning algorithms at the same time, enables feature selection of data by single a algorithm or combinations of multiple. Easy to use tool for k-fold cross validation and nested cross validation.
+Description: Allows data to be processed by multiple machine learning algorithms
+    at the same time, enables feature selection of data by single a algorithm or
+    combinations of multiple. Easy to use tool for k-fold cross validation and
+    nested cross validation.
 License: GPL (>= 2)
 LazyData: TRUE
-Depends: dplyr, plyr, pryr, magrittr, tidyr, caret, glmnet, foreach,
-        Vennerable, parallel, ggplot2, reshape2, randomForest, kknn,
-        pamr, nnet, party, rJava, bartMachine, bigrf, e1071, pROC,
-        stringr
+Depends: R (>= 3.2.5)
+Imports: dplyr, plyr, pryr, tidyr, magrittr, caret, ggplot2, methods,
+        glmnet, bartMachine, reshape2, randomForest, kknn, pamr, nnet,
+        party, rJava, e1071, pROC, stringr
+Suggests: bigrf, Vennerable, parallel
+RoxygenNote: 5.0.1
 NeedsCompilation: no
-Packaged: 2016-06-12 13:27:43 UTC; Davies
+Packaged: 2016-06-15 16:42:22 UTC; Davies

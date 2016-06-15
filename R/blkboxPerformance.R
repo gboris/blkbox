@@ -6,6 +6,7 @@
 #' @param metric Which metric will be used for performance. Area under the Receiver operating curve = "AUROC", Accuracy = "ACC", Error rate = "ERR", Matthews correlation coefficient = "MCC", F-1 score = "F-1". default = "AUROC".
 #' @param consensus if the process was repeated it will calculate the consensus vote for each sample across the repititons before then calculating the performance across all samples. Default is False.
 #' @keywords performance, blkbox, AUROC, F-1, ERR, MCC, ACC.
+#' @importFrom methods hasArg
 #' @export
 Performance <- function(object, metric, consensus){
 

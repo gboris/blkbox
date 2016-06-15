@@ -28,7 +28,7 @@
 
 
 #KKNN HIDDEN MODULE
-.BB_KKNN <- function(cv.train, cv.test, distance, ...){
+.BB_KKNN <- function(cv.train, cv.test, ...){
 
 
   test.kknn = kknn::kknn(y~.,cv.train, cv.test, distance=3)

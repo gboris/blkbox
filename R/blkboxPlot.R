@@ -7,6 +7,7 @@
 #' @param y_ranges is the y axis limits for the plot, defaults to c(0,1). Must be a numeric vector with two entries.
 #' @param title the title to be adhered to the plot. Default is no title.
 #' @keywords NCV, Plot, ggplot2, boxplot
+#' @importFrom methods hasArg
 #' @export
 ncv.plot <- function(obj, metric, y_ranges, title){
 
@@ -24,8 +25,8 @@ ncv.plot <- function(obj, metric, y_ranges, title){
     title = ""
   }
 
-
-  data = obj$HoldoutPerf %>% filter(Metric == metric)
+  Algorithm <- Metric <- NULL
+  data = obj$HoldoutPerf %>% dplyr::filter(Metric == metric)
   ggplot(data, aes(x=factor(Algorithm), y=Performance, fill = Algorithm)) + geom_boxplot() +  theme_bw() + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5), legend.key = element_blank(), plot.title = element_text(lineheight=.9, face="bold", size = 16)) + xlab("Algorithms") + ylab(paste(metric)) + ylim(y_ranges) + geom_hline(yintercept=0.5,  linetype="dotted", size = 1) + ggtitle(paste(title))
 
 }
@@ -36,11 +37,12 @@ ncv.plot <- function(obj, metric, y_ranges, title){
 #' @author Zachary Davies, Boris Guennewig
 #' @description Compares the performance of each algorithm in a boxplot OR barplot. Each holdout will contribute at least one data point to each algorithm.
 #' @param obj An object produced by the blkboxCV function.
-#' @param Which metric you wish to plot. Area under the Receiver operating curve = "AUROC", Accuracy = "ACC", Error rate = "ERR", Matthews correlation coefficient = "MCC", F-1 score = "F-1". default = c("AUROC")
+#' @param metric Which metric you wish to plot. Area under the Receiver operating curve = "AUROC", Accuracy = "ACC", Error rate = "ERR", Matthews correlation coefficient = "MCC", F-1 score = "F-1". default = c("AUROC")
 #' @param y_ranges is the y axis limits for the plot, defaults to c(0,1). Must be a numeric vector with two entries. Invalid for barplots.
 #' @param title the title to be adhered to the plot. Default is no title.
 #' @param type The plot can be either a barplot or boxplot. For the barplot the consensus performance is used, for a boxplot consensus is false. If only one performance measure is found for each algorithm then it will be forced to a barplot. default = "boxplot", unless data is unsupported.
 #' @keywords CV, Plot, ggplot2, boxplot, barplot
+#' @importFrom methods hasArg
 #' @export
 cv.plot <- function(obj, metric, y_ranges, title, type){
 
@@ -97,7 +99,8 @@ cv.plot <- function(obj, metric, y_ranges, title, type){
 
   df = data.frame(matrix(values, ncol = length(algs)))
   colnames(df) = algs
-  df_melt = melt(df)
+  df_melt = reshape2::melt(df)
+  variable <- value <- NULL
   #return(df_melt)
   if(plot.type == "boxplot"){
     x = (ggplot(df_melt, aes(x=factor(variable), y=value, fill = variable)) + geom_boxplot() +  theme_bw() + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5), legend.key = element_blank(), plot.title = element_text(lineheight=.9, face="bold", size = 16)) + xlab("Algorithms") + ylab(paste(metric)) + ylim(y_ranges) + geom_hline(yintercept=0.5,  linetype="dotted", size = 1) + ggtitle(paste(title)))
