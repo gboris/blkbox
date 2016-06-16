@@ -18,4 +18,4 @@ Imports: dplyr, plyr, pryr, tidyr, magrittr, caret, ggplot2, methods,
 Suggests: bigrf, Vennerable, parallel
 RoxygenNote: 5.0.1
 NeedsCompilation: no
-Packaged: 2016-06-15 16:42:22 UTC; Davies
+Packaged: 2016-06-16 00:29:39 UTC; Davies
