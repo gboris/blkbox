@@ -20,46 +20,46 @@
 #' @export
 blkboxCV <- function(data, labels, folds, seeds, ntrees, mTry, repeats, Kernel, Gamma, exclude, Method, AUC){
 
-  startMem = pryr::mem_used()
-  startTime = Sys.time()
+  startMem <- pryr::mem_used()
+  startTime <- Sys.time()
 
-  labels = as.numeric(factor(x = labels, labels = c(1,2)))
-  class = data.frame(y = (c(labels)))
-  class.data = cbind(data, class)
-  actual.label = data.frame(labels = class.data$y, row.names = rownames(class.data))
-  algorithm.importance = list()
-  algorithm.votes = list()
-  perf = list()
+  labels <- as.numeric(factor(x = labels, labels = c(1,2)))
+  class <- data.frame(y = (c(labels)))
+  class.data <- cbind(data, class)
+  actual.label <- data.frame(labels = class.data$y, row.names = rownames(class.data))
+  algorithm.importance <- list()
+  algorithm.votes <- list()
+  perf <- list()
 
-  if(!hasArg(data)){
+  if (!hasArg(data)){
     stop("Ensemble cannot run without data, provide data.frame of samples by features")
   }
 
-  if(!hasArg(labels)){
+  if (!hasArg(labels)){
     stop("Ensemble cannot run without class, provide to 'labels' parameter")
   } else {
-    if(length(levels(as.factor(labels))) > 2){
+    if (length(levels(as.factor(labels))) > 2){
       stop("blkbox does not support non-binary classification tasks")
     }
   }
 
-  if(!hasArg(folds)){
+  if (!hasArg(folds)){
     folds = 10
   }
 
-  if(!hasArg(Method)){
+  if (!hasArg(Method)){
     Method = "GLM"
   }
 
 
-  if(hasArg(folds)){
-    k = folds
-    folds1 = nrow(class.data) %% k
-    size1 = floor(nrow(class.data)/k+1)
-    folds2 = k-(nrow(class.data) %% k)
-    size2 = floor(nrow(class.data)/k)
-    if((folds1*size1 + folds2*size2) == nrow(class.data)){
-      if(folds1 == 0){
+  if (hasArg(folds)){
+    k <- folds
+    folds1 <- nrow(class.data) %% k
+    size1 <- floor(nrow(class.data) / k + 1)
+    folds2 <- k - (nrow(class.data) %% k)
+    size2 <- floor(nrow(class.data) / k)
+    if ( (folds1 * size1 + folds2 * size2) == nrow(class.data)){
+      if (folds1 == 0){
         message(k, " fold cross validation, fold size: ", size2)
       } else {
         message(k, " fold cross validation with ", folds1, " folds of ", size1, " and ", folds2, " folds of ", size2)
@@ -70,11 +70,11 @@ blkboxCV <- function(data, labels, folds, seeds, ntrees, mTry, repeats, Kernel, 
     fold_intervals = c(seq(from = 0, to = folds1*size1, by = size1), seq(from = ((folds1*size1)+size2), to = (folds1*size1 + folds2*size2), by = size2))
   }
 
-  if(hasArg(repeats) == FALSE){
+  if (hasArg(repeats) == FALSE){
     repeats = 1
   }
 
-  if(hasArg(seeds)){
+  if (hasArg(seeds)){
     seed.list = seeds[1:repeats]
   } else {
     set.seed(runif(1,1,10000))
@@ -82,42 +82,42 @@ blkboxCV <- function(data, labels, folds, seeds, ntrees, mTry, repeats, Kernel, 
     message("No seed list provided, seeds are: ", seed.list[1:repeats])
   }
 
-  if(hasArg(ntrees)){
+  if (hasArg(ntrees)){
     nTrees = ntrees
   } else {
     nTrees = 501
   }
 
-  if(hasArg(m.try)){
+  if (hasArg(m.try)){
     m.try = mTry
   } else {
     m.try = round(sqrt(ncol(class.data)))
   }
 
-  if(hasArg(Kernel)){
+  if (hasArg(Kernel)){
     svm.kernel = Kernel
   } else {
     svm.kernel = "linear"
     #message("No kernel provided, using linear kernel from e1071 package")
   }
 
-  if(hasArg(Gamma)){
+  if (hasArg(Gamma)){
     svm.gamma = Gamma
   } else {
     svm.gamma = 1/(ncol(class.data)-1)
   }
 
-  if(!hasArg(exclude)){
+  if (!hasArg(exclude)){
     exclude = c(0)
   }
 
-  if(hasArg(AUC)){
+  if (hasArg(AUC)){
     AUC = AUC
   } else {
     AUC = "NA"
   }
 
-  if(is.numeric(AUC) == FALSE & AUC != "NA"){
+  if (is.numeric(AUC) == FALSE & AUC != "NA"){
     stop("AUC must be numeric")
   }
   counter = 0
@@ -128,46 +128,46 @@ blkboxCV <- function(data, labels, folds, seeds, ntrees, mTry, repeats, Kernel, 
     RunThrough = RunThrough + 1
     class.data = class.data[sample(nrow(class.data)),]
 
-    for(i in 1:k){
-      counter = counter + 1
-      s1 = fold_intervals[i]+1
-      s2 = fold_intervals[i+1]
-      subset = s1:s2
-      cv.train = class.data[-subset,-ncol(class.data)]
-      cv.test = class.data[subset,-ncol(class.data)]
-      classtr = data.frame(condition = (factor(class.data$y[-subset])))
-      classts = data.frame(condition = (factor(class.data$y[subset])))
+    for (i in 1:k){
+      counter <- counter + 1
+      s1 <- fold_intervals[i] + 1
+      s2 <- fold_intervals[i + 1]
+      subset <- s1:s2
+      cv.train <- class.data[-subset, -ncol(class.data)]
+      cv.test <- class.data[subset, -ncol(class.data)]
+      classtr <- data.frame(condition = (factor(class.data$y[-subset])))
+      classts <- data.frame(condition = (factor(class.data$y[subset])))
 
-      BB_S = blkbox(data = cv.train, labels = classtr$condition, holdout = cv.test, holdout.labels = classts$condition, ntrees = nTrees, mTry = m.try, Kernel = svm.kernel, Gamma = svm.gamma, exclude = exclude)
+      BB_S <- blkbox(data = cv.train, labels = classtr$condition, holdout = cv.test, holdout.labels = classts$condition, ntrees = nTrees, mTry = m.try, Kernel = svm.kernel, Gamma = svm.gamma, exclude = exclude)
 
-      for(q in 1:length(names(BB_S$algorithm.votes))){
+      for (q in 1:length(names(BB_S$algorithm.votes))){
 
-        if(names(BB_S$algorithm.votes)[q] != "kknn"){
-          if(i == 1 & z == seed.list[1]){
+        if (names(BB_S$algorithm.votes)[q] != "kknn"){
+          if (i == 1 & z == seed.list[1]){
             algorithm.importance[[names(BB_S$algorithm.votes)[q]]] = data.frame(R1F1 = BB_S$algorithm.importance[[names(BB_S$algorithm.votes)[q]]][,1], row.names = rownames(BB_S$algorithm.importance[[names(BB_S$algorithm.votes)[q]]]))
           } else {
             algorithm.importance[[names(BB_S$algorithm.votes)[q]]] = cbind(algorithm.importance[[names(BB_S$algorithm.votes)[q]]], BB_S$algorithm.importance[[names(BB_S$algorithm.votes)[q]]][,1])
             colnames(algorithm.importance[[names(BB_S$algorithm.votes)[q]]])[counter] <- paste0("R",RunThrough,"F",i)
-            if(i == k & z == seed.list[repeats]){
+            if (i == k & z == seed.list[repeats]){
               algorithm.importance[[names(BB_S$algorithm.votes)[q]]] = cbind(algorithm.importance[[names(BB_S$algorithm.votes)[q]]], average = rowMeans(algorithm.importance[[names(BB_S$algorithm.votes)[q]]]))
             }
           }
         }
-        if(i == 1){
+        if (i == 1){
           algorithm.votes[[names(BB_S$algorithm.votes)[q]]] = BB_S$algorithm.votes[[q]]
         } else {
           algorithm.votes[[names(BB_S$algorithm.votes)[q]]] = cbind(algorithm.votes[[names(BB_S$algorithm.votes)[q]]], BB_S$algorithm.votes[[q]])
-          if(i == k){
-            algorithm.votes[[names(BB_S$algorithm.votes)[q]]] = algorithm.votes[[names(BB_S$algorithm.votes)[q]]][,match(rownames(data), colnames(algorithm.votes[[names(BB_S$algorithm.votes)[q]]]))]
-            if(z == 1){
+          if (i == k){
+            algorithm.votes[[names(BB_S$algorithm.votes)[q]]] = algorithm.votes[[names(BB_S$algorithm.votes)[q]]][, match(rownames(data), colnames(algorithm.votes[[names(BB_S$algorithm.votes)[q]]]))]
+            if (z == 1){
               algorithm.votes[[paste0("vec_votes_", names(BB_S$algorithm.votes)[q])]] = algorithm.votes[[names(BB_S$algorithm.votes)[q]]]
-              if(z == seed.list[repeats]){
+              if (z == seed.list[repeats]){
                 algorithm.votes[[names(BB_S$algorithm.votes)[q]]] = algorithm.votes[[paste0("vec_votes_", names(BB_S$algorithm.votes)[q])]]
                 algorithm.votes[[paste0("vec_votes_", names(BB_S$algorithm.votes)[q])]] = NULL
               }
             } else {
               algorithm.votes[[paste0("vec_votes_", names(BB_S$algorithm.votes)[q])]] = rbind(algorithm.votes[[paste0("vec_votes_", names(BB_S$algorithm.votes)[q])]], algorithm.votes[[names(BB_S$algorithm.votes)[q]]])
-              if(z == seed.list[repeats]){
+              if (z == seed.list[repeats]){
                 algorithm.votes[[names(BB_S$algorithm.votes)[q]]] = algorithm.votes[[paste0("vec_votes_", names(BB_S$algorithm.votes)[q])]]
                 algorithm.votes[[paste0("vec_votes_", names(BB_S$algorithm.votes)[q])]] = NULL
               }
@@ -180,54 +180,54 @@ blkboxCV <- function(data, labels, folds, seeds, ntrees, mTry, repeats, Kernel, 
   }
 
   #Feature Selection Process
-  if(AUC != "NA"){
+  if (AUC != "NA"){
 
-    Output = list()
-    surviving.features = list()
-    surviving.features.importance = list()
+    Output <- list()
+    surviving.features <- list()
+    surviving.features.importance <- list()
 
-    for(s in Method){
+    for (s in Method){
       #Creating a data frame from average importance
-      imp.frame = data.frame(rowMeans(algorithm.importance[[s]][,-ncol(algorithm.importance[[s]])]))
-      names(imp.frame) = paste0(s, "_importance")
+      imp.frame <- data.frame(rowMeans(algorithm.importance[[s]][,-ncol(algorithm.importance[[s]])]))
+      names(imp.frame) <- paste0(s, "_importance")
       #imp.frame = imp.frame[sort.list(imp.frame[,1], decreasing = T),,drop=F]
-      if(s == "GLM"){
-        GLM_adjust = abs((imp.frame[,1]) - (as.numeric(names(sort(-table(imp.frame[,1])))[1])))
-        imp.frame = cbind(imp.frame, "GLM_importance" = GLM_adjust)[,-1, drop = F]
+      if (s == "GLM"){
+        GLM_adjust <- abs((imp.frame[,1]) - (as.numeric(names(sort(-table(imp.frame[,1])))[1])))
+        imp.frame <- cbind(imp.frame, "GLM_importance" = GLM_adjust)[, -1, drop = F]
       }
-      imp.frame = data.frame(apply(imp.frame, 2, function(imp.frame) abs(imp.frame)*100/max(abs(imp.frame))))
+      imp.frame <- data.frame(apply(imp.frame, 2, function(imp.frame) abs(imp.frame) * 100 / max(abs(imp.frame))))
       #Sorting the data frame, descending
-      imp.frame = imp.frame[sort.list(imp.frame[,1], decreasing = T),,drop=F]
-      imp.frame = cbind(feature_id = rownames(imp.frame), imp.frame)
+      imp.frame <- imp.frame[sort.list(imp.frame[,1], decreasing = T),,drop=F]
+      imp.frame <- cbind(feature_id = rownames(imp.frame), imp.frame)
       rownames(imp.frame) <- NULL
       #Append results to output list
-      Output[[s]] = imp.frame
+      Output[[s]] <- imp.frame
     }
 
-    for(d in 1:length(Output)){
-      auc.max.value = sum(Output[[d]][,2])*AUC
-      cum.imp = cumsum(Output[[d]][,2])
-      imp.range.max = which(abs(cum.imp - auc.max.value) == min(abs(cum.imp - auc.max.value)))[1]
-      imp.auc.cutoff = (Output[[d]][,2])[imp.range.max]
+    for (d in 1:length(Output)){
+      auc.max.value <- sum(Output[[d]][, 2]) * AUC
+      cum.imp <- cumsum(Output[[d]][, 2])
+      imp.range.max <- which(abs(cum.imp - auc.max.value) == min(abs(cum.imp - auc.max.value)))[1]
+      imp.auc.cutoff <- (Output[[d]][, 2])[imp.range.max]
       #Drop features below imp.auc.cutoff
-      imp.features = Output[[d]][which(Output[[d]][,2] >= imp.auc.cutoff), , drop = F]
-      surviving.features[[names(Output)[d]]] = as.character(imp.features$feature_id)
-      surviving.features.importance[[names(Output)[d]]] = imp.features
+      imp.features <- Output[[d]][which(Output[[d]][,2] >= imp.auc.cutoff), , drop = F]
+      surviving.features[[names(Output)[d]]] <- as.character(imp.features$feature_id)
+      surviving.features.importance[[names(Output)[d]]] <- imp.features
     }
 
-    if(length(Method) == 1){
+    if (length(Method) == 1){
       FS.data = data[, which(colnames(data) %in% surviving.features[[Method[1]]]), drop = F]
     } else {
       FS.data = data[, which(colnames(data) %in% unique(surviving.features[[Method[1]]], surviving.features[[Method[2]]])), drop = F]
     }
   }
 
-  endTime = Sys.time()
-  endMem = pryr::mem_used()
-  diffMem = endMem - startMem
-  elapsedTime = endTime - startTime
+  endTime <- Sys.time()
+  endMem <- pryr::mem_used()
+  diffMem <- endMem - startMem
+  elapsedTime <- endTime - startTime
 
-  if(AUC != "NA"){
+  if (AUC != "NA"){
     return(list("algorithm.votes" = algorithm.votes, "algorithm.importance" = algorithm.importance, "Feature_Selection" = list("FS.data" = FS.data, "FS.surviving.features" = surviving.features, "FS.surviving.features.importance" = surviving.features.importance, "algorithm.importance" = Output, "importance.cutoff" = imp.auc.cutoff), benchmarks = list("time" = elapsedTime, "memory.used" = diffMem), "input.data" = list("Data" = class.data ,"labels" = actual.label)))
   } else {
     return(list("algorithm.votes" = algorithm.votes, "algorithm.importance" = algorithm.importance, benchmarks = list("time" = elapsedTime, "memory.used" = diffMem), "input.data" = list("Data" = class.data ,"labels" = actual.label)))
