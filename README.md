@@ -1,6 +1,6 @@
 # blkbox
 
-##Data exploration with multiple machine learning algorithms 
+##Data Exploration with Multiple Machine Learning Algorithms 
 
 ###Introduction
 
@@ -25,7 +25,7 @@ Details of how to use this package, please see the vignette.
 
 **Title**: Data exploration with multiple machine learning algorithms
 
-**Version**: 0.1
+**Version**: 1.0
 
 **Date**: 2016-05-23
 
