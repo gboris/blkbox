@@ -63,7 +63,7 @@ blkbox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, 
     if(1 %in% exclude == FALSE){
       if (!requireNamespace("bigrf", quietly = TRUE)) {
         message("The bigrf package is not installed.\nWithout this analysis with randomforest for large numbers of features is very slow.\nInstall it via 'devtools::install_github('aloysius-lim/bigrf')'")
-        tree.ethod = 0
+        tree.method = 0
       }
     }
   } else {
