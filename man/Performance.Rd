@@ -4,7 +4,7 @@
 \alias{Performance}
 \title{blkbox Performance.}
 \usage{
-Performance(object, metric, consensus)
+Performance(object, metric = "AUROC", consensus = FALSE)
 }
 \arguments{
 \item{object}{the blkboxCV or blkbox output}

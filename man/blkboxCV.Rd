@@ -4,8 +4,8 @@
 \alias{blkboxCV}
 \title{k-fold cross validation with blkbox.}
 \usage{
-blkboxCV(data, labels, folds, seeds, ntrees, mTry, repeats, Kernel, Gamma,
-  exclude, Method, AUC)
+blkboxCV(data, labels, folds = 10, seeds, ntrees, mTry, repeats = 1, Kernel,
+  Gamma, exclude = c(0), Method = "GLM", AUC = "NA")
 }
 \arguments{
 \item{data}{A data.frame where the columns correspond to features and the rows are samples. The dataframe will be shuffled and split into k folds for downstream analysis.}

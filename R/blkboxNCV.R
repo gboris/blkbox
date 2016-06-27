@@ -23,9 +23,49 @@
 #' @importFrom stats predict
 #' @import ggplot2
 #' @export
-blkboxNCV <- function(data, labels, outerfolds, innerfolds, ntrees, mTry, Kernel, Gamma, exclude, inn.exclude, Method, AUC, metric, seed){
+blkboxNCV <- function(data, labels, outerfolds = 5, innerfolds = 5, ntrees, mTry, Kernel, Gamma, exclude = c(0), inn.exclude, Method = "GLM", AUC = 0.5, metric = c("ERR", "AUROC", "ACC", "MCC", "F-1"), seed){
 
-  . <- "cheeky"
+  #. <- "cheeky"
+
+  if (!hasArg(data)){
+    stop("Ensemble cannot run without data, provide data.frame of samples by features")
+  }
+
+  if(ncol(data) < 2){
+    stop("Data cannot a single feature")
+  }
+
+  if (!hasArg(labels)){
+    stop("Ensemble cannot run without class, provide to 'labels' parameter")
+  } else {
+    if (length(levels(as.factor(labels))) != 2){
+      stop("blkbox does not support non-binary classification tasks")
+    }
+  }
+  if (hasArg(Gamma)){
+    svm.gamma = Gamma
+  } else {
+    svm.gamma = 1/(ncol(data)-1)
+  }
+  if (hasArg(m.try)){
+    m.try = mTry
+  } else {
+    m.try = round(sqrt(ncol(data)))
+  }
+  if (hasArg(ntrees)){
+    nTrees = ntrees
+  } else {
+    nTrees = 501
+  }
+  if (!hasArg(inn.exclude)){
+    inn.exclude = c(1:8)[-which(Method == c("randomforest", "kknn", "bartmachine", "party", "GLM", "PamR", "nnet", "SVM"))]
+  }
+  if (hasArg(Kernel)){
+    svm.kernel = Kernel
+  } else {
+    svm.kernel = "linear"
+  }
+
   startMem <- pryr::mem_used()
   startTime <- Sys.time()
 
@@ -35,14 +75,6 @@ blkboxNCV <- function(data, labels, outerfolds, innerfolds, ntrees, mTry, Kernel
   actual.label <- data.frame(labels = class.data$y, row.names = rownames(class.data))
 
   #########################
-  if (!hasArg(innerfolds)){
-    innerfolds = 5
-  }
-
-  if (!hasArg(outerfolds)){
-    outerfolds = 5
-  }
-
   k = innerfolds
   nk = outerfolds
 
@@ -59,7 +91,6 @@ blkboxNCV <- function(data, labels, outerfolds, innerfolds, ntrees, mTry, Kernel
   holdout.result <- list()
   holdout.performance <- list()
   re.shuffle.counter <- 0
-
 
   while (!exists("nfold_intervals")){
     #set.seed(z)
@@ -95,59 +126,8 @@ blkboxNCV <- function(data, labels, outerfolds, innerfolds, ntrees, mTry, Kernel
     stop("error in cross validation, set folds parameter")
   }
   #########################
-  if (!hasArg(data)){
-    stop("Ensemble cannot run without data, provide data.frame of samples by features")
-  }
-  if (!hasArg(labels)){
-    stop("Ensemble cannot run without class, provide to 'labels' parameter")
-  } else {
-    if (length(levels(as.factor(labels))) > 2){
-      #stop("blkbox does not support non-binary classification tasks")
-    }
-  }
-  if (!hasArg(Method)){
-    Method = "GLM"
-    message("No Method has been supplied; defaulting to GLM - inner selection will be using GLM")
-  }
-  if (hasArg(Gamma)){
-    svm.gamma = Gamma
-  } else {
-    svm.gamma = 1/(ncol(data)-1)
-  }
-  if (!hasArg(AUC)){
-    AUC = 0.5
-  }
-  if (hasArg(m.try)){
-    m.try = mTry
-  } else {
-    m.try = round(sqrt(ncol(data)))
-  }
-  if (hasArg(ntrees)){
-    nTrees = ntrees
-  } else {
-    nTrees = 501
-  }
-  if (hasArg(folds) == FALSE){
-    folds = 10
-  }
-  if (!hasArg(exclude)){
-    exclude = c(0)
-  }
-  if (!hasArg(inn.exclude)){
-    inn.exclude = c(1:8)[-which(Method == c("randomforest", "kknn", "bartmachine", "party", "GLM", "PamR", "nnet", "SVM"))]
-  }
-  if (hasArg(Kernel)){
-    svm.kernel = Kernel
-  } else {
-    svm.kernel = "linear"
-    #("No kernel provided, using linear kernel from e1071 package", "\n")
-  }
-  if (!hasArg(metric)){
-    metric =  c("ERR", "AUROC", "ACC", "MCC", "F-1")
-  }
-  ########
 
-  #set the seed and then shuffle the data accordingly
+  ########
 
   #start loop - for the number of nested folds
   for (i in 1:nk){
@@ -176,7 +156,7 @@ blkboxNCV <- function(data, labels, outerfolds, innerfolds, ntrees, mTry, Kernel
 
   #for each algorithm, make a table
   #table will be calculated by going through each
-  #return(list(holdout.result, holdout.performance))
+
   temp_table1 <- list()
   temp_list1 <- list()
   for (alg in 1:length(names(holdout.result[[1]][[2]]))){
@@ -219,6 +199,12 @@ blkboxNCV <- function(data, labels, outerfolds, innerfolds, ntrees, mTry, Kernel
     return(df)
   }) %>% Reduce(cbind, .)
 
+  #return(holdout.performance)
+  roc.data = lapply(seq_along(holdout.performance), function(x){
+    df <- cbind(Rep = paste0("Holdout ", x), holdout.performance[[1]][3]$roc.values[,-1])
+  })
+  roc.data[["seperated"]] = Reduce(rbind, roc.data)
+  roc.data[["combined"]] = ncv.perf$roc.values
 
   holdout.performance = lapply(seq_along(holdout.performance), function(x){
     df <- data.frame(temp_name = unlist(holdout.performance[[x]]$Performance))
@@ -232,7 +218,6 @@ blkboxNCV <- function(data, labels, outerfolds, innerfolds, ntrees, mTry, Kernel
     dplyr::select_("Algorithm", "Holdout", "Metric", "Performance") %>%
     dplyr::arrange_("Holdout")
 
-
   list_tabs <- lapply(X = 1:length(temp_table1), y = temp_table1, function(X, y){
     names_c <- names(y)
     y <- data.frame(t(y[[X]]))
@@ -241,16 +226,14 @@ blkboxNCV <- function(data, labels, outerfolds, innerfolds, ntrees, mTry, Kernel
       dplyr::mutate(algorithm = names_c[X]) %>%
       tidyr::gather_("Holdout", "Importance", c(paste0("Holdout_", c(1:outerfolds)))) %>%
       dplyr::mutate(Holdout = gsub("Holdout_", "", Holdout),
-             Importance = Importance / max(Importance))
+             Importance = Importance / max(Importance, na.rm = T))
     return(y)
   })
-
-  Holdout <- Importance <- NULL
 
   list_tabs <- Reduce(rbind, list_tabs)
   list_tabs_summarised <- list_tabs %>%
     dplyr::group_by_("algorithm", "feature") %>%
-    dplyr::summarise_(Importance = mean("Importance", na.rm = T))
+    dplyr::summarise(Importance = mean(Importance, na.rm = T))
 
   endTime <- Sys.time()
   endMem <- pryr::mem_used()
@@ -262,7 +245,19 @@ blkboxNCV <- function(data, labels, outerfolds, innerfolds, ntrees, mTry, Kernel
   print(ncv.perf)
 
 
+
   #Output
-  return(list("InnerFS" = inner.feature.selection, "InnerBB" = inner.blkbox, "InnerPerf" = inner.performance, "HoldoutRes" = holdout.result, "HoldoutPerf" = holdout.performance, "HoldoutPerfMerged" = ncv.perf, "FeatureTable" = list_tabs, "MeanFeatureTable" = list_tabs_summarised, "WeightedAverageImportance" = temp_list1, benchmarks = list("time" = elapsedTime, "memory.used" = diffMem)))
+  return(list("InnerFS" = inner.feature.selection,
+              "InnerBB" = inner.blkbox,
+              "InnerPerf" = inner.performance,
+              "HoldoutRes" = holdout.result,
+              "HoldoutPerf" = holdout.performance,
+              "HoldoutPerfMerged" = ncv.perf,
+              "FeatureTable" = list_tabs,
+              "MeanFeatureTable" = list_tabs_summarised,
+              "WeightedAverageImportance" = temp_list1,
+              "roc.data" = roc.data,
+              "benchmarks" = list("time" = elapsedTime,
+                                "memory.used" = diffMem)))
 
 }

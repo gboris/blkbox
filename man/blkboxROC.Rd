@@ -4,7 +4,7 @@
 \alias{blkboxROC}
 \title{ROC plots for blkbox}
 \usage{
-blkboxROC(results, title)
+blkboxROC(results, title = "ROC")
 }
 \arguments{
 \item{results}{The output of blkbox Performance that had "AUROC" as one of the specified metrics.}
@@ -17,11 +17,6 @@ will plot ROC curves for output from Performance function if "AUROC" was specifi
 \author{
 Zachary Davies, Boris Guennewig
 }
-\keyword{AUC,}
-\keyword{Cross}
-\keyword{Validation,}
-\keyword{blkbox,}
-\keyword{feature}
-\keyword{k-fold,}
-\keyword{selection}
+\keyword{ROC,}
+\keyword{blkbox}
 

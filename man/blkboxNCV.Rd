@@ -4,8 +4,9 @@
 \alias{blkboxNCV}
 \title{Nested cross fold validation with blkbox.}
 \usage{
-blkboxNCV(data, labels, outerfolds, innerfolds, ntrees, mTry, Kernel, Gamma,
-  exclude, inn.exclude, Method, AUC, metric, seed)
+blkboxNCV(data, labels, outerfolds = 5, innerfolds = 5, ntrees, mTry,
+  Kernel, Gamma, exclude = c(0), inn.exclude, Method = "GLM", AUC = 0.5,
+  metric = c("ERR", "AUROC", "ACC", "MCC", "F-1"), seed)
 }
 \arguments{
 \item{data}{A data.frame where the columns correspond to features and the rows are samples. The dataframe will be shuffled and split into k folds for downstream analysis.}

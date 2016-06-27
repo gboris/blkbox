@@ -18,60 +18,24 @@
 #' @importFrom methods hasArg
 #' @importFrom stats runif
 #' @export
-blkboxCV <- function(data, labels, folds, seeds, ntrees, mTry, repeats, Kernel, Gamma, exclude, Method, AUC){
+blkboxCV <- function(data, labels, folds = 10, seeds, ntrees, mTry, repeats = 1, Kernel, Gamma, exclude = c(0), Method = "GLM", AUC = "NA"){
 
-  startMem <- pryr::mem_used()
-  startTime <- Sys.time()
-
-  labels <- as.numeric(factor(x = labels, labels = c(1,2)))
-  class <- data.frame(y = (c(labels)))
-  class.data <- cbind(data, class)
-  actual.label <- data.frame(labels = class.data$y, row.names = rownames(class.data))
-  algorithm.importance <- list()
-  algorithm.votes <- list()
-  perf <- list()
+   if (is.numeric(AUC) == FALSE & AUC != "NA"){
+    stop("AUC must be numeric")
+   }
 
   if (!hasArg(data)){
     stop("Ensemble cannot run without data, provide data.frame of samples by features")
   }
-
+  if(ncol(data) < 2){
+    stop("Data cannot a single feature")
+  }
   if (!hasArg(labels)){
     stop("Ensemble cannot run without class, provide to 'labels' parameter")
   } else {
-    if (length(levels(as.factor(labels))) > 2){
+    if (length(levels(as.factor(labels))) != 2){
       stop("blkbox does not support non-binary classification tasks")
     }
-  }
-
-  if (!hasArg(folds)){
-    folds = 10
-  }
-
-  if (!hasArg(Method)){
-    Method = "GLM"
-  }
-
-
-  if (hasArg(folds)){
-    k <- folds
-    folds1 <- nrow(class.data) %% k
-    size1 <- floor(nrow(class.data) / k + 1)
-    folds2 <- k - (nrow(class.data) %% k)
-    size2 <- floor(nrow(class.data) / k)
-    if ( (folds1 * size1 + folds2 * size2) == nrow(class.data)){
-      if (folds1 == 0){
-        message(k, " fold cross validation, fold size: ", size2)
-      } else {
-        message(k, " fold cross validation with ", folds1, " folds of ", size1, " and ", folds2, " folds of ", size2)
-      }
-    } else {
-      stop("error in cross validation, set folds parameter")
-    }
-    fold_intervals = c(seq(from = 0, to = folds1*size1, by = size1), seq(from = ((folds1*size1)+size2), to = (folds1*size1 + folds2*size2), by = size2))
-  }
-
-  if (hasArg(repeats) == FALSE){
-    repeats = 1
   }
 
   if (hasArg(seeds)){
@@ -91,35 +55,49 @@ blkboxCV <- function(data, labels, folds, seeds, ntrees, mTry, repeats, Kernel, 
   if (hasArg(m.try)){
     m.try = mTry
   } else {
-    m.try = round(sqrt(ncol(class.data)))
+    m.try = round(sqrt(ncol(data)))
   }
 
   if (hasArg(Kernel)){
     svm.kernel = Kernel
   } else {
     svm.kernel = "linear"
-    #message("No kernel provided, using linear kernel from e1071 package")
   }
 
   if (hasArg(Gamma)){
     svm.gamma = Gamma
   } else {
-    svm.gamma = 1/(ncol(class.data)-1)
+    svm.gamma = 1/(ncol(data)-1)
   }
 
-  if (!hasArg(exclude)){
-    exclude = c(0)
-  }
+  startMem <- pryr::mem_used()
+  startTime <- Sys.time()
 
-  if (hasArg(AUC)){
-    AUC = AUC
-  } else {
-    AUC = "NA"
-  }
+  labels <- as.numeric(factor(x = labels, labels = c(1,2)))
+  class <- data.frame(y = (c(labels)))
+  class.data <- cbind(data, class)
+  actual.label <- data.frame(labels = class.data$y, row.names = rownames(class.data))
+  algorithm.importance <- list()
+  algorithm.votes <- list()
+  perf <- list()
 
-  if (is.numeric(AUC) == FALSE & AUC != "NA"){
-    stop("AUC must be numeric")
-  }
+
+    k <- folds
+    folds1 <- nrow(class.data) %% k
+    size1 <- floor(nrow(class.data) / k + 1)
+    folds2 <- k - (nrow(class.data) %% k)
+    size2 <- floor(nrow(class.data) / k)
+    if ( (folds1 * size1 + folds2 * size2) == nrow(class.data)){
+      if (folds1 == 0){
+        message(k, " fold cross validation, fold size: ", size2)
+      } else {
+        message(k, " fold cross validation with ", folds1, " folds of ", size1, " and ", folds2, " folds of ", size2)
+      }
+    } else {
+      stop("error in cross validation, set folds parameter")
+    }
+    fold_intervals = c(seq(from = 0, to = folds1*size1, by = size1), seq(from = ((folds1*size1)+size2), to = (folds1*size1 + folds2*size2), by = size2))
+
   counter = 0
   RunThrough = 0
   for(z in seed.list[1:repeats]){

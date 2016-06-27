@@ -8,13 +8,13 @@ blkbox(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, Gamma,
   exclude)
 }
 \arguments{
-\item{data}{a data frame of training data where the features correspond to columns and the samples are rows. As data size increases the memory required and run time of some algorithms may compound exponentially.}
+\item{data}{Data partitioned by into a list or a data frame of training data where the features correspond to columns and the samples are rows. As data size increases the memory required and run time of some algorithms may compound exponentially.}
 
-\item{labels}{a character or numeric vector that contains the training class identifiers for the samples in the data frame. Must appear in the same order.}
+\item{labels}{a character or numeric vector that contains the training class identifiers for the samples in the data frame. Must appear in the same order. Does not need to be specified if using a partitoned data list.}
 
-\item{holdout}{a data frame of holdout of testing data where the features correspond to columns and the samples are the rows.}
+\item{holdout}{a data frame of holdout of testing data where the features correspond to columns and the samples are the rows. Does not need to be specified if using a partitoned data list.}
 
-\item{holdout.labels}{a character or numeric vector that contains the holdout or testing class identifiers for the samples in the holdout data frame.}
+\item{holdout.labels}{a character or numeric vector that contains the holdout or testing class identifiers for the samples in the holdout data frame. Does not need to be specified if using a partitoned data list.}
 
 \item{ntrees}{The number of trees used in the ensemble based learners (randomforest, bigrf, party, bartmachine). default = 500.}
 

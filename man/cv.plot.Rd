@@ -4,7 +4,8 @@
 \alias{cv.plot}
 \title{Crossfold Validation Performance Plot.}
 \usage{
-cv.plot(obj, metric, y_ranges, title, type)
+cv.plot(obj, metric = "AUROC", y_ranges = c(0, 1), title = "",
+  type = "boxplot")
 }
 \arguments{
 \item{obj}{An object produced by the blkboxCV function.}

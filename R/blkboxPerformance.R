@@ -8,7 +8,7 @@
 #' @keywords performance, blkbox, AUROC, F-1, ERR, MCC, ACC.
 #' @importFrom methods hasArg
 #' @export
-Performance <- function(object, metric, consensus){
+Performance <- function(object, metric = "AUROC", consensus = FALSE){
 
   output <- list()
   avg.predicted <- list()
@@ -20,16 +20,8 @@ Performance <- function(object, metric, consensus){
     votes <- object$algorithm.votes
     labels <- as.numeric(factor(x = object$input.data$labels[, 1], labels = c(1, 2)))
   } else {
-    stop("Need a blkbox Object to caculate importance")
+    stop("Need a blkbox Object to calculate importance")
   }
-
-  if (!hasArg(metric)){
-    metric = "AUROC"
-  }
-  if (!hasArg(consensus)){
-    consensus = FALSE
-  }
-
 
   for (m in 1:length(metric)){
 
@@ -51,13 +43,15 @@ Performance <- function(object, metric, consensus){
 
           ROC <- pROC::roc(predictor = as.numeric(as.matrix(avg.predicted[[q]])), response = labels, auc = TRUE, ci = TRUE)
           performance[q] <- ROC$auc
-          nums[[names(votes)[i]]] <- cbind(Algorithm = rep(names(votes)[i], length(ROC$specificities)), data.frame(cbind(rev(ROC$specificities), rev(ROC$sensitivities))))
+          nums[[length(nums)+1]] <- cbind(Rep = rep(paste0("Repeat ",q), length(ROC$specificities)),
+                                          Algorithm = rep(names(votes)[i], length(ROC$specificities)),
+                                          data.frame(cbind(rev(ROC$specificities), rev(ROC$sensitivities))))
 
         } else {
-          TP <- length(which( (round(avg.predicted[[q]])[which(as.numeric(round(avg.predicted[[q]])) == labels)]) == levels(as.factor(labels))[1]))
-          FP <- length(which( (round(avg.predicted[[q]])[which(as.numeric(round(avg.predicted[[q]])) != labels)]) == levels(as.factor(labels))[2]))
-          FN <- length(which( (round(avg.predicted[[q]])[which(as.numeric(round(avg.predicted[[q]])) != labels)]) == levels(as.factor(labels))[1]))
-          TN <- length(which( (round(avg.predicted[[q]])[which(as.numeric(round(avg.predicted[[q]])) == labels)]) == levels(as.factor(labels))[2]))
+          TP <- length(which((round(avg.predicted[[q]])[which(as.numeric(round(avg.predicted[[q]])) == labels)]) == levels(as.factor(labels))[1]))
+          FP <- length(which((round(avg.predicted[[q]])[which(as.numeric(round(avg.predicted[[q]])) != labels)]) == levels(as.factor(labels))[2]))
+          FN <- length(which((round(avg.predicted[[q]])[which(as.numeric(round(avg.predicted[[q]])) != labels)]) == levels(as.factor(labels))[1]))
+          TN <- length(which((round(avg.predicted[[q]])[which(as.numeric(round(avg.predicted[[q]])) == labels)]) == levels(as.factor(labels))[2]))
           N <- FP + TN
           P <- TP + FN
           if (metric[m] == "ACC"){

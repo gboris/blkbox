@@ -2,10 +2,10 @@
 #'
 #' @author Zachary Davies, Boris Guennewig
 #' @description This standard function will allow multiple machine learning algorithms to be utilized on the same data to determine, which algorithm may be the most appropriate.
-#' @param data a data frame of training data where the features correspond to columns and the samples are rows. As data size increases the memory required and run time of some algorithms may compound exponentially.
-#' @param labels a character or numeric vector that contains the training class identifiers for the samples in the data frame. Must appear in the same order.
-#' @param holdout a data frame of holdout of testing data where the features correspond to columns and the samples are the rows.
-#' @param holdout.labels a character or numeric vector that contains the holdout or testing class identifiers for the samples in the holdout data frame.
+#' @param data Data partitioned by into a list or a data frame of training data where the features correspond to columns and the samples are rows. As data size increases the memory required and run time of some algorithms may compound exponentially.
+#' @param labels a character or numeric vector that contains the training class identifiers for the samples in the data frame. Must appear in the same order. Does not need to be specified if using a partitoned data list.
+#' @param holdout a data frame of holdout of testing data where the features correspond to columns and the samples are the rows. Does not need to be specified if using a partitoned data list.
+#' @param holdout.labels a character or numeric vector that contains the holdout or testing class identifiers for the samples in the holdout data frame. Does not need to be specified if using a partitoned data list.
 #' @param ntrees The number of trees used in the ensemble based learners (randomforest, bigrf, party, bartmachine). default = 500.
 #' @param mTry The number of features sampled at each node in the trees of ensemble based learners (randomforest, bigrf, party, bartmachine). default = sqrt(number of features).
 #' @param Kernel The type of kernel used in the support vector machine algorithm (linear, radial, sigmoid, polynomial). default = "linear".
@@ -19,16 +19,27 @@ blkbox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, 
   startMem <- pryr::mem_used()
   startTime <- Sys.time()
 
-  if (!hasArg(data)){
-    stop("Ensemble cannot run without data, provide data.frame of samples by features")
+  if(!hasArg(data)){
+    stop("Provide training and holdout data appropriately, partitoned data lists or seperate parameters are accepted. See ?blkbox")
   }
 
-  if (!hasArg(labels)){
-    stop("Ensemble cannot run without class, provide to 'labels' parameter")
+  if(class(data) == "list"){
+
+    labels = data$training.labels
+    holdout.labels = data$holdout.labels
+    holdout = data$holdout.data
+    data = data$training.data
+
   } else {
-    if (length(levels(as.factor(labels))) > 2){
-      stop("blkbox does not support non-binary classification tasks")
+
+    if (!hasArg(labels) || !hasArg(holdout) || !hasArg(holdout.labels)){
+      stop("Provide all necessary data inputs")
     }
+
+  }
+
+  if (length(levels(as.factor(labels))) > 2){
+    stop("blkbox does not support non-binary classification tasks")
   }
 
   #class will appropraite the labels into a data frame
@@ -38,27 +49,24 @@ blkbox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, 
   class.data <- cbind(data, class)
   actual.label <- data.frame(labels = class.data$y, row.names = rownames(class.data))
 
+
   cv.train <- class.data
   classtr <- data.frame(condition = factor(cv.train$y))
 
   #reduce the holdout set to the same features as decicided upon in feature selection
-
-
   class_ho <- data.frame(y = (c(holdout.labels)))
   cv.test <- holdout[, which(colnames(holdout) %in% colnames(data))]
   cv.test <- cbind(cv.test, class_ho)
-  classts <- data.frame(condition = factor(holdout.labels))
-
+  classts <- data.frame(condition = factor(cv.test$y))
   #Creating lists for data storage
   algorithm.importance <- list()
   algorithm.votes <- list()
   algorithm_list <- list()
-
   if (!hasArg(exclude)){
     exclude = c(0)
   }
 
-  if (ncol(class.data) > 4001){
+  if (ncol(data) > 4001){
     tree.method = 1
     if (1 %in% exclude == FALSE){
       if (!requireNamespace("bigrf", quietly = TRUE)) {
@@ -70,8 +78,6 @@ blkbox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, 
     tree.method = 0
   }
 
-
-
   if (hasArg(Kernel)){
     svm.kernel = Kernel
   } else {
@@ -80,12 +86,12 @@ blkbox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, 
   if (hasArg(Gamma)){
     svm.gamma = Gamma
   } else {
-    svm.gamma = 1/(ncol(class.data)-1)
+    svm.gamma = 1/(ncol(data)-1)
   }
   if (hasArg(m.try)){
     m.try = mTry
   } else {
-    m.try = round(sqrt(ncol(class.data)))
+    m.try = round(sqrt(ncol(data)))
   }
   if (hasArg(ntrees)){
     nTrees = ntrees

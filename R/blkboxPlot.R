@@ -44,30 +44,14 @@ ncv.plot <- function(obj, metric, y_ranges, title){
 #' @keywords CV, Plot, ggplot2, boxplot, barplot
 #' @importFrom methods hasArg
 #' @export
-cv.plot <- function(obj, metric, y_ranges, title, type){
+cv.plot <- function(obj, metric = "AUROC", y_ranges = c(0, 1), title = "", type = "boxplot"){
 
   repeats = dim(obj$algorithm.votes[[1]])[1]
-
-  if (!hasArg(y_ranges)){
-    y_ranges = c(0, 1)
-  }
-
-  if (!hasArg(title)){
-    title = ""
-  }
-
-  if (!hasArg(metric)){
-    metric = "AUROC"
-  }
-
-  if (!hasArg(type)){
-    type = "boxplot"
-    message("Defaulting to a boxplot.")
-  }
 
   if (!( (type == "boxplot") | (type == "barplot"))){
     stop("Invalid plot type.")
   }
+
   if (type == "boxplot"){
    obj = Performance(obj, consensus = F, metric = metric)
   } else {
@@ -101,13 +85,30 @@ cv.plot <- function(obj, metric, y_ranges, title, type){
   colnames(df) <- algs
   df_melt <- reshape2::melt(df)
   variable <- value <- NULL
-  #return(df_melt)
+
+  x <- ggplot(df_melt,
+              aes(x = factor(variable),
+                  y = value,
+                  fill = variable)) +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 90,hjust = 1,vjust = 0.5),
+          legend.key = element_blank(),
+          plot.title = element_text(lineheight = .9, face = "bold", size = 16)) +
+    xlab("Algorithms") +
+    ylab(paste(metric)) +
+    ylim(y_ranges) +
+    geom_hline(yintercept = 0.5,
+               linetype = "dotted",
+               size = 1) +
+    ggtitle(paste(title))
+
+
   if (plot.type == "boxplot"){
-    x <- (ggplot(df_melt, aes(x = factor(variable), y = value, fill = variable)) + geom_boxplot() +  theme_bw() + theme(axis.text.x = element_text(angle = 90,hjust = 1,vjust = 0.5), legend.key = element_blank(), plot.title = element_text(lineheight = .9, face = "bold", size = 16)) + xlab("Algorithms") + ylab(paste(metric)) + ylim(y_ranges) + geom_hline(yintercept = 0.5,  linetype = "dotted", size = 1) + ggtitle(paste(title)))
+    x <- x + geom_boxplot()
   } else {
-    x <- (ggplot(df_melt, aes(x = factor(variable), y = value, fill = variable)) + geom_bar(stat = "identity") +  theme_bw() + theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5), legend.key = element_blank(), plot.title = element_text(lineheight = .9, face = "bold", size = 16)) + xlab("Algorithms") + labs(fill = "Algorithms") + ylab(paste(metric)) + ylim(c(0, 1)) + geom_hline(yintercept = 0.5,  linetype = "dotted", size = 1) + ggtitle(paste(title)))
+    x <- + geom_bar(stat = "identity") + labs(fill = "Algorithms")
   }
-  print(x)
+
   return(list(plot.data = df_melt, plot = x))
 }
 
