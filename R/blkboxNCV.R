@@ -10,8 +10,8 @@
 #' @param mTry The number of features sampled at each node in the trees of ensemble based learners (randomforest, bigrf, party, bartmachine). default = sqrt(number of features).
 #' @param Kernel The type of kernel used in the support vector machine algorithm (linear, radial, sigmoid, polynomial). default = "linear".
 #' @param Gamma Advanced parameter, defines the distance of which a single training example reaches. Low gamma will produce a SVM with softer boundaries, as Gamma increases the boundaries will eventually become restricted to their singular support vector. default is 1/(ncol - 1).
-#' @param exclude removes certain algorithms from analysis - to exclude random forest which you would set exclude = c(1). To only run GLM you would set exclude = c(1:4,6:8). The algorithms each have their own numeric identifier. randomforest = 1, knn = 2, bartmachine = 3, party = 4, glm = 5, pam = 6, nnet = 7, svm = 8.
-#' @param inn.exclude removes certain algorithms from after feature selection analysis. similar to 'exclude'.
+#' @param exclude removes certain algorithms from analysis - to exclude random forest which you would set exclude = "randomforest". The algorithms each have their own numeric identifier. randomforest = "randomforest", knn = "kknn", bartmachine = "bartmachine", party = "party", glmnet = "GLM", pam = "PamR, nnet = "nnet", svm = "SVM.
+#' @param inn.exclude removes certain algorithms from after feature selection analysis. similar to 'exclude'. Defaults to exclude all but Method.
 #' @param Method The algorithm used to feature select the data. Uses the feature importance from the algorithms to rank and remove anything below the AUC threshold. Defaults to "GLM", therefore the inner folds will use "GLM" only unless specified otherwise.
 #' @param AUC Area under the curve selection measure. The relative importance of features is calculated and then ranked. The features responsible for the most importance are therefore desired, the AUC value is the percentile in which to keep features above. 0.5 keeps the highest ranked features responsible for 50 percent of the cumulative importance. default = 0.5.
 #' @param metric A character string to determine which performance metric will be passed on to the Performance() function. Refer to Performance() documentation. default = c("ERR", "AUROC", "ACC", "MCC", "F-1")
@@ -58,7 +58,8 @@ blkboxNCV <- function(data, labels, outerfolds = 5, innerfolds = 5, ntrees, mTry
     nTrees = 501
   }
   if (!hasArg(inn.exclude)){
-    inn.exclude = c(1:8)[-which(Method == c("randomforest", "kknn", "bartmachine", "party", "GLM", "PamR", "nnet", "SVM"))]
+    alg_names = c("randomforest", "kknn", "bartmachine", "party", "GLM", "PamR", "nnet", "SVM")
+    inn.exclude = alg_names[-which(Method == alg_names)]
   }
   if (hasArg(Kernel)){
     svm.kernel = Kernel

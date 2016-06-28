@@ -35,7 +35,7 @@ unique(my_labels)
 #  # Calculate Performance
 #  perf = Performance(model_1)
 #  # Standard ROC curve
-#  blkboxROC(perf_cv)
+#  blkboxROC(perf)
 
 ## ----eval=FALSE----------------------------------------------------------
 #  # Standard ROC curve for Cross-fold Validation with 2 repeats
@@ -105,5 +105,11 @@ unique(my_labels)
 ## ----eval=FALSE----------------------------------------------------------
 #  
 #  # Example placeholder
+#  
+
+## ----eval=FALSE----------------------------------------------------------
+#  library(blkbox)
+#  # Allowed for 16 gigabytes of memory for rJava processes
+#  options(java.parameters = 'Xmx16g')
 #  
 

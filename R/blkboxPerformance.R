@@ -41,7 +41,7 @@ Performance <- function(object, metric = "AUROC", consensus = FALSE){
         }
         if (metric[m] == "AUROC"){
 
-          ROC <- pROC::roc(predictor = as.numeric(as.matrix(avg.predicted[[q]])), response = labels, auc = TRUE, ci = TRUE)
+          ROC <- pROC::roc(predictor = as.numeric(as.matrix(avg.predicted[[q]])), response = labels, auc = TRUE)
           performance[q] <- ROC$auc
           nums[[length(nums)+1]] <- cbind(Rep = rep(paste0("Repeat ",q), length(ROC$specificities)),
                                           Algorithm = rep(names(votes)[i], length(ROC$specificities)),

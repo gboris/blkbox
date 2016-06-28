@@ -10,7 +10,7 @@
 #' @param mTry The number of features sampled at each node in the trees of ensemble based learners (randomforest, bigrf, party, bartmachine). default = sqrt(number of features).
 #' @param Kernel The type of kernel used in the support vector machine algorithm (linear, radial, sigmoid, polynomial). default = "linear".
 #' @param Gamma dvanced parameter, defines the distance of which a single training example reaches. Low gamma will produce a SVM with softer boundaries, as Gamma increases the boundaries will eventually become restricted to their singular support vector. default is 1/(ncol - 1).
-#' @param exclude removes certain algorithms from analysis - to exclude random forest which you would set exclude = c(1). To only run GLM you would set exclude = c(1:4,6:8). The algorithms each have their own numeric identifier. randomforest = 1, knn = 2, bartmachine = 3, party = 4, glm = 5, pam = 6, nnet = 7, svm = 8.
+#' @param exclude removes certain algorithms from analysis - to exclude random forest which you would set exclude = "randomforest". The algorithms each have their own numeric identifier. randomforest = "randomforest", knn = "kknn", bartmachine = "bartmachine", party = "party", glmnet = "GLM", pam = "PamR, nnet = "nnet", svm = "SVM.
 #' @keywords Machine Learning, blkbox, Training, Testing
 #' @importFrom methods hasArg
 #' @export
@@ -38,7 +38,7 @@ blkbox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, 
 
   }
 
-  if (length(levels(as.factor(labels))) > 2){
+  if (length(levels(as.factor(labels))) != 2){
     stop("blkbox does not support non-binary classification tasks")
   }
 
@@ -54,6 +54,7 @@ blkbox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, 
   classtr <- data.frame(condition = factor(cv.train$y))
 
   #reduce the holdout set to the same features as decicided upon in feature selection
+  holdout.labels <- as.numeric(factor(x = holdout.labels, labels = c(1,2)))
   class_ho <- data.frame(y = (c(holdout.labels)))
   cv.test <- holdout[, which(colnames(holdout) %in% colnames(data))]
   cv.test <- cbind(cv.test, class_ho)
@@ -68,7 +69,7 @@ blkbox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, 
 
   if (ncol(data) > 4001){
     tree.method = 1
-    if (1 %in% exclude == FALSE){
+    if ("randomforest" %in% exclude == FALSE){
       if (!requireNamespace("bigrf", quietly = TRUE)) {
         message("The bigrf package is not installed.\nWithout this analysis with randomforest for large numbers of features is very slow.\nInstall it via 'devtools::install_github('aloysius-lim/bigrf')'")
         tree.method = 0
@@ -101,38 +102,38 @@ blkbox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, 
 
 
 
-  if (1 %in% exclude == FALSE){
+  if ("randomforest" %in% exclude == FALSE){
     if ( tree.method > 0){
       algorithm_list[["randomforest"]] = .BB_BRF(cv.train = cv.train, cv.test = cv.test, classtr = classtr, classts = classts, m.try = m.try, nTrees = nTrees)
     } else {
       algorithm_list[["randomforest"]] = .BB_RF(cv.train = cv.train, cv.test = cv.test, classtr = classtr, m.try = m.try, nTrees = nTrees)
     }
   }
-  if (2 %in% exclude == FALSE){
+  if ("kknn" %in% exclude == FALSE){
     algorithm_list[["kknn"]] = .BB_KKNN(cv.train = cv.train, cv.test = cv.test)
   }
-  if (3 %in% exclude == FALSE){
+  if ("bartmachine" %in% exclude == FALSE){
     algorithm_list[["bartmachine"]] = .BB_BARTM(cv.train = cv.train, cv.test = cv.test, nTrees = nTrees)
   }
-  if (4 %in% exclude == FALSE){
+  if ("party" %in% exclude == FALSE){
     algorithm_list[["party"]] = .BB_PARTY(cv.train = cv.train, cv.test = cv.test, m.try = m.try, nTrees = nTrees)
   }
-  if (5 %in% exclude == FALSE){
+  if ("GLM" %in% exclude == FALSE){
     algorithm_list[["GLM"]] = .BB_GLM(cv.train = cv.train, cv.test = cv.test)
   }
-  if (6 %in% exclude == FALSE){
+  if ("PamR" %in% exclude == FALSE){
     algorithm_list[["PamR"]] = .BB_PAM(cv.train = cv.train, cv.test = cv.test)
   }
-  if (7 %in% exclude == FALSE){
+  if ("nnet" %in% exclude == FALSE){
     algorithm_list[["nnet"]] = .BB_NNET(cv.train = cv.train, cv.test = cv.test)
   }
-  if (8 %in% exclude == FALSE){
+  if ("SVM" %in% exclude == FALSE){
     algorithm_list[["SVM"]] = .BB_SVM(cv.train = cv.train, cv.test = cv.test, classtr = classtr, svm.kernel = svm.kernel, svm.gamma = svm.gamma)
   }
 
 
   for (q in 1:length(algorithm_list)){
-    if (names(algorithm_list)[q] != "kknn"){
+    if (names(algorithm_list)[q] != "kknn" || (names(algorithm_list)[q] != "SVM" & svm.kernel != "linear")){
       algorithm.importance[[names(algorithm_list)[q]]] = algorithm_list[[q]]$IMP
     }
     algorithm.votes[[names(algorithm_list)[q]]] = as.matrix(algorithm_list[[q]]$VOTE)

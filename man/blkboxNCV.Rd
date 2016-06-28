@@ -25,9 +25,9 @@ blkboxNCV(data, labels, outerfolds = 5, innerfolds = 5, ntrees, mTry,
 
 \item{Gamma}{Advanced parameter, defines the distance of which a single training example reaches. Low gamma will produce a SVM with softer boundaries, as Gamma increases the boundaries will eventually become restricted to their singular support vector. default is 1/(ncol - 1).}
 
-\item{exclude}{removes certain algorithms from analysis - to exclude random forest which you would set exclude = c(1). To only run GLM you would set exclude = c(1:4,6:8). The algorithms each have their own numeric identifier. randomforest = 1, knn = 2, bartmachine = 3, party = 4, glm = 5, pam = 6, nnet = 7, svm = 8.}
+\item{exclude}{removes certain algorithms from analysis - to exclude random forest which you would set exclude = "randomforest". The algorithms each have their own numeric identifier. randomforest = "randomforest", knn = "kknn", bartmachine = "bartmachine", party = "party", glmnet = "GLM", pam = "PamR, nnet = "nnet", svm = "SVM.}
 
-\item{inn.exclude}{removes certain algorithms from after feature selection analysis. similar to 'exclude'.}
+\item{inn.exclude}{removes certain algorithms from after feature selection analysis. similar to 'exclude'. Defaults to exclude all but Method.}
 
 \item{Method}{The algorithm used to feature select the data. Uses the feature importance from the algorithms to rank and remove anything below the AUC threshold. Defaults to "GLM", therefore the inner folds will use "GLM" only unless specified otherwise.}
 

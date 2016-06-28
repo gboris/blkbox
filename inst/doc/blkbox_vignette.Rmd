@@ -123,7 +123,7 @@ For Training and Testing as well as Cross-fold Validation the ROC curve is gener
 # Calculate Performance
 perf = Performance(model_1)
 # Standard ROC curve
-blkboxROC(perf_cv)
+blkboxROC(perf)
 ````
 ![](roc_cv.png)
 
@@ -235,4 +235,22 @@ When comparing multiple algorithms it can be insightful to visualise the overlap
 
 ````
 
+## Solutions
+
+### rJava & bartMachine
+blkbox utilises `rJava` for the models created with `bartMachine`, therefore the memory allowed for use by java proccess must be set with `options(java.parameters = 'Xmx4g')` with the desired memory.
+blkbox will raise the memory to four gigabytes by default, however this is not "locked in" until `bartMachine` is called for modelling and therefore can be adjusted after calling `library(blkbox)`.
+
+```{r eval=FALSE}
+library(blkbox)
+# Allowed for 16 gigabytes of memory for rJava processes
+options(java.parameters = 'Xmx16g')
+
+```
+
+## Benchmarks & Memory Usage
+
+blkbox incorperates a range of algorithms, however their demands for memory and run duration can be widely different, which can become a major consideration when dealing with larger data.
+
+ insert plot that shows time differences and memory usage of algorithms by T&T, CV, and NCV
 

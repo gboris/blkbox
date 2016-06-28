@@ -1,3 +1,10 @@
+.get_null_sink <- function(x){
+  if (grepl(pattern = "Windows", x = Sys.info()[['sysname']])){
+    return("NUL")
+  }
+  return("/dev/null")
+}
+
 #RANDOM FOREST HIDDEN MODULE
 .BB_RF <- function(cv.train, cv.test, classtr, m.try, nTrees, ...){
 
@@ -30,7 +37,6 @@
 #KKNN HIDDEN MODULE
 .BB_KKNN <- function(cv.train, cv.test, ...){
 
-
   test.kknn = kknn::kknn(y~.,cv.train, cv.test, distance=3)
   kknn_fit = stats::fitted(test.kknn)
 
@@ -45,25 +51,16 @@
 
   BartM = bartMachine::build_bart_machine(X=NULL,y=NULL, Xy=cv.train, num_trees=nTrees, verbose = FALSE)
   BartMP = bartMachine::bart_predict_for_test_data(BartM, cv.test[,1:(ncol(cv.test)-1)], cv.test$y)
-  if(length(grep(pattern = "Windows", x = Sys.info()[['sysname']])) == 0){
-    { sink(file = "/dev/null");BartM_imp = bartMachine::investigate_var_importance(BartM); sink(); }
-  } else {
-    { sink("NUL"); BartM_imp = bartMachine::investigate_var_importance(BartM); sink(); }
-  }
+  sink(file = .get_null_sink()); BartM_imp = bartMachine::investigate_var_importance(BartM); sink();
   BartM_imp2 = data.frame(AvgImp = BartM_imp$avg_var_props)
-
   return(list("VOTE" = t(data.frame(vote = BartMP$y_hat, row.names = row.names(cv.test))), "IMP" = BartM_imp2))
-
 }
-
 
 #PARTY HIDDEN MODULE
 .BB_PARTY <- function(cv.train, cv.test, m.try, nTrees, ...){
-
   pd.cf = party::cforest(y ~., data = cv.train, controls = party::cforest_unbiased(ntree = nTrees, mtry = m.try))
   pd.cf_pred = predict(pd.cf, newdata = cv.test, OOB = TRUE)
   pd.cf_imp = data.frame(party_imp = abs(party::varimp(pd.cf)))
-
   return(list("VOTE" = t(data.frame(vote = pd.cf_pred[,1], row.names = row.names(cv.test))), "IMP" = pd.cf_imp))
 }
 
@@ -72,11 +69,7 @@
 #GLMNET HIDDEN MODULE
 .BB_GLM <- function(cv.train, cv.test, ...){
 
-  if(length(grep(pattern = "Windows", x = Sys.info()[['sysname']])) == 0){
-    { sink(file = "/dev/null"); glm.tr = caret::train(x = cv.train[,-ncol(cv.train),drop=F], y = as.factor(cv.train$y), method = "glmnet"); sink(); }
-  } else {
-    { sink("NUL"); glm.tr = caret::train(x = cv.train[,-ncol(cv.train),drop=F], y = as.factor(cv.train$y), method = "glmnet"); sink(); }
-  }
+  sink(file =.get_null_sink()); glm.tr = caret::train(x = cv.train[,-ncol(cv.train),drop=F], y = as.factor(cv.train$y), method = "glmnet"); sink()
   glm.pr = predict(object = glm.tr, newdata = cv.test[,-ncol(cv.test), drop = F], "prob")[, 2] + 1
   glm.imp = caret::varImp(glm.tr)
   glm.imp = glm.imp$importance
@@ -90,11 +83,8 @@
 #PAMR HIDDEN MODULE
 .BB_PAM <- function(cv.train, cv.test, ...){
 
-  if(length(grep(pattern = "Windows", x = Sys.info()[['sysname']])) == 0){
-    { sink(file = "/dev/null");pamr.tr = caret::train(x = cv.train[,-ncol(cv.train),drop=F], y = as.factor(cv.train$y), method = "pam"); sink(); }
-  } else {
-    { sink("NUL"); pamr.tr = caret::train(x = cv.train[,-ncol(cv.train),drop=F], y = as.factor(cv.train$y), method = "pam"); sink(); }
-  }
+  sink(file = .get_null_sink()); pamr.tr = caret::train(x = cv.train[,-ncol(cv.train),drop=F], y = as.factor(cv.train$y), method = "pam"); sink()
+
   pamr.pr = predict(object = pamr.tr, newdata = cv.test[,-ncol(cv.test), drop = F], "prob")[, 2] + 1
   #pamr.imp = caret::varImp(object = pamr.tr, useModel = T)
   #pamr.imp = pamr.imp$importance$'1'
@@ -116,11 +106,8 @@
 #NNET HIDDEN MODULE
 .BB_NNET <- function(cv.train, cv.test, ...){
 
-  if(length(grep(pattern = "Windows", x = Sys.info()[['sysname']])) == 0){
-    { sink(file = "/dev/null");nnet.tr = caret::train(x = cv.train[,-ncol(cv.train),drop=F], y = as.factor(cv.train$y), method = "nnet", MaxNWts = 1000000); sink(); }
-  } else {
-    { sink("NUL"); nnet.tr = caret::train(x = cv.train[,-ncol(cv.train),drop=F], y = as.factor(cv.train$y), method = "nnet", MaxNWts = 1000000); sink(); }
-  }
+  sink(file = .get_null_sink()); nnet.tr = caret::train(x = cv.train[,-ncol(cv.train),drop=F], y = as.factor(cv.train$y), method = "nnet", MaxNWts = 1000000); sink()
+
   nnet.pr = predict(object = nnet.tr, newdata = cv.test[,-ncol(cv.test), drop = F], "prob")[, 2] + 1
   nnet.imp = caret::varImp(nnet.tr)
   nnet.imp = nnet.imp$importance
@@ -133,10 +120,9 @@
 #SVM HIDDEN MODULE
 .BB_SVM <- function(cv.train, cv.test, classtr, svm.kernel, svm.gamma, ...){
 
-
   svm.model = e1071::svm(classtr$condition ~ ., data = cv.train[,1:(ncol(cv.test)-1)] , kernel = svm.kernel, gamma = svm.gamma, probability = TRUE)
   svm.pred = predict(svm.model, cv.test[,1:(ncol(cv.test)-1), drop = F], probability = T)
-  svm.pred = attr(svm.pred, "probabilities")[,2] + 1
+  svm.pred = attr(svm.pred, "probabilities")[,1] + 1
   if(svm.kernel == "linear"){
     svm.imp = t(data.frame((abs(t(svm.model$coefs) %*% svm.model$SV))^2))
     return(list("VOTE" =  t(data.frame(vote = as.numeric(svm.pred), row.names = row.names(cv.test))), "IMP" = svm.imp))

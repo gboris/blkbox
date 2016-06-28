@@ -11,7 +11,7 @@
 #' @param repeats repeat the cross validation process. default = 1.
 #' @param Kernel The type of kernel used in the support vector machine algorithm (linear, radial, sigmoid, polynomial). default = "linear".
 #' @param Gamma Advanced parameter, defines the distance of which a single training example reaches. Low gamma will produce a SVM with softer boundaries, as Gamma increases the boundaries will eventually become restricted to their singular support vector. default is 1/(ncol - 1).
-#' @param exclude removes certain algorithms from analysis - to exclude random forest which you would set exclude = c(1). To only run GLM you would set exclude = c(1:4,6:8). The algorithms each have their own numeric identifier. randomforest = 1, knn = 2, bartmachine = 3, party = 4, glm = 5, pam = 6, nnet = 7, svm = 8.
+#' @param exclude removes certain algorithms from analysis - to exclude random forest which you would set exclude = "randomforest". The algorithms each have their own numeric identifier. randomforest = "randomforest", knn = "kknn", bartmachine = "bartmachine", party = "party", glmnet = "GLM", pam = "PamR, nnet = "nnet", svm = "SVM.
 #' @param Method The algorithm used to feature select the data. Uses the feature importance from the algorithms to rank and remove anything below the AUC threshold. Default is "GLM".
 #' @param AUC Area under the curve selection measure. The relative importance of features is calculated and then ranked. The features responsible for the most importance are therefore desired, the AUC value is the percentile in which to keep features above. 0.5 keeps the highest ranked features responsible for 50 percent of the cumulative importance. Default is NA which means feature are not selected at after CV.
 #' @keywords Cross Validation, k-fold, blkbox, AUC, feature selection
@@ -120,7 +120,7 @@ blkboxCV <- function(data, labels, folds = 10, seeds, ntrees, mTry, repeats = 1,
 
       for (q in 1:length(names(BB_S$algorithm.votes))){
 
-        if (names(BB_S$algorithm.votes)[q] != "kknn"){
+        if (names(BB_S$algorithm.votes)[q] != "kknn" || (names(BB_S$algorithm.votes)[q] != "SVM" & svm.kernel != "linear")){
           if (i == 1 & z == seed.list[1]){
             algorithm.importance[[names(BB_S$algorithm.votes)[q]]] = data.frame(R1F1 = BB_S$algorithm.importance[[names(BB_S$algorithm.votes)[q]]][,1], row.names = rownames(BB_S$algorithm.importance[[names(BB_S$algorithm.votes)[q]]]))
           } else {
