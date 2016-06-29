@@ -70,7 +70,7 @@ blkboxNCV <- function(data, labels, outerfolds = 5, innerfolds = 5, ntrees, mTry
   startMem <- pryr::mem_used()
   startTime <- Sys.time()
 
-  labels <- as.numeric(factor(x = labels, labels = c(1, 2)))
+  labels <- ifelse(as.factor(labels) == levels(as.factor(labels))[1], 1, 2)
   class <- data.frame(y = (c(labels)))
   class.data <- cbind(data, class)
   actual.label <- data.frame(labels = class.data$y, row.names = rownames(class.data))
@@ -218,12 +218,13 @@ blkboxNCV <- function(data, labels, outerfolds = 5, innerfolds = 5, ntrees, mTry
     Reduce(rbind, .) %>%
     dplyr::select_("Algorithm", "Holdout", "Metric", "Performance") %>%
     dplyr::arrange_("Holdout")
+  holdout.performance = data.frame(holdout.performance)
 
   list_tabs <- lapply(X = 1:length(temp_table1), y = temp_table1, function(X, y){
     names_c <- names(y)
     y <- data.frame(t(y[[X]]))
     colnames(y) <- paste0("Holdout_", 1:length(y))
-    y <- dplyr::add_rownames(y, var = "feature") %>%
+    y <- tibble::rownames_to_column(y, var = "feature") %>%
       dplyr::mutate(algorithm = names_c[X]) %>%
       tidyr::gather_("Holdout", "Importance", c(paste0("Holdout_", c(1:outerfolds)))) %>%
       dplyr::mutate(Holdout = gsub("Holdout_", "", Holdout),

@@ -73,7 +73,7 @@ blkboxCV <- function(data, labels, folds = 10, seeds, ntrees, mTry, repeats = 1,
   startMem <- pryr::mem_used()
   startTime <- Sys.time()
 
-  labels <- as.numeric(factor(x = labels, labels = c(1,2)))
+  labels <- ifelse(as.factor(labels) == levels(as.factor(labels))[1], 1, 2)
   class <- data.frame(y = (c(labels)))
   class.data <- cbind(data, class)
   actual.label <- data.frame(labels = class.data$y, row.names = rownames(class.data))

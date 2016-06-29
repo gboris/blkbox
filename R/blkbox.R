@@ -44,7 +44,7 @@ blkbox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, 
 
   #class will appropraite the labels into a data frame
   #The data from feature selected data will not contain a response column and therefore will need to be bound
-  labels <- as.numeric(factor(x = labels, labels = c(1,2)))
+  labels <- ifelse(as.factor(labels) == levels(as.factor(labels))[1], 1, 2)
   class <- data.frame(y = (c(labels)))
   class.data <- cbind(data, class)
   actual.label <- data.frame(labels = class.data$y, row.names = rownames(class.data))
@@ -54,7 +54,7 @@ blkbox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, 
   classtr <- data.frame(condition = factor(cv.train$y))
 
   #reduce the holdout set to the same features as decicided upon in feature selection
-  holdout.labels <- as.numeric(factor(x = holdout.labels, labels = c(1,2)))
+  holdout.labels <- ifelse(as.factor(holdout.labels) == levels(as.factor(holdout.labels))[1], 1, 2)
   class_ho <- data.frame(y = (c(holdout.labels)))
   cv.test <- holdout[, which(colnames(holdout) %in% colnames(data))]
   cv.test <- cbind(cv.test, class_ho)
