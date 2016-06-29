@@ -4,7 +4,7 @@
 \alias{blkboxCV}
 \title{k-fold cross validation with blkbox.}
 \usage{
-blkboxCV(data, labels, folds = 10, seeds, ntrees, mTry, repeats = 1, Kernel,
+blkboxCV(data, labels, folds = 10, seed, ntrees, mTry, repeats = 1, Kernel,
   Gamma, exclude = c(0), Method = "GLM", AUC = "NA")
 }
 \arguments{
@@ -13,8 +13,6 @@ blkboxCV(data, labels, folds = 10, seeds, ntrees, mTry, repeats = 1, Kernel,
 \item{labels}{A character or numeric vector of the class identifiers that each sample belongs.}
 
 \item{folds}{The number of times the data set will be subsectioned (number of samples / k, if modulo exists the groups will be as close to the same size as possible). Each data subsection will be used as a holdout portion. default = 10.}
-
-\item{seeds}{A numeric vector. defaults to a randomly generated set of seeds that are output when run starts.}
 
 \item{ntrees}{The number of trees used in the ensemble based learners (randomforest, bigrf, party, bartmachine). default = 500.}
 
@@ -31,6 +29,8 @@ blkboxCV(data, labels, folds = 10, seeds, ntrees, mTry, repeats = 1, Kernel,
 \item{Method}{The algorithm used to feature select the data. Uses the feature importance from the algorithms to rank and remove anything below the AUC threshold. Default is "GLM".}
 
 \item{AUC}{Area under the curve selection measure. The relative importance of features is calculated and then ranked. The features responsible for the most importance are therefore desired, the AUC value is the percentile in which to keep features above. 0.5 keeps the highest ranked features responsible for 50 percent of the cumulative importance. Default is NA which means feature are not selected at after CV.}
+
+\item{seeds}{A numeric vector. defaults to a randomly generated set of seeds that are output when run starts.}
 }
 \description{
 A function that builds upon the blkbox function and performs k-fold cross validation and then provides votes for each fold as well as the importance of each feature in the models.

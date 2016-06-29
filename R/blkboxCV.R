@@ -18,7 +18,7 @@
 #' @importFrom methods hasArg
 #' @importFrom stats runif
 #' @export
-blkboxCV <- function(data, labels, folds = 10, seeds, ntrees, mTry, repeats = 1, Kernel, Gamma, exclude = c(0), Method = "GLM", AUC = "NA"){
+blkboxCV <- function(data, labels, folds = 10, seed, ntrees, mTry, repeats = 1, Kernel, Gamma, exclude = c(0), Method = "GLM", AUC = "NA"){
 
    if (is.numeric(AUC) == FALSE & AUC != "NA"){
     stop("AUC must be numeric")
@@ -39,11 +39,12 @@ blkboxCV <- function(data, labels, folds = 10, seeds, ntrees, mTry, repeats = 1,
   }
 
   if (hasArg(seeds)){
-    seed.list = seeds[1:repeats]
+    set.seed(seed)
+    seed.list = sample(1000, repeats)
   } else {
-    set.seed(runif(1,1,10000))
-    seed.list = runif(repeats, 1, 100)
-    message("No seed list provided, seeds are: ", seed.list[1:repeats])
+    set.seed(sample(1000, 1))
+    seed.list = sample(1000, repeats)
+    message("No seed list provided, seeds are: ", seed.list)
   }
 
   if (hasArg(ntrees)){
@@ -100,7 +101,7 @@ blkboxCV <- function(data, labels, folds = 10, seeds, ntrees, mTry, repeats = 1,
 
   counter = 0
   RunThrough = 0
-  for(z in seed.list[1:repeats]){
+  for(z in seed.list){
 
     set.seed(z)
     RunThrough = RunThrough + 1
