@@ -109,31 +109,31 @@ blkbox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, 
 
   if ("randomforest" %in% exclude == FALSE){
     if ( tree.method > 0){
-      algorithm_list[["randomforest"]] = .BB_BRF(cv.train = cv.train, cv.test = cv.test, classtr = classtr, classts = classts, m.try = m.try, nTrees = nTrees)
+      algorithm_list[["randomforest"]] = .BB_BRF(cv.train = cv.train, cv.test = cv.test, classtr = classtr, classts = classts, m.try = m.try, nTrees = nTrees, seed = seed)
     } else {
-      algorithm_list[["randomforest"]] = .BB_RF(cv.train = cv.train, cv.test = cv.test, classtr = classtr, m.try = m.try, nTrees = nTrees)
+      algorithm_list[["randomforest"]] = .BB_RF(cv.train = cv.train, cv.test = cv.test, classtr = classtr, m.try = m.try, nTrees = nTrees, seed = seed)
     }
   }
   if ("kknn" %in% exclude == FALSE){
-    algorithm_list[["kknn"]] = .BB_KKNN(cv.train = cv.train, cv.test = cv.test)
+    algorithm_list[["kknn"]] = .BB_KKNN(cv.train = cv.train, cv.test = cv.test, seed = seed)
   }
   if ("bartmachine" %in% exclude == FALSE){
     algorithm_list[["bartmachine"]] = .BB_BARTM(cv.train = cv.train, cv.test = cv.test, nTrees = nTrees, seed = seed)
   }
   if ("party" %in% exclude == FALSE){
-    algorithm_list[["party"]] = .BB_PARTY(cv.train = cv.train, cv.test = cv.test, m.try = m.try, nTrees = nTrees)
+    algorithm_list[["party"]] = .BB_PARTY(cv.train = cv.train, cv.test = cv.test, m.try = m.try, nTrees = nTrees, seed = seed)
   }
   if ("GLM" %in% exclude == FALSE){
-    algorithm_list[["GLM"]] = .BB_GLM(cv.train = cv.train, cv.test = cv.test)
+    algorithm_list[["GLM"]] = .BB_GLM(cv.train = cv.train, cv.test = cv.test, seed = seed)
   }
   if ("PamR" %in% exclude == FALSE){
-    algorithm_list[["PamR"]] = .BB_PAM(cv.train = cv.train, cv.test = cv.test)
+    algorithm_list[["PamR"]] = .BB_PAM(cv.train = cv.train, cv.test = cv.test, seed = seed)
   }
   if ("nnet" %in% exclude == FALSE){
-    algorithm_list[["nnet"]] = .BB_NNET(cv.train = cv.train, cv.test = cv.test)
+    algorithm_list[["nnet"]] = .BB_NNET(cv.train = cv.train, cv.test = cv.test, seed = seed)
   }
   if ("SVM" %in% exclude == FALSE){
-    algorithm_list[["SVM"]] = .BB_SVM(cv.train = cv.train, cv.test = cv.test, classtr = classtr, svm.kernel = svm.kernel, svm.gamma = svm.gamma)
+    algorithm_list[["SVM"]] = .BB_SVM(cv.train = cv.train, cv.test = cv.test, classtr = classtr, svm.kernel = svm.kernel, svm.gamma = svm.gamma, seed = seed)
   }
 
 
