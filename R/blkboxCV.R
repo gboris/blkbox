@@ -38,13 +38,13 @@ blkboxCV <- function(data, labels, folds = 10, seed, ntrees, mTry, repeats = 1, 
     }
   }
 
-  if (hasArg(seeds)){
+  if (hasArg(seed)){
     set.seed(seed)
     seed.list = sample(1000, repeats)
   } else {
     set.seed(sample(1000, 1))
     seed.list = sample(1000, repeats)
-    message("No seed list provided, seeds are: ", seed.list)
+    message("No seed list provided, seeds are: ", toString(seed.list))
   }
 
   if (hasArg(ntrees)){

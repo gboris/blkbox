@@ -18,5 +18,5 @@ Imports: dplyr, plyr, pryr, tidyr, magrittr, caret, ggplot2, methods,
 Suggests: bigrf, Vennerable, parallel, knitr, rmarkdown
 RoxygenNote: 5.0.1
 NeedsCompilation: no
-Packaged: 2016-06-29 15:03:32 UTC; Davies
+Packaged: 2016-06-29 15:45:51 UTC; Davies
 VignetteBuilder: knitr

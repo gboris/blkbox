@@ -79,11 +79,15 @@ blkboxNCV <- function(data, labels, outerfolds = 5, innerfolds = 5, ntrees, mTry
   k = innerfolds
   nk = outerfolds
 
-  if (!hasArg(seed)){
-    seed <- sample(runif(1:1000), 1) * 100
+
+  if (hasArg(seed)){
+    set.seed(seed)
+  } else {
+    seed = sample(1000, 1)
+    set.seed(seed)
   }
-  set.seed(seed)
-  message("Starting seed is ", seed)
+  seed.list = sample(1000, nk)
+  message("Seeds are: ", toString(seed.list))
 
   inner.feature.selection <- list()
   inner.blkbox <- list()
@@ -143,14 +147,14 @@ blkboxNCV <- function(data, labels, outerfolds = 5, innerfolds = 5, ntrees, mTry
 
     #we take nk-1 data portion and give to blkbox functions
     #blkboxFS to reduce the data nk times)
-    inner.feature.selection[[paste0("holdout_", i)]] <- blkboxCV(data = ncv.train[, -ncol(ncv.train)], labels = nclasstr$condition, folds = k, Method = Method, AUC = AUC, Gamma = svm.gamma, exclude = inn.exclude)
+    inner.feature.selection[[paste0("holdout_", i)]] <- blkboxCV(data = ncv.train[, -ncol(ncv.train)], labels = nclasstr$condition, folds = k, Method = Method, AUC = AUC, Gamma = svm.gamma, exclude = inn.exclude, seed = seed.list[i])
     #blkbox standard and performance to determine the inner loop performances
-    inner.blkbox[[paste0("holdout_", i)]] <- blkboxCV(data = inner.feature.selection[[paste0("holdout_", i)]]$Feature_Selection$FS.data, labels = nclasstr$condition, folds = k, exclude = inn.exclude)
+    inner.blkbox[[paste0("holdout_", i)]] <- blkboxCV(data = inner.feature.selection[[paste0("holdout_", i)]]$Feature_Selection$FS.data, labels = nclasstr$condition, folds = k, exclude = inn.exclude, seed = seed.list[i])
     inner.performance[[paste0("holdout_", i)]] <- Performance(inner.blkbox[[paste0("holdout_", i)]], metric = metric, consensus = TRUE)
     #Store results feature selected subset, their importance, the inner fold performance
 
     #blkboxTrain on all BB_AFS$FS.data selected data and then blkboxPredict on ncv.test
-    holdout.result[[paste0("holdout_", i)]] <- blkbox(data = inner.feature.selection[[paste0("holdout_", i)]]$Feature_Selection$FS.data, holdout = ncv.test, labels = nclasstr$condition, holdout.labels = nclassts$condition, Kernel = svm.kernel, Gamma = svm.gamma, mTry = m.try, ntrees = nTrees, exclude = exclude)
+    holdout.result[[paste0("holdout_", i)]] <- blkbox(data = inner.feature.selection[[paste0("holdout_", i)]]$Feature_Selection$FS.data, holdout = ncv.test, labels = nclasstr$condition, holdout.labels = nclassts$condition, Kernel = svm.kernel, Gamma = svm.gamma, mTry = m.try, ntrees = nTrees, exclude = exclude, seed = seed.list[i])
     #performance of blkboxPredict result
     holdout.performance[[paste0("holdout_", i)]] <- Performance(holdout.result[[paste0("holdout_", i)]], metric = metric, consensus = TRUE)
   }
