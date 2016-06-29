@@ -116,7 +116,7 @@ blkboxCV <- function(data, labels, folds = 10, seeds, ntrees, mTry, repeats = 1,
       classtr <- data.frame(condition = (factor(class.data$y[-subset])))
       classts <- data.frame(condition = (factor(class.data$y[subset])))
 
-      BB_S <- blkbox(data = cv.train, labels = classtr$condition, holdout = cv.test, holdout.labels = classts$condition, ntrees = nTrees, mTry = m.try, Kernel = svm.kernel, Gamma = svm.gamma, exclude = exclude)
+      BB_S <- blkbox(data = cv.train, labels = classtr$condition, holdout = cv.test, holdout.labels = classts$condition, ntrees = nTrees, mTry = m.try, Kernel = svm.kernel, Gamma = svm.gamma, exclude = exclude, seed = z)
 
       for (q in 1:length(names(BB_S$algorithm.votes))){
 

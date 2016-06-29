@@ -14,7 +14,7 @@
 #' @keywords Machine Learning, blkbox, Training, Testing
 #' @importFrom methods hasArg
 #' @export
-blkbox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, Gamma, exclude){
+blkbox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, Gamma, exclude, seed){
 
   startMem <- pryr::mem_used()
   startTime <- Sys.time()
@@ -40,6 +40,10 @@ blkbox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, 
 
   if (length(levels(as.factor(labels))) != 2){
     stop("blkbox does not support non-binary classification tasks")
+  }
+
+  if (!hasArg(seed)){
+    seed = sample(1:1000, 1)
   }
 
   #class will appropraite the labels into a data frame
@@ -113,7 +117,7 @@ blkbox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, 
     algorithm_list[["kknn"]] = .BB_KKNN(cv.train = cv.train, cv.test = cv.test)
   }
   if ("bartmachine" %in% exclude == FALSE){
-    algorithm_list[["bartmachine"]] = .BB_BARTM(cv.train = cv.train, cv.test = cv.test, nTrees = nTrees)
+    algorithm_list[["bartmachine"]] = .BB_BARTM(cv.train = cv.train, cv.test = cv.test, nTrees = nTrees, seed = seed)
   }
   if ("party" %in% exclude == FALSE){
     algorithm_list[["party"]] = .BB_PARTY(cv.train = cv.train, cv.test = cv.test, m.try = m.try, nTrees = nTrees)

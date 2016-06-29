@@ -5,7 +5,7 @@
 \title{Train and Test datasets.}
 \usage{
 blkbox(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, Gamma,
-  exclude)
+  exclude, seed)
 }
 \arguments{
 \item{data}{Data partitioned by into a list or a data frame of training data where the features correspond to columns and the samples are rows. As data size increases the memory required and run time of some algorithms may compound exponentially.}
