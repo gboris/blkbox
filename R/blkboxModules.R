@@ -50,10 +50,10 @@
 .BB_BARTM <- function(cv.train, cv.test, nTrees, seed){
   BartM = bartMachine::build_bart_machine(X=NULL,y=NULL, Xy=cv.train, num_trees=nTrees, seed = seed, verbose = FALSE)
   BartMP = bartMachine::bart_predict_for_test_data(BartM, cv.test[,1:(ncol(cv.test)-1)], cv.test$y)
-  sink(file = .get_null_sink()); BartM_imp = bartMachine::investigate_var_importance(BartM); sink();
+  sink(file = .get_null_sink()); BartM_imp = bartMachine::investigate_var_importance(BartM, plot = F); sink();
   BartM_imp2 = data.frame(AvgImp = BartM_imp$avg_var_props)
+  #do.call(file.remove, list(paste0(tempdir(), "/", list.files(tempdir()))))
   return(list("VOTE" = t(data.frame(vote = BartMP$y_hat, row.names = row.names(cv.test))), "IMP" = BartM_imp2))
-  do.call(file.remove, list(paste0(tempdir(), "/", list.files(tempdir()))))
 }
 
 #PARTY HIDDEN MODULE
