@@ -53,6 +53,7 @@
   sink(file = .get_null_sink()); BartM_imp = bartMachine::investigate_var_importance(BartM); sink();
   BartM_imp2 = data.frame(AvgImp = BartM_imp$avg_var_props)
   return(list("VOTE" = t(data.frame(vote = BartMP$y_hat, row.names = row.names(cv.test))), "IMP" = BartM_imp2))
+  do.call(file.remove, list(paste0(tempdir(), "/", list.files(tempdir()))))
 }
 
 #PARTY HIDDEN MODULE

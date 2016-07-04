@@ -25,7 +25,7 @@
 #' @export
 blkboxNCV <- function(data, labels, outerfolds = 5, innerfolds = 5, ntrees, mTry, Kernel, Gamma, exclude = c(0), inn.exclude, Method = "GLM", AUC = 0.5, metric = c("ERR", "AUROC", "ACC", "MCC", "F-1"), seed){
 
-  #. <- "cheeky"
+  . <- "cheeky"
 
   if (!hasArg(data)){
     stop("Ensemble cannot run without data, provide data.frame of samples by features")
