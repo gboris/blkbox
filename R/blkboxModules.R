@@ -123,11 +123,13 @@
   set.seed(seed)
   svm.model = e1071::svm(classtr$condition ~ ., data = cv.train[,1:(ncol(cv.test)-1)] , kernel = svm.kernel, gamma = svm.gamma, probability = TRUE)
   svm.pred = predict(svm.model, cv.test[,1:(ncol(cv.test)-1), drop = F], probability = T)
-  svm.pred = attr(svm.pred, "probabilities")[,2] + 1
+  svm.pred = attr(svm.pred, "probabilities") + 1
+  svm.pred = svm.pred[,order(colnames(svm.pred), decreasing = T)][,1]
+  #svm.pred = as.numeric(ifelse(svm.pred[,1] == 1, colnames(svm.pred)[1], colnames(svm.pred)[2]))
   if(svm.kernel == "linear"){
     svm.imp = t(data.frame((abs(t(svm.model$coefs) %*% svm.model$SV))^2))
-    return(list("VOTE" =  t(data.frame(vote = as.numeric(svm.pred), row.names = row.names(cv.test))), "IMP" = svm.imp))
+    return(list("VOTE" =  t(data.frame(vote = svm.pred, row.names = row.names(cv.test))), "IMP" = svm.imp))
   } else {
-    return(list("VOTE" = t(data.frame(vote = as.numeric(svm.pred), row.names = row.names(cv.test)))))
+    return(list("VOTE" = t(data.frame(vote = svm.pred, row.names = row.names(cv.test)))))
   }
 }
