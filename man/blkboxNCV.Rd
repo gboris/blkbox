@@ -5,8 +5,9 @@
 \title{Nested cross fold validation with blkbox.}
 \usage{
 blkboxNCV(data, labels, outerfolds = 5, innerfolds = 5, ntrees, mTry,
-  Kernel, Gamma, exclude = c(0), inn.exclude, Method = "GLM", AUC = 0.5,
-  metric = c("ERR", "AUROC", "ACC", "MCC", "F-1"), seed)
+  Kernel, Gamma, max.depth, xgtype = "binary:logistic", exclude = c(0),
+  inn.exclude, Method = "GLM", AUC = 0.5, metric = c("ERR", "AUROC",
+  "ACC", "MCC", "F-1"), seed)
 }
 \arguments{
 \item{data}{A data.frame where the columns correspond to features and the rows are samples. The dataframe will be shuffled and split into k folds for downstream analysis.}
@@ -25,13 +26,13 @@ blkboxNCV(data, labels, outerfolds = 5, innerfolds = 5, ntrees, mTry,
 
 \item{Gamma}{Advanced parameter, defines the distance of which a single training example reaches. Low gamma will produce a SVM with softer boundaries, as Gamma increases the boundaries will eventually become restricted to their singular support vector. default is 1/(ncol - 1).}
 
-\item{exclude}{removes certain algorithms from analysis - to exclude random forest which you would set exclude = "randomforest". The algorithms each have their own numeric identifier. randomforest = "randomforest", knn = "kknn", bartmachine = "bartmachine", party = "party", glmnet = "GLM", pam = "PamR, nnet = "nnet", svm = "SVM.}
+\item{exclude}{removes certain algorithms from analysis - to exclude random forest which you would set exclude = "randomforest". The algorithms each have their own numeric identifier. randomforest = "randomforest", knn = "kknn", bartmachine = "bartmachine", party = "party", glmnet = "GLM", pam = "PamR, nnet = "nnet", svm = "SVM", xgboost = "xgboost".}
 
 \item{inn.exclude}{removes certain algorithms from after feature selection analysis. similar to 'exclude'. Defaults to exclude all but Method.}
 
 \item{Method}{The algorithm used to feature select the data. Uses the feature importance from the algorithms to rank and remove anything below the AUC threshold. Defaults to "GLM", therefore the inner folds will use "GLM" only unless specified otherwise.}
 
-\item{AUC}{Area under the curve selection measure. The relative importance of features is calculated and then ranked. The features responsible for the most importance are therefore desired, the AUC value is the percentile in which to keep features above. 0.5 keeps the highest ranked features responsible for 50 percent of the cumulative importance. default = 0.5.}
+\item{AUC}{Area under the curve selection measure. The relative importance of features is calculated and then ranked. The features responsible for the most importance are therefore desired, the AUC value is the percentile in which to keep features above. 0.5 keeps the highest ranked features responsible for 50 percent of the cumulative importance. default = 0.5. Will Change to 1.0 default when Method = "xgboost".}
 
 \item{metric}{A character string to determine which performance metric will be passed on to the Performance() function. Refer to Performance() documentation. default = c("ERR", "AUROC", "ACC", "MCC", "F-1")}
 

@@ -10,10 +10,10 @@
 #' @param mTry The number of features sampled at each node in the trees of ensemble based learners (randomforest, bigrf, party, bartmachine). default = sqrt(number of features).
 #' @param Kernel The type of kernel used in the support vector machine algorithm (linear, radial, sigmoid, polynomial). default = "linear".
 #' @param Gamma Advanced parameter, defines the distance of which a single training example reaches. Low gamma will produce a SVM with softer boundaries, as Gamma increases the boundaries will eventually become restricted to their singular support vector. default is 1/(ncol - 1).
-#' @param exclude removes certain algorithms from analysis - to exclude random forest which you would set exclude = "randomforest". The algorithms each have their own numeric identifier. randomforest = "randomforest", knn = "kknn", bartmachine = "bartmachine", party = "party", glmnet = "GLM", pam = "PamR, nnet = "nnet", svm = "SVM.
+#' @param exclude removes certain algorithms from analysis - to exclude random forest which you would set exclude = "randomforest". The algorithms each have their own numeric identifier. randomforest = "randomforest", knn = "kknn", bartmachine = "bartmachine", party = "party", glmnet = "GLM", pam = "PamR, nnet = "nnet", svm = "SVM", xgboost = "xgboost".
 #' @param inn.exclude removes certain algorithms from after feature selection analysis. similar to 'exclude'. Defaults to exclude all but Method.
 #' @param Method The algorithm used to feature select the data. Uses the feature importance from the algorithms to rank and remove anything below the AUC threshold. Defaults to "GLM", therefore the inner folds will use "GLM" only unless specified otherwise.
-#' @param AUC Area under the curve selection measure. The relative importance of features is calculated and then ranked. The features responsible for the most importance are therefore desired, the AUC value is the percentile in which to keep features above. 0.5 keeps the highest ranked features responsible for 50 percent of the cumulative importance. default = 0.5.
+#' @param AUC Area under the curve selection measure. The relative importance of features is calculated and then ranked. The features responsible for the most importance are therefore desired, the AUC value is the percentile in which to keep features above. 0.5 keeps the highest ranked features responsible for 50 percent of the cumulative importance. default = 0.5. Will Change to 1.0 default when Method = "xgboost".
 #' @param metric A character string to determine which performance metric will be passed on to the Performance() function. Refer to Performance() documentation. default = c("ERR", "AUROC", "ACC", "MCC", "F-1")
 #' @param seed A single numeric value that will determine all subsequent seeds set in NCV.
 #' @keywords Cross Validation, k-fold, blkbox, AUC, feature selection
@@ -23,7 +23,7 @@
 #' @importFrom stats predict
 #' @import ggplot2
 #' @export
-blkboxNCV <- function(data, labels, outerfolds = 5, innerfolds = 5, ntrees, mTry, Kernel, Gamma, exclude = c(0), inn.exclude, Method = "GLM", AUC = 0.5, metric = c("ERR", "AUROC", "ACC", "MCC", "F-1"), seed){
+blkboxNCV <- function(data, labels, outerfolds = 5, innerfolds = 5, ntrees, mTry, Kernel, Gamma, max.depth, xgtype = "binary:logistic", exclude = c(0), inn.exclude, Method = "GLM", AUC = 0.5, metric = c("ERR", "AUROC", "ACC", "MCC", "F-1"), seed){
 
   . <- "cheeky"
 
@@ -42,6 +42,9 @@ blkboxNCV <- function(data, labels, outerfolds = 5, innerfolds = 5, ntrees, mTry
       stop("blkbox does not support non-binary classification tasks")
     }
   }
+  if(Method == "xgboost" && AUC < 0.5){
+    message("xgboost does not assign many features importance and a higher AUC may be more appropraite")
+  }
   if (hasArg(Gamma)){
     svm.gamma = Gamma
   } else {
@@ -52,13 +55,16 @@ blkboxNCV <- function(data, labels, outerfolds = 5, innerfolds = 5, ntrees, mTry
   } else {
     m.try = round(sqrt(ncol(data)))
   }
+  if (!hasArg(max.depth)){
+    max.depth = round(sqrt(ncol(data)))
+  }
   if (hasArg(ntrees)){
     nTrees = ntrees
   } else {
     nTrees = 501
   }
   if (!hasArg(inn.exclude)){
-    alg_names = c("randomforest", "kknn", "bartmachine", "party", "GLM", "PamR", "nnet", "SVM")
+    alg_names = c("randomforest", "kknn", "bartmachine", "party", "GLM", "PamR", "nnet", "SVM", "xgboost")
     inn.exclude = alg_names[-which(Method == alg_names)]
   }
   if (hasArg(Kernel)){
@@ -67,7 +73,6 @@ blkboxNCV <- function(data, labels, outerfolds = 5, innerfolds = 5, ntrees, mTry
     svm.kernel = "linear"
   }
 
-  startMem <- pryr::mem_used()
   startTime <- Sys.time()
 
   labels <- ifelse(as.factor(labels) == levels(as.factor(labels))[1], 1, 2)
@@ -147,14 +152,29 @@ blkboxNCV <- function(data, labels, outerfolds = 5, innerfolds = 5, ntrees, mTry
 
     #we take nk-1 data portion and give to blkbox functions
     #blkboxFS to reduce the data nk times)
-    inner.feature.selection[[paste0("holdout_", i)]] <- blkboxCV(data = ncv.train[, -ncol(ncv.train)], labels = nclasstr$condition, folds = k, Method = Method, AUC = AUC, Gamma = svm.gamma, exclude = inn.exclude, seed = seed.list[i])
+    inner.feature.selection[[paste0("holdout_", i)]] <- blkboxCV(data = ncv.train[, -ncol(ncv.train)], labels = nclasstr$condition, folds = k, Method = Method, AUC = AUC, Gamma = svm.gamma, exclude = inn.exclude, seed = seed.list[i], max.depth = max.depth, xgtype = xgtype)
     #blkbox standard and performance to determine the inner loop performances
-    inner.blkbox[[paste0("holdout_", i)]] <- blkboxCV(data = inner.feature.selection[[paste0("holdout_", i)]]$Feature_Selection$FS.data, labels = nclasstr$condition, folds = k, exclude = inn.exclude, seed = seed.list[i])
+    inner.blkbox[[paste0("holdout_", i)]] <- blkboxCV(data = inner.feature.selection[[paste0("holdout_", i)]]$Feature_Selection$FS.data, labels = nclasstr$condition, folds = k, exclude = inn.exclude, seed = seed.list[i], max.depth = max.depth, xgtype = xgtype)
     inner.performance[[paste0("holdout_", i)]] <- Performance(inner.blkbox[[paste0("holdout_", i)]], metric = metric, consensus = TRUE)
     #Store results feature selected subset, their importance, the inner fold performance
-
+    # return(list(data = inner.feature.selection[[paste0("holdout_", i)]]$Feature_Selection$FS.data,
+    #             holdout = ncv.test,
+    #             labels = nclasstr$condition,
+    #             holdout.labels = nclassts$condition,
+    #             seed = seed))
     #blkboxTrain on all BB_AFS$FS.data selected data and then blkboxPredict on ncv.test
-    holdout.result[[paste0("holdout_", i)]] <- blkbox(data = inner.feature.selection[[paste0("holdout_", i)]]$Feature_Selection$FS.data, holdout = ncv.test, labels = nclasstr$condition, holdout.labels = nclassts$condition, Kernel = svm.kernel, Gamma = svm.gamma, mTry = m.try, ntrees = nTrees, exclude = exclude, seed = seed.list[i])
+    holdout.result[[paste0("holdout_", i)]] <- blkbox(data = inner.feature.selection[[paste0("holdout_", i)]]$Feature_Selection$FS.data,
+                                                      holdout = ncv.test,
+                                                      labels = nclasstr$condition,
+                                                      holdout.labels = nclassts$condition,
+                                                      Kernel = svm.kernel,
+                                                      Gamma = svm.gamma,
+                                                      mTry = m.try,
+                                                      ntrees = nTrees,
+                                                      exclude = exclude,
+                                                      seed = seed.list[i],
+                                                      max.depth = max.depth,
+                                                      xgtype = xgtype)
     #performance of blkboxPredict result
     holdout.performance[[paste0("holdout_", i)]] <- Performance(holdout.result[[paste0("holdout_", i)]], metric = metric, consensus = TRUE)
   }
@@ -179,7 +199,7 @@ blkboxNCV <- function(data, labels, outerfolds = 5, innerfolds = 5, ntrees, mTry
   merged_votes <- list()
 
 
-  for (q in c(1:(8 - ifelse(exclude[1] == 0, 0, length(exclude))))){
+  for (q in c(1:(9 - ifelse(exclude[1] == 0, 0, length(exclude))))){
     for (i in 1:nk){
       if (i == 1){
         merged_votes[[names(holdout.result[[paste0("holdout_", i)]]$algorithm.votes)[q]]] <- holdout.result[[paste0("holdout_",i)]]$algorithm.votes[[q]]
@@ -242,8 +262,6 @@ blkboxNCV <- function(data, labels, outerfolds = 5, innerfolds = 5, ntrees, mTry
     dplyr::summarise(Importance = mean(Importance, na.rm = T))
 
   endTime <- Sys.time()
-  endMem <- pryr::mem_used()
-  diffMem <- endMem - startMem
   elapsedTime <- endTime - startTime
 
   #Output summary message
@@ -263,7 +281,6 @@ blkboxNCV <- function(data, labels, outerfolds = 5, innerfolds = 5, ntrees, mTry
               "MeanFeatureTable" = list_tabs_summarised,
               "WeightedAverageImportance" = temp_list1,
               "roc.data" = roc.data,
-              "benchmarks" = list("time" = elapsedTime,
-                                "memory.used" = diffMem)))
+              "benchmarks" = list("time" = elapsedTime)))
 
 }

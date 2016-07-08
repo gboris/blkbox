@@ -5,7 +5,7 @@
 \title{Train and Test datasets.}
 \usage{
 blkbox(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, Gamma,
-  exclude, seed)
+  exclude, max.depth, xgtype = "binary:logistic", seed)
 }
 \arguments{
 \item{data}{Data partitioned by into a list or a data frame of training data where the features correspond to columns and the samples are rows. As data size increases the memory required and run time of some algorithms may compound exponentially.}
@@ -24,7 +24,7 @@ blkbox(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, Gamma,
 
 \item{Gamma}{dvanced parameter, defines the distance of which a single training example reaches. Low gamma will produce a SVM with softer boundaries, as Gamma increases the boundaries will eventually become restricted to their singular support vector. default is 1/(ncol - 1).}
 
-\item{exclude}{removes certain algorithms from analysis - to exclude random forest which you would set exclude = "randomforest". The algorithms each have their own numeric identifier. randomforest = "randomforest", knn = "kknn", bartmachine = "bartmachine", party = "party", glmnet = "GLM", pam = "PamR, nnet = "nnet", svm = "SVM.}
+\item{exclude}{removes certain algorithms from analysis - to exclude random forest which you would set exclude = "randomforest". The algorithms each have their own numeric identifier. randomforest = "randomforest", knn = "kknn", bartmachine = "bartmachine", party = "party", glmnet = "GLM", pam = "PamR, nnet = "nnet", svm = "SVM", xgboost = "xgboost".}
 
 \item{seed}{Sets the seed for the bartMachine model.}
 }

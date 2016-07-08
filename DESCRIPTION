@@ -12,11 +12,11 @@ Description: Allows data to be processed by multiple machine learning algorithms
 License: GPL (>= 2)
 LazyData: TRUE
 Depends: R (>= 3.2.2)
-Imports: dplyr, plyr, pryr, tidyr, magrittr, caret, ggplot2, methods,
-        glmnet, bartMachine, reshape2, randomForest, kknn, pamr, nnet,
-        party, rJava, e1071, pROC, stringr
+Imports: dplyr, plyr, tidyr, magrittr, caret, ggplot2, methods, glmnet,
+        bartMachine, reshape2, randomForest, kknn, pamr, nnet, party,
+        rJava, e1071, pROC, stringr, xgboost
 Suggests: bigrf, Vennerable, parallel, knitr, rmarkdown
 RoxygenNote: 5.0.1
 NeedsCompilation: no
-Packaged: 2016-07-06 03:09:59 UTC; Davies
+Packaged: 2016-07-08 11:51:49 UTC; Davies
 VignetteBuilder: knitr

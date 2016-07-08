@@ -5,7 +5,8 @@
 \title{k-fold cross validation with blkbox.}
 \usage{
 blkboxCV(data, labels, folds = 10, seed, ntrees, mTry, repeats = 1, Kernel,
-  Gamma, exclude = c(0), Method = "GLM", AUC = "NA")
+  Gamma, max.depth, xgtype = "binary:logistic", exclude = c(0),
+  Method = "GLM", AUC = "NA")
 }
 \arguments{
 \item{data}{A data.frame where the columns correspond to features and the rows are samples. The dataframe will be shuffled and split into k folds for downstream analysis.}
@@ -24,11 +25,11 @@ blkboxCV(data, labels, folds = 10, seed, ntrees, mTry, repeats = 1, Kernel,
 
 \item{Gamma}{Advanced parameter, defines the distance of which a single training example reaches. Low gamma will produce a SVM with softer boundaries, as Gamma increases the boundaries will eventually become restricted to their singular support vector. default is 1/(ncol - 1).}
 
-\item{exclude}{removes certain algorithms from analysis - to exclude random forest which you would set exclude = "randomforest". The algorithms each have their own numeric identifier. randomforest = "randomforest", knn = "kknn", bartmachine = "bartmachine", party = "party", glmnet = "GLM", pam = "PamR, nnet = "nnet", svm = "SVM.}
+\item{exclude}{removes certain algorithms from analysis - to exclude random forest which you would set exclude = "randomforest". The algorithms each have their own numeric identifier. randomforest = "randomforest", knn = "kknn", bartmachine = "bartmachine", party = "party", glmnet = "GLM", pam = "PamR, nnet = "nnet", svm = "SVM", xgboost = "xgboost".}
 
 \item{Method}{The algorithm used to feature select the data. Uses the feature importance from the algorithms to rank and remove anything below the AUC threshold. Default is "GLM".}
 
-\item{AUC}{Area under the curve selection measure. The relative importance of features is calculated and then ranked. The features responsible for the most importance are therefore desired, the AUC value is the percentile in which to keep features above. 0.5 keeps the highest ranked features responsible for 50 percent of the cumulative importance. Default is NA which means feature are not selected at after CV.}
+\item{AUC}{Area under the curve selection measure. The relative importance of features is calculated and then ranked. The features responsible for the most importance are therefore desired, the AUC value is the percentile in which to keep features above. 0.5 keeps the highest ranked features responsible for 50 percent of the cumulative importance. Default is NA which means feature are not selected at after CV. Will default to 1.0 if Method is "xgboost".}
 
 \item{seeds}{A numeric vector. defaults to a randomly generated set of seeds that are output when run starts.}
 }

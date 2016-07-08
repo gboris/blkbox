@@ -10,14 +10,13 @@
 #' @param mTry The number of features sampled at each node in the trees of ensemble based learners (randomforest, bigrf, party, bartmachine). default = sqrt(number of features).
 #' @param Kernel The type of kernel used in the support vector machine algorithm (linear, radial, sigmoid, polynomial). default = "linear".
 #' @param Gamma dvanced parameter, defines the distance of which a single training example reaches. Low gamma will produce a SVM with softer boundaries, as Gamma increases the boundaries will eventually become restricted to their singular support vector. default is 1/(ncol - 1).
-#' @param exclude removes certain algorithms from analysis - to exclude random forest which you would set exclude = "randomforest". The algorithms each have their own numeric identifier. randomforest = "randomforest", knn = "kknn", bartmachine = "bartmachine", party = "party", glmnet = "GLM", pam = "PamR, nnet = "nnet", svm = "SVM.
+#' @param exclude removes certain algorithms from analysis - to exclude random forest which you would set exclude = "randomforest". The algorithms each have their own numeric identifier. randomforest = "randomforest", knn = "kknn", bartmachine = "bartmachine", party = "party", glmnet = "GLM", pam = "PamR, nnet = "nnet", svm = "SVM", xgboost = "xgboost".
 #' @param seed Sets the seed for the bartMachine model.
 #' @keywords Machine Learning, blkbox, Training, Testing
 #' @importFrom methods hasArg
 #' @export
-blkbox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, Gamma, exclude, seed){
+blkbox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, Gamma, exclude, max.depth, xgtype = "binary:logistic", seed){
 
-  startMem <- pryr::mem_used()
   startTime <- Sys.time()
 
   if(!hasArg(data)){
@@ -99,12 +98,14 @@ blkbox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, 
   } else {
     m.try = round(sqrt(ncol(data)))
   }
+  if (!hasArg(max.depth)){
+    max.depth = round(sqrt(ncol(data)))
+  }
   if (hasArg(ntrees)){
     nTrees = ntrees
   } else {
     nTrees = 501
   }
-
 
 
   if ("randomforest" %in% exclude == FALSE){
@@ -135,6 +136,9 @@ blkbox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, 
   if ("SVM" %in% exclude == FALSE){
     algorithm_list[["SVM"]] = .BB_SVM(cv.train = cv.train, cv.test = cv.test, classtr = classtr, svm.kernel = svm.kernel, svm.gamma = svm.gamma, seed = seed)
   }
+  if ("xgboost" %in% exclude == FALSE){
+    algorithm_list[["xgboost"]] = .XGB(cv.train = cv.train, cv.test = cv.test, classtr = classtr, max.depth = max.depth, eta = 1, nthread = 1, nround = 10, objective = xgtype, seed = seed)
+  }
 
 
   for (q in 1:length(algorithm_list)){
@@ -145,10 +149,12 @@ blkbox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, 
   }
 
   endTime <- Sys.time()
-  endMem <- pryr::mem_used()
-  diffMem <- endMem - startMem
   elapsedTime <- endTime - startTime
 
-  return(list("algorithm.votes" = algorithm.votes, "algorithm.importance" = algorithm.importance, benchmarks = list("time" = elapsedTime, "memory.used" = diffMem), "input.data" = list("Data" = class.data ,"labels" = classts)))
+  return(list("algorithm.votes" = algorithm.votes,
+              "algorithm.importance" = algorithm.importance,
+              "benchmarks" = list("time" = elapsedTime),
+              "input.data" = list("Data" = class.data,
+                                  "labels" = classts)))
 
 }

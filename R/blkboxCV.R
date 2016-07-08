@@ -11,14 +11,14 @@
 #' @param repeats repeat the cross validation process. default = 1.
 #' @param Kernel The type of kernel used in the support vector machine algorithm (linear, radial, sigmoid, polynomial). default = "linear".
 #' @param Gamma Advanced parameter, defines the distance of which a single training example reaches. Low gamma will produce a SVM with softer boundaries, as Gamma increases the boundaries will eventually become restricted to their singular support vector. default is 1/(ncol - 1).
-#' @param exclude removes certain algorithms from analysis - to exclude random forest which you would set exclude = "randomforest". The algorithms each have their own numeric identifier. randomforest = "randomforest", knn = "kknn", bartmachine = "bartmachine", party = "party", glmnet = "GLM", pam = "PamR, nnet = "nnet", svm = "SVM.
+#' @param exclude removes certain algorithms from analysis - to exclude random forest which you would set exclude = "randomforest". The algorithms each have their own numeric identifier. randomforest = "randomforest", knn = "kknn", bartmachine = "bartmachine", party = "party", glmnet = "GLM", pam = "PamR, nnet = "nnet", svm = "SVM", xgboost = "xgboost".
 #' @param Method The algorithm used to feature select the data. Uses the feature importance from the algorithms to rank and remove anything below the AUC threshold. Default is "GLM".
-#' @param AUC Area under the curve selection measure. The relative importance of features is calculated and then ranked. The features responsible for the most importance are therefore desired, the AUC value is the percentile in which to keep features above. 0.5 keeps the highest ranked features responsible for 50 percent of the cumulative importance. Default is NA which means feature are not selected at after CV.
+#' @param AUC Area under the curve selection measure. The relative importance of features is calculated and then ranked. The features responsible for the most importance are therefore desired, the AUC value is the percentile in which to keep features above. 0.5 keeps the highest ranked features responsible for 50 percent of the cumulative importance. Default is NA which means feature are not selected at after CV. Will default to 1.0 if Method is "xgboost".
 #' @keywords Cross Validation, k-fold, blkbox, AUC, feature selection
 #' @importFrom methods hasArg
 #' @importFrom stats runif
 #' @export
-blkboxCV <- function(data, labels, folds = 10, seed, ntrees, mTry, repeats = 1, Kernel, Gamma, exclude = c(0), Method = "GLM", AUC = "NA"){
+blkboxCV <- function(data, labels, folds = 10, seed, ntrees, mTry, repeats = 1, Kernel, Gamma, max.depth, xgtype = "binary:logistic", exclude = c(0), Method = "GLM", AUC = "NA"){
 
    if (is.numeric(AUC) == FALSE & AUC != "NA"){
     stop("AUC must be numeric")
@@ -59,6 +59,10 @@ blkboxCV <- function(data, labels, folds = 10, seed, ntrees, mTry, repeats = 1, 
     m.try = round(sqrt(ncol(data)))
   }
 
+  if (!hasArg(max.depth)){
+    max.depth = round(sqrt(ncol(data)))
+  }
+
   if (hasArg(Kernel)){
     svm.kernel = Kernel
   } else {
@@ -71,7 +75,6 @@ blkboxCV <- function(data, labels, folds = 10, seed, ntrees, mTry, repeats = 1, 
     svm.gamma = 1/(ncol(data)-1)
   }
 
-  startMem <- pryr::mem_used()
   startTime <- Sys.time()
 
   labels <- ifelse(as.factor(labels) == levels(as.factor(labels))[1], 1, 2)
@@ -117,18 +120,22 @@ blkboxCV <- function(data, labels, folds = 10, seed, ntrees, mTry, repeats = 1, 
       classtr <- data.frame(condition = (factor(class.data$y[-subset])))
       classts <- data.frame(condition = (factor(class.data$y[subset])))
 
-      BB_S <- blkbox(data = cv.train, labels = classtr$condition, holdout = cv.test, holdout.labels = classts$condition, ntrees = nTrees, mTry = m.try, Kernel = svm.kernel, Gamma = svm.gamma, exclude = exclude, seed = z)
+      BB_S <- blkbox(data = cv.train, labels = classtr$condition, holdout = cv.test, holdout.labels = classts$condition, ntrees = nTrees, mTry = m.try, Kernel = svm.kernel, Gamma = svm.gamma, exclude = exclude, seed = z, max.depth = max.depth, xgtype = xgtype)
 
       for (q in 1:length(names(BB_S$algorithm.votes))){
 
         if (names(BB_S$algorithm.votes)[q] != "kknn" || (names(BB_S$algorithm.votes)[q] != "SVM" & svm.kernel != "linear")){
           if (i == 1 & z == seed.list[1]){
-            algorithm.importance[[names(BB_S$algorithm.votes)[q]]] = data.frame(R1F1 = BB_S$algorithm.importance[[names(BB_S$algorithm.votes)[q]]][,1], row.names = rownames(BB_S$algorithm.importance[[names(BB_S$algorithm.votes)[q]]]))
+            algorithm.importance[[names(BB_S$algorithm.votes)[q]]] = as.matrix(t(data.frame(BB_S$algorithm.importance[[names(BB_S$algorithm.votes)[q]]][,1], row.names = rownames(BB_S$algorithm.importance[[names(BB_S$algorithm.votes)[q]]]))))
           } else {
-            algorithm.importance[[names(BB_S$algorithm.votes)[q]]] = cbind(algorithm.importance[[names(BB_S$algorithm.votes)[q]]], BB_S$algorithm.importance[[names(BB_S$algorithm.votes)[q]]][,1])
-            colnames(algorithm.importance[[names(BB_S$algorithm.votes)[q]]])[counter] <- paste0("R",RunThrough,"F",i)
+            algorithm.importance[[names(BB_S$algorithm.votes)[q]]] = plyr::rbind.fill.matrix(algorithm.importance[[names(BB_S$algorithm.votes)[q]]], as.matrix(t(data.frame(BB_S$algorithm.importance[[names(BB_S$algorithm.votes)[q]]][,1], row.names = rownames(BB_S$algorithm.importance[[names(BB_S$algorithm.votes)[q]]])))))
+            # colnames(algorithm.importance[[names(BB_S$algorithm.votes)[q]]])[counter] <- paste0("R",RunThrough,"F",i)
             if (i == k & z == seed.list[repeats]){
-              algorithm.importance[[names(BB_S$algorithm.votes)[q]]] = cbind(algorithm.importance[[names(BB_S$algorithm.votes)[q]]], average = rowMeans(algorithm.importance[[names(BB_S$algorithm.votes)[q]]]))
+              algorithm.importance[[names(BB_S$algorithm.votes)[q]]][is.na(algorithm.importance[[names(BB_S$algorithm.votes)[q]]])] = 0
+              algorithm.importance[[names(BB_S$algorithm.votes)[q]]] = rbind(algorithm.importance[[names(BB_S$algorithm.votes)[q]]], colMeans(algorithm.importance[[names(BB_S$algorithm.votes)[q]]]))
+              algorithm.importance[[names(BB_S$algorithm.votes)[q]]] = t(algorithm.importance[[names(BB_S$algorithm.votes)[q]]])
+              colname_vec = sapply(c(1:(repeats * folds)), z = expand.grid(1:folds, 1:repeats), FUN = function(x, z){ paste0("R", z[x,2], "F", z[x,1]) })
+              colnames(algorithm.importance[[names(BB_S$algorithm.votes)[q]]]) = c(colname_vec, "average")
             }
           }
         }
@@ -202,14 +209,25 @@ blkboxCV <- function(data, labels, folds = 10, seed, ntrees, mTry, repeats = 1, 
   }
 
   endTime <- Sys.time()
-  endMem <- pryr::mem_used()
-  diffMem <- endMem - startMem
   elapsedTime <- endTime - startTime
 
   if (AUC != "NA"){
-    return(list("algorithm.votes" = algorithm.votes, "algorithm.importance" = algorithm.importance, "Feature_Selection" = list("FS.data" = FS.data, "FS.surviving.features" = surviving.features, "FS.surviving.features.importance" = surviving.features.importance, "algorithm.importance" = Output, "importance.cutoff" = imp.auc.cutoff), benchmarks = list("time" = elapsedTime, "memory.used" = diffMem), "input.data" = list("Data" = class.data ,"labels" = actual.label)))
+    return(list("algorithm.votes" = algorithm.votes,
+                "algorithm.importance" = algorithm.importance,
+                "Feature_Selection" = list("FS.data" = FS.data,
+                                           "FS.surviving.features" = surviving.features,
+                                           "FS.surviving.features.importance" = surviving.features.importance,
+                                           "algorithm.importance" = Output,
+                                           "importance.cutoff" = imp.auc.cutoff),
+                "benchmarks" = list("time" = elapsedTime),
+                "input.data" = list("Data" = class.data ,
+                                    "labels" = actual.label)))
   } else {
-    return(list("algorithm.votes" = algorithm.votes, "algorithm.importance" = algorithm.importance, benchmarks = list("time" = elapsedTime, "memory.used" = diffMem), "input.data" = list("Data" = class.data ,"labels" = actual.label)))
+    return(list("algorithm.votes" = algorithm.votes,
+                "algorithm.importance" = algorithm.importance,
+                "benchmarks" = list("time" = elapsedTime),
+                "input.data" = list("Data" = class.data,
+                                    "labels" = actual.label)))
   }
 
 }

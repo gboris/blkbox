@@ -22,8 +22,10 @@
 #BIG RANDOM FOREST HIDDEN MODULE
 .BB_BRF <- function(cv.train, cv.test, classtr, classts, m.try, nTrees, seed){
   set.seed(seed)
+  sink(file =.get_null_sink())
   test.rf = bigrf::bigrfc(x = cv.train[,-ncol(cv.train)], y = classtr$condition, ntrees = nTrees, nsplitvar = m.try, cachepath = NULL)
   test.rf.pr = bigrf::predict(test.rf, cv.test[,-ncol(cv.test)], y = classts$condition)
+  sink()
   rf_imp = bigrf::fastimp(test.rf)
   rf_imp = as.data.frame(rf_imp)
   rf_imp = rf_imp[sort.list(rf_imp$rf_imp),, drop = FALSE]
@@ -32,6 +34,26 @@
   return(list("VOTE" = t(data.frame(vote = test.rf.pr, row.names = row.names(cv.test))) , "IMP" = rf_imp))
 }
 
+# XGBOOST HIDDEN MODULE
+
+.XGB <- function(cv.train, cv.test, classtr, max.depth, eta = 1, nthread = 1, nround = 10, objective, seed, ...){
+  set.seed(seed)
+  xg_test = xgboost::xgboost(data = as.matrix(cv.train[,-ncol(cv.train)]),
+                    label = as.numeric(cv.train$y)-1,
+                    max.depth = max.depth,
+                    eta = eta,
+                    nthread = nthread,
+                    nround = nround,
+                    objective = objective,
+                    verbose = 0)
+  pred <- data.frame(xgboost::predict(xg_test, as.matrix(cv.test)) + 1)
+  rownames(pred) = rownames(cv.test)
+  colnames(pred) = NULL
+  ximp = xgboost::xgb.importance(colnames(cv.test), model = xg_test)
+  ximp = as.matrix(data.frame(row.names = ximp$Feature, "AvgImp" = as.numeric(ximp$Gain)))
+  return(list("VOTE" = t(pred), "IMP" = ximp))
+
+}
 
 
 #KKNN HIDDEN MODULE
@@ -45,15 +67,14 @@
 }
 
 
-
 #BARTMACHINE HIDDEN MODULE
 .BB_BARTM <- function(cv.train, cv.test, nTrees, seed){
-  BartM = bartMachine::build_bart_machine(X=NULL,y=NULL, Xy=cv.train, num_trees=nTrees, seed = seed, verbose = FALSE)
-  BartMP = bartMachine::bart_predict_for_test_data(BartM, cv.test[,1:(ncol(cv.test)-1)], cv.test$y)
+  BartM = bartMachine::build_bart_machine(X=cv.train[,-ncol(cv.train)],y=as.factor(cv.train$y), seed = seed, verbose = FALSE)
+  BartMP = bartMachine::bart_predict_for_test_data(BartM, cv.test[,-ncol(cv.test)], as.factor(cv.test$y))
   sink(file = .get_null_sink()); BartM_imp = bartMachine::investigate_var_importance(BartM, plot = F); sink();
   BartM_imp2 = data.frame(AvgImp = BartM_imp$avg_var_props)
   #do.call(file.remove, list(paste0(tempdir(), "/", list.files(tempdir()))))
-  return(list("VOTE" = t(data.frame(vote = BartMP$y_hat, row.names = row.names(cv.test))), "IMP" = BartM_imp2))
+  return(list("VOTE" = t(data.frame(vote = as.numeric(BartMP$y_hat), row.names = row.names(cv.test))), "IMP" = BartM_imp2))
 }
 
 #PARTY HIDDEN MODULE
@@ -78,7 +99,6 @@
   return(list("VOTE" = t(data.frame(votes = as.numeric(glm.pr), row.names = row.names(cv.test))) , "IMP" = glm.imp))
 
 }
-
 
 
 #PAMR HIDDEN MODULE
