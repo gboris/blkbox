@@ -33,7 +33,7 @@ shinyServer(function(input, output) {
                      ifelse(input$fold_number == 10, "", paste0(",\n       folds = ", input$fold_number)),
                      ifelse(input$cv_repeat_number == 1, "", paste0(",\n       repeats = ", input$cv_repeat_number)),
                      ifelse(input$cv_auc_slider == 0.5, "", paste0(",\n       AUC = ", input$cv_auc_slider)),
-                     ifelse(input$cv_method == "GLM", "", paste0(",\n       Method = ", "'", input$cv_method, "'"), ""),
+                     ifelse(input$cv_method == "GLM", "", paste0(",\n       Method = ", "'", input$cv_method, "'")),
                      ifelse(input$ntree != 500 && input$options == T, paste0(",\n       ntrees = ", input$ntree), ""),
                      ifelse(!is.na(input$mtry) && input$options == T, paste0(",\n       mTry = ", input$mtry), ""),
                      ifelse(input$svm_kernel != "linear" && input$options == T, paste0(",\n       Kernel = ", "'", input$svm_kernel, "'"), ""),
@@ -45,7 +45,7 @@ shinyServer(function(input, output) {
 
     } else if (input$model_type ==3 ){
     # Nested Cross-fold Validation -------------------------------------------------------
-      code <- paste0("blkboxCV(data = ", input$data_selection,
+      code <- paste0("blkboxNCV(data = ", input$data_selection,
                      ", labels = ", input$label_selection,
                      ifelse(input$inner_folds == 10, "", paste0(",\n       folds = ", input$fold_number)),
                      ifelse(input$outer_folds == 10, "", paste0(",\n       folds = ", input$fold_number)),
