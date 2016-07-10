@@ -7,7 +7,6 @@
 #' @param y_ranges is the y axis limits for the plot, defaults to c(0,1). Must be a numeric vector with two entries.
 #' @param title the title to be adhered to the plot. Default is no title.
 #' @keywords NCV, Plot, ggplot2, boxplot
-#' @importFrom methods hasArg
 #' @export
 ncv.plot <- function(obj, metric, y_ranges, title){
 

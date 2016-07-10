@@ -1,0 +1,79 @@
+.selectize-input, .selectize-dropdown {
+  font-size: 10pt; 
+}
+        
+body {
+  background-image: url("bg.jpg");
+  color: #000;
+}
+
+#header {
+  color: #FFF;
+}
+
+.selectize-dropdown, .selectize-input, .selectize-input {
+    line-height: 13pt;
+}
+
+.selectize-input {
+    min-height: 13pt;
+}
+
+.form-control {
+    font-size: 10pt;
+    height: 25pt;
+}
+
+.irs-bar {
+    height: 8px;
+    top: 25px;
+    border-top: 1px solid #000000;
+    border-bottom: 1px solid #000000;
+    background: #000000;
+}
+
+.irs-bar-edge {
+    border: 1px solid #000000;
+    background: #000000;
+}
+
+.irs-from, .irs-to, .irs-single {
+    background: #000000;
+}
+
+.selectize-input.focus {
+    border-color: #626d75;
+    outline: 0;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(116, 120, 123, 0.6);
+}
+
+.h1, h1 {
+    text-align: center;
+}
+
+#panel1  {
+  position: relative !important;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.well {
+    padding: 5px;
+    margin-bottom: 5px;
+    background-color: rgba(255, 255, 255, 0.35);
+    border: 1px solid rgba(0, 0, 0, 1.0);
+}
+
+.form-group {
+    margin-bottom: -10px;
+}
+
+.well .form-group {
+    margin-bottom: 4px;
+}
+
+.irs-min, .irs-max {
+    color: #000;
+    font-size: 12px;
+    background: rgba(255, 251, 251, 0.25);
+}

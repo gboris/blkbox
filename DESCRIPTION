@@ -11,12 +11,12 @@ Description: Allows data to be processed by multiple machine learning algorithms
     nested cross validation.
 License: GPL (>= 2)
 LazyData: TRUE
-Depends: R (>= 3.2.2)
-Imports: dplyr, plyr, tidyr, magrittr, caret, ggplot2, methods, glmnet,
+Depends: R (>= 3.2.2), methods
+Imports: dplyr, plyr, tidyr, magrittr, caret, ggplot2, glmnet,
         bartMachine, reshape2, randomForest, kknn, pamr, nnet, party,
         rJava, e1071, pROC, stringr, xgboost
-Suggests: bigrf, Vennerable, parallel, knitr, rmarkdown
+Suggests: bigrf, Vennerable, parallel, knitr, rmarkdown, shiny
 RoxygenNote: 5.0.1
 NeedsCompilation: no
-Packaged: 2016-07-08 11:51:49 UTC; Davies
+Packaged: 2016-07-10 00:10:42 UTC; Davies
 VignetteBuilder: knitr

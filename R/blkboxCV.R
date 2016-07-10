@@ -5,7 +5,7 @@
 #' @param data A data.frame where the columns correspond to features and the rows are samples. The dataframe will be shuffled and split into k folds for downstream analysis.
 #' @param labels A character or numeric vector of the class identifiers that each sample belongs.
 #' @param folds The number of times the data set will be subsectioned (number of samples / k, if modulo exists the groups will be as close to the same size as possible). Each data subsection will be used as a holdout portion. default = 10.
-#' @param seeds A numeric vector. defaults to a randomly generated set of seeds that are output when run starts.
+#' @param seed A numeric value. defaults to a randomly generated set of seeds that are output when run starts.
 #' @param ntrees The number of trees used in the ensemble based learners (randomforest, bigrf, party, bartmachine). default = 500.
 #' @param mTry The number of features sampled at each node in the trees of ensemble based learners (randomforest, bigrf, party, bartmachine). default = sqrt(number of features).
 #' @param repeats repeat the cross validation process. default = 1.
@@ -15,7 +15,6 @@
 #' @param Method The algorithm used to feature select the data. Uses the feature importance from the algorithms to rank and remove anything below the AUC threshold. Default is "GLM".
 #' @param AUC Area under the curve selection measure. The relative importance of features is calculated and then ranked. The features responsible for the most importance are therefore desired, the AUC value is the percentile in which to keep features above. 0.5 keeps the highest ranked features responsible for 50 percent of the cumulative importance. Default is NA which means feature are not selected at after CV. Will default to 1.0 if Method is "xgboost".
 #' @keywords Cross Validation, k-fold, blkbox, AUC, feature selection
-#' @importFrom methods hasArg
 #' @importFrom stats runif
 #' @export
 blkboxCV <- function(data, labels, folds = 10, seed, ntrees, mTry, repeats = 1, Kernel, Gamma, max.depth, xgtype = "binary:logistic", exclude = c(0), Method = "GLM", AUC = "NA"){

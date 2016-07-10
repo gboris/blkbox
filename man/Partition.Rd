@@ -22,5 +22,5 @@ Prepares data for standard training and testing, data will be split into trainin
 Zachary Davies, Boris Guennewig
 }
 \keyword{blkbox,}
-\keyword{partition,}
+\keyword{partition}
 

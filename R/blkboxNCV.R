@@ -17,7 +17,6 @@
 #' @param metric A character string to determine which performance metric will be passed on to the Performance() function. Refer to Performance() documentation. default = c("ERR", "AUROC", "ACC", "MCC", "F-1")
 #' @param seed A single numeric value that will determine all subsequent seeds set in NCV.
 #' @keywords Cross Validation, k-fold, blkbox, AUC, feature selection
-#' @importFrom methods hasArg
 #' @importFrom stats runif
 #' @importFrom magrittr "%>%"
 #' @importFrom stats predict

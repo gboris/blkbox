@@ -13,7 +13,6 @@
 #' @param exclude removes certain algorithms from analysis - to exclude random forest which you would set exclude = "randomforest". The algorithms each have their own numeric identifier. randomforest = "randomforest", knn = "kknn", bartmachine = "bartmachine", party = "party", glmnet = "GLM", pam = "PamR, nnet = "nnet", svm = "SVM", xgboost = "xgboost".
 #' @param seed Sets the seed for the bartMachine model.
 #' @keywords Machine Learning, blkbox, Training, Testing
-#' @importFrom methods hasArg
 #' @export
 blkbox <- function(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, Gamma, exclude, max.depth, xgtype = "binary:logistic", seed){
 

@@ -5,7 +5,6 @@
 #' @param results The output of blkbox Performance that had "AUROC" as one of the specified metrics.
 #' @param title The title of the plot. Default is "ROC".
 #' @keywords ROC, blkbox
-#' @importFrom methods hasArg
 #' @export
 blkboxROC <- function(results, title = "ROC"){
   if(hasArg(results)){
