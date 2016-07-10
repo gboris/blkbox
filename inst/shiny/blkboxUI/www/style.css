@@ -4,7 +4,7 @@
         
 body {
   background-image: url("bg.jpg");
-  color: #000;
+  color: #FFF;
 }
 
 #header {
@@ -73,7 +73,7 @@ body {
 }
 
 .irs-min, .irs-max {
-    color: #000;
+    color: #FFF;
     font-size: 12px;
     background: rgba(255, 251, 251, 0.25);
 }
