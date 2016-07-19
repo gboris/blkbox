@@ -105,8 +105,9 @@ cv.plot <- function(obj, metric = "AUROC", y_ranges = c(0, 1), title = "", type 
   if (plot.type == "boxplot"){
     x <- x + geom_boxplot()
   } else {
-    x <- + geom_bar(stat = "identity") + labs(fill = "Algorithms")
+    x <- x + geom_bar(stat = "identity") + labs(fill = "Algorithms")
   }
+
 
   return(list(plot.data = df_melt, plot = x))
 }

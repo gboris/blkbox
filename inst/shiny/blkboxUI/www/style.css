@@ -1,7 +1,7 @@
 .selectize-input, .selectize-dropdown {
-  font-size: 10pt; 
+  font-size: 10pt;
 }
-        
+
 body {
   background-image: url("bg.jpg");
   color: #FFF;
@@ -73,7 +73,7 @@ body {
 }
 
 .irs-min, .irs-max {
-    color: #FFF;
+    color: #000;
     font-size: 12px;
     background: rgba(255, 251, 251, 0.25);
 }

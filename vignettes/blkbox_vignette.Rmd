@@ -22,7 +22,7 @@ blkbox was designed to facilitate running multiple machine learning algorithms o
 
 Once the user has decided upon a specific algorithm that is ideal for the task at hand a more direct approach using that algorithm alone can be developed.
 
-The algorithms included within blkbox are: [randomForest](https://cran.r-project.org/web/packages/randomForest/), [bartMachine](https://cran.r-project.org/web/packages/bartMachine/), [party](https://cran.r-project.org/web/packages/party/), [nnet](https://cran.r-project.org/web/packages/nnet/), [PamR](https://cran.r-project.org/web/packages/pamr/), [knn](https://cran.r-project.org/web/packages/kknn/), [glmnet](https://cran.r-project.org/web/packages/glmnet/), [SVM](https://cran.r-project.org/web/packages/e1071/) & [xgboost](https://cran.r-project.org/web/packages/xgboost/). The algorithms were chosen such that their scope covers a broad area, allowing one to discover which performs best on a particular task.
+The algorithms included within blkbox are: [randomForest](https://cran.r-project.org/web/packages/randomForest/), [bartMachine](https://cran.r-project.org/web/packages/bartMachine/), [party](https://cran.r-project.org/web/packages/party/), [nnet](https://cran.r-project.org/web/packages/nnet/), [PamR](https://cran.r-project.org/web/packages/pamr/), [knn](https://cran.r-project.org/web/packages/kknn/), [glmnet](https://cran.r-project.org/web/packages/glmnet/), [SVM](https://cran.r-project.org/web/packages/e1071/). The algorithms were chosen such that their scope covers a broad area, allowing one to discover which performs best on a particular task.
 
 
 ## Data Structure
