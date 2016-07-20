@@ -1,7 +1,7 @@
 #' @export
 .mpi <- function(results, Y){
-  multi.plot.info = sapply(X = c(1:length(results$InnerFS)), y = Y, FUN = function(X, y){
-    results$InnerFS[[X]]$Feature_Selection$FS.surviving.features[Y]
+  multi.plot.info = sapply(X = c(1:length(results$InnerFS)), results = results, y = Y, FUN = function(X, y, results){
+    results$InnerFS[[X]]$Feature_Selection$FS.surviving.features[y]
   })
   names(multi.plot.info) = paste0(names(results$InnerFS))
   Vennerable::plot(Vennerable::Venn(multi.plot.info), doWeights = FALSE)
@@ -19,7 +19,7 @@
 #ncv venn plot function
 ncv.venn <- function(results){
 
-  if (!requireNamespace("Vennerable", quietly = TRUE)) {
+  if (!requireNamespace("Vennerable")) {
     stop("The Vennerable package is not installed. It can be installed by following the instructions at 'https://github.com/js229/Vennerable'")
   }
 

@@ -1,12 +1,3 @@
-#
-# This is the user-interface definition of a Shiny web application. You can
-# run the application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
 library(shiny)
 
 # Define UI for application that draws a histogram
@@ -16,8 +7,8 @@ shinyUI(fluidPage(theme = "style.css",
     h1(id = "header", icon("square", "fa-6x"), "blkbox"),
     wellPanel(
     # Select Data & Labels ------------------------------------------------------------------
-    selectInput("data_selection", label = "Data", choices = c("placeholder"), width = "240px"),
-    selectInput("label_selection", label = "Labels", choices = c("placeholder"), width = "240px"),
+    uiOutput("data_selection"),
+    uiOutput("label_selection"),
     # Select Type of Model ------------------------------------------------------------------
     selectInput("model_type", label = "Model Type:", width = "240px",
                 choices = c("-- Select Model Type --" = 0,
@@ -167,11 +158,13 @@ shinyUI(fluidPage(theme = "style.css",
 
 
     # Submit/Run ---------------------------------------------------------------------------
-    actionButton(inputId = "submit_model", label = "Process", icon = icon("cogs", "fa"), width = "118px"),
-    actionButton(inputId = "get_code", label = "Get Code", icon = icon("terminal", "fa"), width = "118px"),
+    conditionalPanel(condition = "input.model_type != 0",
+                     actionButton(inputId = "submit_model", label = "Process", icon = icon("cogs", "fa"), width = "118px"),
+                     actionButton(inputId = "get_code", label = "Show Code", icon = icon("terminal", "fa"), width = "118px"),
     # Code Display -------------------------------------------------------------------------
     wellPanel(
       textOutput("code")
+    )
     )
     )
 ))

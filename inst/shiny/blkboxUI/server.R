@@ -1,19 +1,45 @@
 library(shiny)
 
+fetch_obj_names <- function(class, compliment = F){
+  which_obj_names <- sapply(as.list(.GlobalEnv), class = class, function(x, class){
+    ifelse(class %in% class(x), TRUE, FALSE)
+    })
+  # compliment provides the opposite results if TRUE
+  if(compliment == F){
+    obj_names = names(as.list(.GlobalEnv))[which_obj_names]
+  } else {
+    obj_names = names(as.list(.GlobalEnv))[!which_obj_names]
+  }
+  return(obj_names)
+}
+
+
 shinyServer(function(input, output) {
   # ---------------------------------------------------------------------------------------
+  # Determine all objects in .GlobalEnv that are:
+  # data.frames
+  output$data_selection = renderUI({
+    selectInput("data_selection", label = "Data", choices = fetch_obj_names("data.frame"), width = "240px")
+  })
+  # non data.frames
+  output$label_selection = renderUI({
+    selectInput("label_selection", label = "Labels", choices = fetch_obj_names("data.frame", T), width = "240px")
+  })
 
   # Run Model -----------------------------------------------------------------------------
-  # Coming Soon
-
+  observeEvent(input$submit_model, {
+    print("Model Submitted")
+    print(code_str)
+    blkbox_model <- eval(parse(text = code_str))
+  })
 
   # Get Code Output -----------------------------------------------------------------------
 
-  observeEvent(input$get_code, {
+  observe({
 
     if (input$model_type == 1){
     # Training & Testing ------------------------------------------------------------------
-      code <- paste0("blkbox(data = Partition(",
+      code_str <<- paste0("blkbox(data = Partition(",
                      input$data_selection, ", ", input$label_selection, ", ",
                      "size = ", input$partition_slider,
                      ifelse(is.na(input$partition_seed) || input$partition_seed_ask == F, "", paste0(", seed = ", input$partition_seed)),")",
@@ -28,7 +54,7 @@ shinyServer(function(input, output) {
 
     } else if (input$model_type == 2){
     # Cross-fold Validation ---------------------------------------------------------------
-      code <- paste0("blkboxCV(data = ", input$data_selection,
+      code_str <<- paste0("blkboxCV(data = ", input$data_selection,
                      ", labels = ", input$label_selection,
                      ifelse(input$fold_number == 10, "", paste0(",\n       folds = ", input$fold_number)),
                      ifelse(input$cv_repeat_number == 1, "", paste0(",\n       repeats = ", input$cv_repeat_number)),
@@ -45,7 +71,7 @@ shinyServer(function(input, output) {
 
     } else if (input$model_type ==3 ){
     # Nested Cross-fold Validation -------------------------------------------------------
-      code <- paste0("blkboxNCV(data = ", input$data_selection,
+      code_str <<- paste0("blkboxNCV(data = ", input$data_selection,
                      ", labels = ", input$label_selection,
                      ifelse(input$inner_folds == 10, "", paste0(",\n       folds = ", input$fold_number)),
                      ifelse(input$outer_folds == 10, "", paste0(",\n       folds = ", input$fold_number)),
@@ -62,7 +88,7 @@ shinyServer(function(input, output) {
                      ifelse(is.na(input$seed) || input$seed_ask == F, "", paste0(",\n       seed = ", input$seed)),")")
     }
 
-    output$code <- renderText({code})
+    output$code <- renderText({code_str})
 
   })
 
