@@ -1,7 +1,7 @@
 .selectize-input, .selectize-dropdown {
-  font-size: 10pt;
+  font-size: 10pt; 
 }
-
+        
 body {
   background-image: url("bg.jpg");
   color: #FFF;
@@ -11,12 +11,31 @@ body {
   color: #FFF;
 }
 
+.container-fluid {
+    display: table;
+}
+
 .selectize-dropdown, .selectize-input, .selectize-input {
     line-height: 13pt;
 }
 
 .selectize-input {
     min-height: 13pt;
+}
+
+div#code_well {
+    margin-top: 5px;
+}
+
+button#viewpane_on {
+    display: inherit;
+    margin-top: 5px;
+}
+
+
+button#model_on {
+    display: inherit;
+    margin-top: 5px;
 }
 
 .form-control {
@@ -38,7 +57,6 @@ body {
 }
 
 .irs-from, .irs-to, .irs-single {
-    background: #000000;
 }
 
 .selectize-input.focus {
@@ -49,6 +67,18 @@ body {
 
 .h1, h1 {
     text-align: center;
+}
+
+div#varSel {
+  float:left;  
+  display:inline;
+}
+
+
+div#viewpane {
+  display:inline;
+  float:left;  
+  
 }
 
 #panel1  {
@@ -62,6 +92,7 @@ body {
     margin-bottom: 5px;
     background-color: rgba(255, 255, 255, 0.35);
     border: 1px solid rgba(0, 0, 0, 1.0);
+    width: 240px;
 }
 
 .form-group {
