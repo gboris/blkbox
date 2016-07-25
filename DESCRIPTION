@@ -20,3 +20,4 @@ RoxygenNote: 5.0.1
 NeedsCompilation: no
 Packaged: 2016-07-20 14:28:16 UTC; Davies
 VignetteBuilder: knitr
+Additional_repositories: 'http://zacdav.github.io/drat/'
