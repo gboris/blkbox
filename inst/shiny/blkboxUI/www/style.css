@@ -1,7 +1,7 @@
 .selectize-input, .selectize-dropdown {
-  font-size: 10pt; 
+  font-size: 10pt;
 }
-        
+
 body {
   background-image: url("bg.jpg");
   color: #FFF;
@@ -70,21 +70,25 @@ button#model_on {
 }
 
 div#varSel {
-  float:left;  
+  float:left;
   display:inline;
 }
 
 
 div#viewpane {
   display:inline;
-  float:left;  
-  
+  float:left;
+
 }
 
 #panel1  {
   position: relative !important;
   margin-right: auto;
   margin-left: auto;
+}
+
+.irs-from, .irs-to, .irs-single {
+    background: #000000;
 }
 
 .well {
@@ -104,7 +108,7 @@ div#viewpane {
 }
 
 .irs-min, .irs-max {
-    color: #000;
+    color: #fff;
     font-size: 12px;
     background: rgba(255, 251, 251, 0.25);
 }

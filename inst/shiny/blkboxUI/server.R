@@ -14,6 +14,7 @@ fetch_obj_names <- function(class, compliment = F){
   }
   return(obj_names)
 }
+code_str <<- ""
 
 
 shinyServer(function(input, output) {
@@ -27,17 +28,20 @@ shinyServer(function(input, output) {
   output$label_selection = renderUI({
     selectInput("label_selection", label = "Labels", choices = fetch_obj_names("data.frame", T), width = "240px")
   })
-  
+  # model reults selection
+  output$results_vis = renderUI({
+    selectInput("results_vis", label = "Model Results:", choices = fetch_obj_names("data.frame", T), width = "240px")
+  })
   # Run Model -----------------------------------------------------------------------------
   observeEvent(input$submit_model, {
     print("Model Submitted")
     print(code_str)
     blkbox_model <- eval(parse(text = code_str))
   })
-  
+
   # Get Code Output -----------------------------------------------------------------------
   observe({
-    
+
     if (input$model_type == 1){
       # Training & Testing ------------------------------------------------------------------
       code_str <<- paste0("blkbox(data = Partition(",
@@ -52,7 +56,7 @@ shinyServer(function(input, output) {
                           ifelse(input$exclude_alg == "0" && length(input$exclude_alg) == 1, "",
                                  paste0(",\n       exclude = c(", toString(paste0("'", input$exclude_alg[-which(input$exclude_alg %in% "0")])),")")),
                           ifelse(is.na(input$seed) || input$seed_ask == F, "", paste0(",\n       seed = ", input$seed)),")")
-      
+
     } else if (input$model_type == 2){
       # Cross-fold Validation ---------------------------------------------------------------
       code_str <<- paste0("blkboxCV(data = ", input$data_selection,
@@ -69,7 +73,7 @@ shinyServer(function(input, output) {
                           ifelse(input$exclude_alg == "0" && length(input$exclude_alg) == 1, "",
                                  paste0(",\n       exclude = c(", toString(paste0("'", input$exclude_alg[-which(input$exclude_alg %in% "0")])),")")),
                           ifelse(is.na(input$seed) || input$seed_ask == F, "", paste0(",\n       seed = ", input$seed)),")")
-      
+
     } else if (input$model_type ==3 ){
       # Nested Cross-fold Validation -------------------------------------------------------
       code_str <<- paste0("blkboxNCV(data = ", input$data_selection,
@@ -88,11 +92,11 @@ shinyServer(function(input, output) {
                                  paste0(",\n       exclude = c(", toString(paste0("'", input$exclude_alg[-which(input$exclude_alg %in% "0")])),")")),
                           ifelse(is.na(input$seed) || input$seed_ask == F, "", paste0(",\n       seed = ", input$seed)),")")
     }
-    
+
     output$code <- renderText({code_str})
-    
+
   })
-  
+
   observeEvent(input$viewpane_on, {
     toggle("viewpane")
     toggle("top_panel")
@@ -101,9 +105,16 @@ shinyServer(function(input, output) {
     toggle("model_on")
     toggle("get_code")
     toggle("submit_model")
-    toggle("code_well")
+    toggle("model_type")
+    toggle("TT")
+    toggle("CV")
+    toggle("NCV")
+    toggle("exclude_opts")
+    hide("code_well")
+    delay(ms = 10000, hide("xxx"))
+    delay(ms = 10000, show("xxx2"))
   })
-  
+
   observeEvent(input$model_on, {
     toggle("viewpane")
     toggle("top_panel")
@@ -112,15 +123,36 @@ shinyServer(function(input, output) {
     toggle("viewpane_on")
     toggle("get_code")
     toggle("submit_model")
+    toggle("model_type")
+    toggle("TT")
+    toggle("CV")
+    toggle("NCV")
+    toggle("exclude_opts")
   })
-  
-  
+
+
   observeEvent(input$get_code, {
     toggle("code_well")
   })
-  
-  
+
+  observeEvent(input$vis_type == "Model Performance", {
+    toggle("perf_vis_opts")
+  })
+
   # Performance Output of Model -----------------------------------------------------------
+
+  output$temp_plot = renderPlot({
+    plot(iris)
+  })
+
+  output$temp_plot2 = renderPlot({
+    ggplot() +
+      geom_text(aes(x = 1, y = 1, label = "Boris Smells"), size = 8) +
+      theme_bw() +
+      ylab("Got him!") +
+      xlab("Funny Jokes")
+  })
+
   # Coming Soon
 
   # ---------------------------------------------------------------------------------------

@@ -1,11 +1,23 @@
 library(shiny)
 library(shinyjs)
+# To-Do -------------------------------------------*
+# Visualisation Pane
+#   - "Use Exisiting Model"
+#       - find those objects with class blkbox
+#   - "Performance"
+#   - "ROC Curve"
+#   - "Venn Diagrams"
+#   - "Feature Importance Curves"
+#       - Option to show where AUC line is? [Extra]
+#   -
+#
+# -------------------------------------------------*
 
 # Define UI for application that draws a histogram
 shinyUI(fluidPage( theme = "style.css",
-                   
+
                    shinyjs::useShinyjs(),
-                   
+
     absolutePanel(id = "panel1", width = "auto",
     # ---------------------------------------------------------------------------------------
     h1(id = "header", icon("square", "fa-6x"), "blkbox"),
@@ -19,56 +31,67 @@ shinyUI(fluidPage( theme = "style.css",
     selectInput("model_type", label = "Model Type:", width = "240px",
                 choices = c("-- Select Model Type --" = 0,
                 "Training & Testing" = 1,
-                "Cross-fold Validation" = 2, 
+                "Cross-fold Validation" = 2,
                 "Nested Cross-fold Validation" = 3))),
     #----------------------------------------------------------------------------------------
     # When View pane is toggeled on
     hidden(
       wellPanel(id = "visualis_opts",
-                selectInput("visualisation", label = "Visualisation:", width = "240px",
-                            choices = c("-- Select Results --" = 0,
-                                        "Training & Testing" = 1,
-                                        "Cross-fold Validation" = 2, 
-                                        "Nested Cross-fold Validation" = 3))
+                uiOutput("results_vis"),
+                selectInput("vis_type", label = "Visualisation:", width = "240px",
+                            choices = c("Model Performance", # has option to be ROC // BAR // BOX
+                                        "Venn-Diagrams",
+                                        "Feature Importance")),
+                hidden(
+                  selectInput("perf_vis_opts", label = "Options:", width = "240px",
+                              choices = c("ROC Curve",
+                                          "barplot",
+                                          "boxplot")),
+                  selectInput("feat_vis_opts", label = "Algorithm:", width = "240px",
+                              choices = c("temp_alg1", # has option to be ROC // BAR // BOX
+                                          "temp_alg2",
+                                          "temp_alg3"))
+
+                )
         )
     ),
     #----------------------------------------------------------------------------------------
     # Welcome Screen  -----------------------------------------------------------------------
-    conditionalPanel(condition = "input.model_type == 0"#, 
+    conditionalPanel(condition = "input.model_type == 0"#,
                      #h3("readme")
                      ),
     # Training & Testing --------------------------------------------------------------------
     conditionalPanel(condition = "input.model_type == 1",
-                     wellPanel(
+                     wellPanel(id = "TT",
                      # Partition Data -------------------------------------------------------
-                     sliderInput(inputId = "partition_slider", label = "Partition Ratio", 
-                                 min = 0.1, max = 0.95, value = 0.8, step = 0.01, ticks = F, 
+                     sliderInput(inputId = "partition_slider", label = "Partition Ratio",
+                                 min = 0.1, max = 0.95, value = 0.8, step = 0.01, ticks = F,
                                  width = "240px"),
                      # Partiton Seed --------------------------------------------------------
                      checkboxInput(inputId = "partition_seed_ask", label = "Use seed for Partition?", value = F),
                      conditionalPanel(condition = "input.partition_seed_ask == true",
                                       numericInput(inputId = "partition_seed",
-                                                   label = "Partition Seed:", 
+                                                   label = "Partition Seed:",
                                                    min = 0, step = 1, value = NA, width = "240px"))
                      )),
     # Cross-fold Validation -----------------------------------------------------------------
     conditionalPanel(condition = "input.model_type == 2",
-                     wellPanel(
+                     wellPanel(id = "CV",
                      splitLayout(cellWidths = "120px",
                      # Number of Folds ------------------------------------------------------
-                     numericInput(inputId = "fold_number", label = "Folds:", 
+                     numericInput(inputId = "fold_number", label = "Folds:",
                                   min = 2, step = 1, max = 20, value = 10, width = "105px"),
                      # Number of Repeats ----------------------------------------------------
-                     numericInput(inputId = "cv_repeat_number", label = "Repeats:", 
+                     numericInput(inputId = "cv_repeat_number", label = "Repeats:",
                                   min = 1, step = 1, max = 50, value = 1, width = "105px")
                      ),
                      # Feature Selection of Data? -------------------------------------------
                      # AUC Cutoff -----------------------------------------------------------
-                     sliderInput(inputId = "cv_auc_slider", label = "AUC Feature Cutoff:", 
-                                 min = 0.05, max = 1.00, value = 0.5, step = 0.01, ticks = F, 
+                     sliderInput(inputId = "cv_auc_slider", label = "AUC Feature Cutoff:",
+                                 min = 0.05, max = 1.00, value = 0.5, step = 0.01, ticks = F,
                                  width = "240px"),
                      # Feature Selection Method ---------------------------------------------
-                     selectInput(inputId = "cv_method", label = "Feature Selection Method:", 
+                     selectInput(inputId = "cv_method", label = "Feature Selection Method:",
                                  selected = "GLM", multiple = F, width = "240px",
                                  choices = c("random forest" = "randomforest",
                                              "k-nearest neighbours" = "knn",
@@ -79,28 +102,28 @@ shinyUI(fluidPage( theme = "style.css",
                                              "neural net" = "nnet",
                                              "BART" = "bartmachine",
                                              "Shrunken-Centroid" = "PamR"))
-                     )),               
-    # Nested Cross-fold Validation ----------------------------------------------------------             
+                     )),
+    # Nested Cross-fold Validation ----------------------------------------------------------
     conditionalPanel(condition = "input.model_type == 3",
-                     wellPanel(
+                     wellPanel(id = "NCV",
                      splitLayout(cellWidths = "120px",
                      # Number of Inner Folds ------------------------------------------------
-                     numericInput(inputId = "inner_folds", label = "Inner Folds:", 
+                     numericInput(inputId = "inner_folds", label = "Inner Folds:",
                                   min = 2, step = 1, max = 20, value = 10, width = "105px"),
                      # Number of Outer Folds ------------------------------------------------
-                     numericInput(inputId = "outer_folds", label = "Outer Folds:", 
+                     numericInput(inputId = "outer_folds", label = "Outer Folds:",
                                   min = 2, step = 1, max = 20, value = 10, width = "105px")
                      ),
                      # Number of Repeats ----------------------------------------------------
-                     numericInput(inputId = "ncv_repeat_number", label = "Repeats:", 
+                     numericInput(inputId = "ncv_repeat_number", label = "Repeats:",
                                   min = 1, step = 1, max = 50, value = 1, width = "240px"),
                      # Feature Selection of Data? -------------------------------------------
                      # AUC Cutoff -----------------------------------------------------------
-                     sliderInput(inputId = "ncv_auc_slider", label = "AUC Feature Cutoff:", 
-                                 min = 0.05, max = 1.00, value = 0.5, step = 0.01, ticks = F, 
+                     sliderInput(inputId = "ncv_auc_slider", label = "AUC Feature Cutoff:",
+                                 min = 0.05, max = 1.00, value = 0.5, step = 0.01, ticks = F,
                                  width = "240px"),
                      # Feature Selection Method ---------------------------------------------
-                     selectInput(inputId = "ncv_method", label = "Feature Selection Method:", 
+                     selectInput(inputId = "ncv_method", label = "Feature Selection Method:",
                                  selected = "GLM", multiple = F, width = "240px",
                                  choices = c("random forest" = "randomforest",
                                              "k-nearest neighbours" = "knn",
@@ -111,15 +134,15 @@ shinyUI(fluidPage( theme = "style.css",
                                              "neural net" = "nnet",
                                              "BART" = "bartmachine",
                                              "Shrunken-Centroid" = "PamR"))
-                     )),              
+                     )),
     # Options -------------------------------------------------------------------------------
     conditionalPanel(condition = "input.model_type != 0",
     # Exclude Algorithms --------------------------------------------------------------------
-    wellPanel(
-    selectInput(inputId = "exclude_alg", label = "Exclude Algorithms", multiple = T, 
+    wellPanel(id = "exclude_opts",
+    selectInput(inputId = "exclude_alg", label = "Exclude Algorithms", multiple = T,
                 selected = 0, width = "240px",
                 choices = c("None" = 0,
-                            "random forest" = "randomforest", 
+                            "random forest" = "randomforest",
                             "k-nearest neighbours" = "knn",
                             "glmnet" = "GLM",
                             "SVM",
@@ -133,21 +156,21 @@ shinyUI(fluidPage( theme = "style.css",
                 checkboxInput(inputId = "seed_ask", label = "Use Seed?", value = F),
                 # Choose a seed ------------------------------------------------------------
                 conditionalPanel(condition = "input.seed_ask == true",
-                      numericInput(inputId = "seed", label = "Seed:", 
+                      numericInput(inputId = "seed", label = "Seed:",
                                    min = 1, step = 1, value = NA, width = "105px")
                 )),
     checkboxInput(inputId = "options", label = "Advanced Paramters", value = F))),
     # Algorithm Specific Options -----------------------------------------------------------
-    conditionalPanel(condition = "input.model_type != 0 & input.options == true", 
-                     
+    conditionalPanel(condition = "input.model_type != 0 & input.options == true",
+
                      # Tree based algorithms -----------------------------------------------
-                     conditionalPanel(condition =  "input.exclude_alg.indexOf('randomforest') == -1 || 
-                                                    input.exclude_alg.indexOf('party') == -1 || 
-                                                    input.exclude_alg.indexOf('bartmachine') == -1", 
+                     conditionalPanel(condition =  "input.exclude_alg.indexOf('randomforest') == -1 ||
+                                                    input.exclude_alg.indexOf('party') == -1 ||
+                                                    input.exclude_alg.indexOf('bartmachine') == -1",
                                      wellPanel(
                                      splitLayout(
                                      # Number of Trees ------------------------------------
-                                     numericInput(inputId = "ntree", label = "No. Trees:", 
+                                     numericInput(inputId = "ntree", label = "No. Trees:",
                                                   min = 10, step = 10, max = 20000, value = 500,
                                                   width = "105px"),
                                      # Number of Features @ Node ---------------------------
@@ -155,19 +178,19 @@ shinyUI(fluidPage( theme = "style.css",
                                                   min = 2, step = 1, max = 10000, value = NA,
                                                   width = "105px")))),
                      # SVM -----------------------------------------------------------------
-                     conditionalPanel(condition =  "input.exclude_alg.indexOf('SVM') == -1", 
+                     conditionalPanel(condition =  "input.exclude_alg.indexOf('SVM') == -1",
                                       wellPanel(
-                                      selectInput(inputId = "svm_kernel", label = "SVM Kernel:", 
-                                                  choices = c("linear", "radial", "sigmoid", "polynomial"), 
+                                      selectInput(inputId = "svm_kernel", label = "SVM Kernel:",
+                                                  choices = c("linear", "radial", "sigmoid", "polynomial"),
                                                   selected = "linear", multiple = F, selectize = T),
                                       # Gamma -----------------------------------------------
                                       numericInput(inputId = "svm_gamma", label = "SVM Gamma:",
                                                    min = 1e-3, step = 1e-2, max = 1, value = NA)
                                       )),
                      # xgboost --------------------------------------------------------------
-                     conditionalPanel(condition =  "input.exclude_alg.indexOf('xgboost') == -1", 
+                     conditionalPanel(condition =  "input.exclude_alg.indexOf('xgboost') == -1",
                                       wellPanel(
-                                      numericInput(inputId = "max_depth", label = "xgboost max depth:", 
+                                      numericInput(inputId = "max_depth", label = "xgboost max depth:",
                                                    min = 1, step = 1, max = 20000, value = NA)))
                      ),
     # Submit/Run ---------------------------------------------------------------------------
@@ -186,14 +209,14 @@ shinyUI(fluidPage( theme = "style.css",
     # Performance --------------------------------------------------------------------------
     hidden(
     div(id = "viewpane",
-         wellPanel(
-           
-           
-           
-           
-           
-           
-         )
+         wellPanel(id ="xxx",
+           plotOutput("temp_plot")
+         ),
+        hidden(
+          wellPanel(id ="xxx2",
+                         plotOutput("temp_plot2")
+          )
+        )
     ))
     )
     )
