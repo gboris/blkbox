@@ -1,6 +1,6 @@
 library(shiny)
 library(shinyjs)
-
+library(ggplot2)
 
 fetch_obj_names <- function(class, compliment = F){
   which_obj_names <- sapply(as.list(.GlobalEnv), class = class, function(x, class){
