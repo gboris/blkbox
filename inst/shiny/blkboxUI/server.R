@@ -1,6 +1,6 @@
 library(shiny)
 library(shinyjs)
-library(ggplot2)
+
 
 fetch_obj_names <- function(class, compliment = F){
   which_obj_names <- sapply(as.list(.GlobalEnv), class = class, function(x, class){
@@ -110,6 +110,7 @@ shinyServer(function(input, output) {
     toggle("CV")
     toggle("NCV")
     toggle("exclude_opts")
+    toggle("hide_div")
     hide("code_well")
     delay(ms = 10000, hide("xxx"))
     delay(ms = 10000, show("xxx2"))
@@ -128,6 +129,7 @@ shinyServer(function(input, output) {
     toggle("CV")
     toggle("NCV")
     toggle("exclude_opts")
+    toggle("hide_div")
   })
 
 

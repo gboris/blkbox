@@ -65,7 +65,9 @@ Performance <- function(object, metric = "AUROC", consensus = FALSE){
             stop("Metric unsupported")
           }
         }
+        performance[is.na(performance)] <- 0
         output[[names(votes)[i]]] <- performance
+
       }
     }
     metrics[[(metric[m])]] <- output

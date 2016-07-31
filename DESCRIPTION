@@ -15,9 +15,12 @@ Depends: R (>= 3.2.2), methods
 Imports: dplyr, plyr, tidyr, magrittr, caret, ggplot2, glmnet,
         bartMachine, reshape2, randomForest, kknn, pamr, nnet, party,
         rJava, e1071, pROC, stringr, xgboost
-Suggests: bigrf, Vennerable, parallel, knitr, rmarkdown, shiny, shinyjs
+Suggests: bigrf, Vennerable, parallel, knitr, rmarkdown, shiny,
+        shinyjs, reshape, gtools, RBGL, graph
 RoxygenNote: 5.0.1
 NeedsCompilation: no
-Packaged: 2016-07-26 13:43:21 UTC; Davies
+Packaged: 2016-07-31 12:15:18 UTC; Davies
 VignetteBuilder: knitr
-Additional_repositories: 'http://zacdav.github.io/drat/'
+Additional_repositories: 'http://zacdav.github.io/drat/',
+        'http://R-Forge.R-project.org'
+biocViews:

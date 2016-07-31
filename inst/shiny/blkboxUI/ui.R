@@ -161,6 +161,7 @@ shinyUI(fluidPage( theme = "style.css",
                 )),
     checkboxInput(inputId = "options", label = "Advanced Paramters", value = F))),
     # Algorithm Specific Options -----------------------------------------------------------
+    div(id = "hide_div",
     conditionalPanel(condition = "input.model_type != 0 & input.options == true",
 
                      # Tree based algorithms -----------------------------------------------
@@ -192,7 +193,7 @@ shinyUI(fluidPage( theme = "style.css",
                                       wellPanel(
                                       numericInput(inputId = "max_depth", label = "xgboost max depth:",
                                                    min = 1, step = 1, max = 20000, value = NA)))
-                     ),
+                     )),
     # Submit/Run ---------------------------------------------------------------------------
     actionButton(inputId = "submit_model", label = "Process", icon = icon("cogs", "fa"), width = "118px"),
     actionButton(inputId = "get_code", label = "Get Code", icon = icon("terminal", "fa"), width = "118px"),

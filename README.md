@@ -4,12 +4,7 @@
 
 ###Introduction
 
-
-
-###Acknowledgements
-
-This work was supported in part by grants from the NHMRC (APP1067350), Michael J. Fox Foundation for Rapid Response (MJFF22), and a Geoff and Dawn Dixon fellowship. We gratefully acknowledge the Swiss National Science Foundation for funding (P2EZP3_152143). We are thankful to Peter Holberton for a code review and to Eugene Dubossarsky, Tim Peters and Max Skipper for helpful discussions.
-
+###Paper abstract
 
 ###Installation
 
