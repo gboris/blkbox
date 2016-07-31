@@ -21,6 +21,6 @@ RoxygenNote: 5.0.1
 NeedsCompilation: no
 Packaged: 2016-07-31 14:39:13 UTC; Davies
 VignetteBuilder: knitr
-Additional_repositories: 'http://zacdav.github.io/drat/',
-        'http://R-Forge.R-project.org'
+Additional_repositories: http://zacdav.github.io/drat/,
+        http://R-Forge.R-project.org
 biocViews:
