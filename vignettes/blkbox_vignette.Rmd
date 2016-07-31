@@ -143,14 +143,7 @@ blkboxROC(perf_2r)
 
 ````
 
-```{r eval=FALSE}
-
-# Standard ROC curve for Cross-fold Validation
-  
-    # Need to adjust blkboxROC to accept NCV input (data is already in output)
-
-````
-
+ROC curves for Nested Cross-fold Validation should come with a later update.
 
 ### Performance Measures
 
@@ -164,7 +157,7 @@ Metrics can be applied using the `Performance` function which will allow one mor
 # Example placeholder cv.plot
 
 ````
-
+![](cv_barplot.png)
 
 `ncv.plot` ...
 ```{r eval=FALSE}
@@ -172,7 +165,7 @@ Metrics can be applied using the `Performance` function which will allow one mor
 # Example placeholder ncv.plot
 
 ````
-
+![](ncv_boxplot.png)
 
 
 ### Venn Diagrams
@@ -182,19 +175,21 @@ When comparing multiple algorithms it can be insightful to visualise the overlap
 `cv.venn` ...
 
 ```{r eval=FALSE}
-
 # Example placeholder
 
+
 ````
+![](cv_venn.png)
+
 
 `ncv.venn` ...
 
 ```{r eval=FALSE}
-
 # Example placeholder
 
-````
 
+````
+![](ncv_venn.png)
 
 ## Worked Example 1: Gene Expression Data
 
