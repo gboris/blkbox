@@ -6,4 +6,4 @@ r:
   - release
   - devel
 
-bioc_required: true
+use_bioc: true
