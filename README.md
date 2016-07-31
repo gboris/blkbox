@@ -1,4 +1,4 @@
-# blkbox
+# blkbox [![Build Status](https://travis-ci.org/zacdav/blkbox.svg?branch=master)](https://travis-ci.org/zacdav/blkbox)
 
 ##Data Exploration with Multiple Machine Learning Algorithms 
 
