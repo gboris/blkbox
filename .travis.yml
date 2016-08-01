@@ -15,3 +15,5 @@ bioc_packages:
   - RBGL
   - graph
   - Vennerable
+  - BiocInstaller
+  
