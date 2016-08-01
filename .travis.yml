@@ -8,4 +8,5 @@ r:
 
 use_bioc: true
 
-r_github_packages: zacdav/bigrf-repo
+r_github_packages:
+  - aloysius-lim/bigrf
