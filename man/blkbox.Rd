@@ -31,6 +31,14 @@ blkbox(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, Gamma,
 \description{
 This standard function will allow multiple machine learning algorithms to be utilized on the same data to determine, which algorithm may be the most appropriate.
 }
+\examples{
+\donttest{
+my_data <- iris[1:100, 1:4]
+my_labels <- as.character(iris[1:100, 5])
+my_partition = Partition(data = my_data, labels = my_labels)
+model_1 <- blkbox(data = my_partition)
+}
+}
 \author{
 Zachary Davies, Boris Guennewig
 }

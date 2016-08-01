@@ -14,6 +14,14 @@ blkboxROC(results, title = "ROC")
 \description{
 will plot ROC curves for output from Performance function if "AUROC" was specified.
 }
+\examples{
+\donttest{
+# model_1 can be any blkbox or blkboxCV model
+perf = Performance(model_1)
+# Standard ROC curve
+blkboxROC(perf)
+}
+}
 \author{
 Zachary Davies, Boris Guennewig
 }

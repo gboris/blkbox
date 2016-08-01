@@ -1,5 +1,5 @@
 ---
-title: "Searching Data with blkbox"
+title: "A Quick Guide to blkbox"
 author: "Zachary Davies, Boris Guennewig"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -115,7 +115,7 @@ blkbox provides functions that enable visualisation of results, regarding perfor
 
 Receiver operating characteristic (ROC) curves are a measure of true positive and false positive rates, the area under this curve is often used as a metric for evaluating model performance. blkbox offers the `blkboxROC` function that uses the `pROC` package to calculate the curve and then feeds that to `ggplot2` for an aesthetic overhaul.
 
-`blkboxROC` works on all model types (`blkbox`, `blkboxCV`, `blkboxNCV`), however the representation of each may vary.
+`blkboxROC` currently works on two of the three model types (`blkbox`, `blkboxCV`), `blkboxNCV` ROC curves will be added at a later version.
 
 For Training and Testing as well as Cross-fold Validation the ROC curve is generated after calculating `Performance`.
 
@@ -124,6 +124,7 @@ For Training and Testing as well as Cross-fold Validation the ROC curve is gener
 perf = Performance(model_1)
 # Standard ROC curve
 blkboxROC(perf)
+
 ````
 ![](roc_cv.png)
 
@@ -142,27 +143,27 @@ blkboxROC(perf_2r)
 # blkboxROC(perf_2r)
 
 ````
-
-ROC curves for Nested Cross-fold Validation should come with a later update.
+![](roc_repeats_cv.png)
 
 ### Performance Measures
 
 blkbox currently supports five different performance metrics; error rate, area under the receiver operating characteristic curve, Matthews correlation coefficient and F-score.
 
-Metrics can be applied using the `Performance` function which will allow one more of the metrics to be specified. These can then be passed onto functions which will graphically represent the result. The results can also be merged and averaged over repititions...
+Metrics can be applied using the `Performance` function which will allow one more of the metrics to be specified. 
 
-`cv.plot` ...
+`cv.plot` has the Performance function embedded within it and therefore will not require calling `Performance` manually.
+
 ```{r eval=FALSE}
  
-# Example placeholder cv.plot
+cv.plot(model_2, metric = "AUROC", title = "Example Performance Barplot")
 
 ````
 ![](cv_barplot.png)
 
-`ncv.plot` ...
+`ncv.plot` is similar to `cv.plot` but does not recalculate the performance and uses only the exisiting metrics within a `blkboxNCV` model.
 ```{r eval=FALSE}
  
-# Example placeholder ncv.plot
+ncv.plot(model_3, metric = "AUROC", title = "NCV Performance Boxplot")
 
 ````
 ![](ncv_boxplot.png)
@@ -170,72 +171,48 @@ Metrics can be applied using the `Performance` function which will allow one mor
 
 ### Venn Diagrams
 
-When comparing multiple algorithms it can be insightful to visualise the overlap between them, therefore `cv.venn` and `ncv.venn` allow comparison of what features were found to be important in each algorithm
+When comparing multiple algorithms it can be insightful to visualise the overlap between them, therefore `cv.venn` and `ncv.venn` allow comparison of what features were found to be important in each algorithm.
 
-`cv.venn` ...
+
+`cv.venn` can be used if more than one `Method` and a singular `AUC` were specified when generating a `blkboxCV` model. `cv.venn` will compare and intersect the features that survived the `AUC` cutoff in the specific algorithms (`Methods`).
 
 ```{r eval=FALSE}
-# Example placeholder
+# same model as before, now with feature selection after cross-fold validation
+model_2x <- blkboxCV(data = my_data, 
+                    labels = my_labels,
+                    Method = c("randomforest", "SVM"),
+                    AUC = 0.5)
 
+cv.venn(model_2x)
 
 ````
 ![](cv_venn.png)
 
+**note:** *the image above is not generated from the iris dataset this code example uses as the number of features is too low*
 
-`ncv.venn` ...
+`ncv.venn` varies from `cv.venn` in a major way, it doesnt directly compare algorithms but compares the features used in each holdout of `blkboxNCV`. This can be a measure of feature stability and be informative to adjustments made on the `AUC` and other parameters. 
 
 ```{r eval=FALSE}
-# Example placeholder
-
+# simply wrap the output of blkboxNCV in the ncv.venn function
+ncv.venn(model_3)
 
 ````
 ![](ncv_venn.png)
 
-## Worked Example 1: Gene Expression Data
+**note:** *the image above is not generated from the iris dataset*
 
-
-```{r eval=FALSE}
-
-# Example placeholder
-
-````
-
-```{r eval=FALSE}
-
-# Example placeholder
-
-````
-
-```{r eval=FALSE}
-
-# Example placeholder
-
-````
-
-```{r eval=FALSE}
-
-# Example placeholder
-
-````
-
-```{r eval=FALSE}
-
-# Example placeholder
-
-````
-
-```{r eval=FALSE}
-
-# Example placeholder
-
-````
 
 ## Shiny Interface
 
-blkbox provides a shiny interface, this makes it quite easy to understand what blkbox can provide as output
+blkbox provides a shiny interface that will enable a "code-free" approach. To begin using the shiny interface run `blkboxUI`.
 
-![](shiny_interface.png)
+The interface will allow the submission of a model directly to the current R session, however it will also have the capacity to provide the code used to generate the model. By providing the code as a text output one can easily paste this into any exisitng scripts (e.g. running blkbox on a high performance computing cluster as a submitted job).
 
+![](blkboxui_1.png)
+
+`blkboxUI` will also allow the user to switch between two views, model generation and results visualisation.
+
+![](blkboxui_2.png)
 
 ## Solutions for Common Problems
 
@@ -250,9 +227,13 @@ options(java.parameters = 'Xmx16g')
 
 ```
 
+However, if rJava has been used prior to loading `blkbox` it may be easiest to reset the R session and reload packages.
+
 ## Benchmarks & Memory Usage
 
 blkbox incorperates a range of algorithms, however their demands for memory and run duration can be vastly different, which can become a major consideration when dealing with larger data.
 
- insert plot that shows time differences and memory usage of algorithms by T&T, CV, and NCV
+As a rough qualitative guide the algorithms which consume the highest memory and time are `nnet`, `bartMachine`, and `party`.
+
+Will soon update this vignette with **actual** benchmarks.
 

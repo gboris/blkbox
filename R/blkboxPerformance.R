@@ -5,6 +5,11 @@
 #' @param object the blkboxCV or blkbox output
 #' @param metric Which metric will be used for performance. Area under the Receiver operating curve = "AUROC", Accuracy = "ACC", Error rate = "ERR", Matthews correlation coefficient = "MCC", F-1 score = "F-1". default = "AUROC".
 #' @param consensus if the process was repeated it will calculate the consensus vote for each sample across the repititons before then calculating the performance across all samples. Default is False.
+#' @examples
+#'\donttest{
+#' Performance(blkbox(...), metric = "AUROC")
+#' Performance(blkboxCV(...), metric = "ERR")
+#'}
 #' @keywords performance, blkbox, AUROC, F-1, ERR, MCC, ACC.
 #' @export
 Performance <- function(object, metric = "AUROC", consensus = FALSE){

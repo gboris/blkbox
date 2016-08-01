@@ -3,6 +3,10 @@
 #' @author Zachary Davies
 #' @description Invokes the shiny interface for blkbox.
 #' @keywords Shiny, blkbox
+#' @examples
+#'\donttest{
+#' blkboxUI()
+#'}
 #' @export
 blkboxUI <- function() {
   appDir <- system.file("shiny", "blkboxUI", package = "blkbox")

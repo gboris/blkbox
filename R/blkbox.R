@@ -11,6 +11,13 @@
 #' @param Kernel The type of kernel used in the support vector machine algorithm (linear, radial, sigmoid, polynomial). default = "linear".
 #' @param Gamma dvanced parameter, defines the distance of which a single training example reaches. Low gamma will produce a SVM with softer boundaries, as Gamma increases the boundaries will eventually become restricted to their singular support vector. default is 1/(ncol - 1).
 #' @param exclude removes certain algorithms from analysis - to exclude random forest which you would set exclude = "randomforest". The algorithms each have their own numeric identifier. randomforest = "randomforest", knn = "kknn", bartmachine = "bartmachine", party = "party", glmnet = "GLM", pam = "PamR, nnet = "nnet", svm = "SVM", xgboost = "xgboost".
+#' @examples
+#'\donttest{
+#' my_data <- iris[1:100, 1:4]
+#' my_labels <- as.character(iris[1:100, 5])
+#' my_partition = Partition(data = my_data, labels = my_labels)
+#' model_1 <- blkbox(data = my_partition)
+#'}
 #' @param seed Sets the seed for the bartMachine model.
 #' @keywords Machine Learning, blkbox, Training, Testing
 #' @export

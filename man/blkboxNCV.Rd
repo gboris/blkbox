@@ -41,6 +41,14 @@ blkboxNCV(data, labels, outerfolds = 5, innerfolds = 5, ntrees, mTry,
 \description{
 A function that builds upon the blkbox and blkboxNCV function and performs nested k-fold cross validation and then provides votes for each fold as well as the importance of each feature in the models. Provides feature importance tables and details for each inner and outerfold run.
 }
+\examples{
+\donttest{
+blkboxNCV(data = my_data,
+         labels = my_labels,
+         Method = "randomforest",
+         AUC = 0.9)
+}
+}
 \author{
 Zachary Davies, Boris Guennewig
 }

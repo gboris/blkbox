@@ -18,6 +18,11 @@ ncv.plot(obj, metric, y_ranges, title)
 \description{
 Compares the performance of each algorithm in a boxplot. Each holdout will contribute at least one data point to each algorithms boxplot.
 }
+\examples{
+\donttest{
+ncv.plot(blkboxNCV(...), metric = "AUROC", title = "NCV Performance Boxplot")
+}
+}
 \author{
 Zachary Davies, Boris Guennewig
 }

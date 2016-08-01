@@ -4,6 +4,13 @@
 #' @description will plot ROC curves for output from Performance function if "AUROC" was specified.
 #' @param results The output of blkbox Performance that had "AUROC" as one of the specified metrics.
 #' @param title The title of the plot. Default is "ROC".
+#' @examples
+#'\donttest{
+#' # model_1 can be any blkbox or blkboxCV model
+#' perf = Performance(model_1)
+#' # Standard ROC curve
+#' blkboxROC(perf)
+#'}
 #' @keywords ROC, blkbox
 #' @export
 blkboxROC <- function(results, title = "ROC"){

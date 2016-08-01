@@ -6,6 +6,14 @@
 #' @param labels The labels corresponding to the data, order must match with order of rows in data.
 #' @param size determines the size of the holdout data, must be a numeric value between 0 and 1 that. Default is 0.8.
 #' @param seed Determines the seed used to randomly sample the data by row.
+#' @examples
+#'\donttest{
+#' # Partitioning Data
+#' my_partition = Partition(data = my_data,
+#'                          labels = my_labels)
+#' # Creating a Training & Testing Model
+#' model_1 <- blkbox(data = my_partition)
+#'}
 #' @keywords blkbox, partition
 #' @export
 Partition <- function(data, labels, size, seed){

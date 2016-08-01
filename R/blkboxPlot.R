@@ -6,6 +6,10 @@
 #' @param metric Which metric you wish to plot, can only plot those specified to the blkboxNCV function at time of running. Area under the Receiver operating curve = "AUROC", Accuracy = "ACC", Error rate = "ERR", Matthews correlation coefficient = "MCC", F-1 score = "F-1". Default is the first metric specified to your NCV arguments vector.
 #' @param y_ranges is the y axis limits for the plot, defaults to c(0,1). Must be a numeric vector with two entries.
 #' @param title the title to be adhered to the plot. Default is no title.
+#' @examples
+#'\donttest{
+#' ncv.plot(blkboxNCV(...), metric = "AUROC", title = "NCV Performance Boxplot")
+#'}
 #' @keywords NCV, Plot, ggplot2, boxplot
 #' @export
 ncv.plot <- function(obj, metric, y_ranges, title){
@@ -40,6 +44,10 @@ ncv.plot <- function(obj, metric, y_ranges, title){
 #' @param y_ranges is the y axis limits for the plot, defaults to c(0,1). Must be a numeric vector with two entries. Invalid for barplots.
 #' @param title the title to be adhered to the plot. Default is no title.
 #' @param type The plot can be either a barplot or boxplot. For the barplot the consensus performance is used, for a boxplot consensus is false. If only one performance measure is found for each algorithm then it will be forced to a barplot. default = "boxplot", unless data is unsupported.
+#' @examples
+#'\donttest{
+#' cv.plot(blkboxCV(...), metric = "AUROC", title = "Example Performance Barplot")
+#'}
 #' @keywords CV, Plot, ggplot2, boxplot, barplot
 #' @importFrom methods hasArg
 #' @export

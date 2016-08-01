@@ -16,6 +16,13 @@
 #' @param AUC Area under the curve selection measure. The relative importance of features is calculated and then ranked. The features responsible for the most importance are therefore desired, the AUC value is the percentile in which to keep features above. 0.5 keeps the highest ranked features responsible for 50 percent of the cumulative importance. default = 0.5. Will Change to 1.0 default when Method = "xgboost".
 #' @param metric A character string to determine which performance metric will be passed on to the Performance() function. Refer to Performance() documentation. default = c("ERR", "AUROC", "ACC", "MCC", "F-1")
 #' @param seed A single numeric value that will determine all subsequent seeds set in NCV.
+#' @examples
+#'\donttest{
+#'blkboxNCV(data = my_data,
+#'          labels = my_labels,
+#'          Method = "randomforest",
+#'          AUC = 0.9)
+#'}
 #' @keywords Cross Validation, k-fold, blkbox, AUC, feature selection
 #' @importFrom stats runif
 #' @importFrom magrittr "%>%"

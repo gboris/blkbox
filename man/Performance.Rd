@@ -16,6 +16,12 @@ Performance(object, metric = "AUROC", consensus = FALSE)
 \description{
 Determines the performance of each model within the blkbox or blkboxCV output. Can choose from a range of performance metrics.
 }
+\examples{
+\donttest{
+Performance(blkbox(...), metric = "AUROC")
+Performance(blkboxCV(...), metric = "ERR")
+}
+}
 \author{
 Zachary Davies, Boris Guennewig
 }

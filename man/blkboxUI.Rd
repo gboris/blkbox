@@ -9,6 +9,11 @@ blkboxUI()
 \description{
 Invokes the shiny interface for blkbox.
 }
+\examples{
+\donttest{
+blkboxUI()
+}
+}
 \author{
 Zachary Davies
 }

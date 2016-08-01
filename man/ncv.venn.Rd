@@ -12,6 +12,11 @@ ncv.venn(results)
 \description{
 Compares the features used in the holdouts of nested cross fold validation, this will tell you how much variation in features selected there is between holdouts.
 }
+\examples{
+\donttest{
+ncv.venn(blkboxNCV(...))
+}
+}
 \author{
 Zachary Davies, Boris Guennewig
 }

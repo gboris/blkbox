@@ -36,6 +36,11 @@ blkboxCV(data, labels, folds = 10, seed, ntrees, mTry, repeats = 1, Kernel,
 \description{
 A function that builds upon the blkbox function and performs k-fold cross validation and then provides votes for each fold as well as the importance of each feature in the models.
 }
+\examples{
+\donttest{
+model_2 <- blkboxCV(data = my_data, labels = my_labels)
+}
+}
 \author{
 Zachary Davies, Boris Guennewig
 }

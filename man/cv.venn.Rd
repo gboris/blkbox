@@ -12,6 +12,11 @@ cv.venn(results)
 \description{
 This relies on numerous methods being used for feature selection in blkboxCV. It will construct a venn diagram to compare the features selected by various algorithms based on feature importance.
 }
+\examples{
+\donttest{
+cv.venn(blkboxCV(..., Method = c("randomforest", "SVM"), AUC = 0.50))
+}
+}
 \author{
 Zachary Davies, Boris Guennewig
 }

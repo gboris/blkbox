@@ -18,6 +18,15 @@ Partition(data, labels, size, seed)
 \description{
 Prepares data for standard training and testing, data will be split into training and holdout set and output in a list which can be directly supplied to blkbox.
 }
+\examples{
+\donttest{
+# Partitioning Data
+my_partition = Partition(data = my_data,
+                         labels = my_labels)
+# Creating a Training & Testing Model
+model_1 <- blkbox(data = my_partition)
+}
+}
 \author{
 Zachary Davies, Boris Guennewig
 }

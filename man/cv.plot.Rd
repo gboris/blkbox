@@ -21,6 +21,11 @@ cv.plot(obj, metric = "AUROC", y_ranges = c(0, 1), title = "",
 \description{
 Compares the performance of each algorithm in a boxplot OR barplot. Each holdout will contribute at least one data point to each algorithm.
 }
+\examples{
+\donttest{
+cv.plot(blkboxCV(...), metric = "AUROC", title = "Example Performance Barplot")
+}
+}
 \author{
 Zachary Davies, Boris Guennewig
 }
