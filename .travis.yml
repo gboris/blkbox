@@ -7,3 +7,5 @@ r:
   - devel
 
 use_bioc: true
+
+r_github_packages: zacdav/bigrf-repo
