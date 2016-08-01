@@ -10,3 +10,8 @@ use_bioc: true
 
 r_github_packages:
   - aloysius-lim/bigrf
+  
+bioc_packages:
+  - RBGL
+  - graph
+  - Vennerable
