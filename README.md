@@ -27,7 +27,7 @@ Details of how to use this package, please see the vignette.
 
 **Version**: 1.0
 
-**Date**: 2016-05-23
+**Date**: 2016-08-01
 
 **Author**: Zachary Davies, Boris Guennewig
 
@@ -41,9 +41,9 @@ Details of how to use this package, please see the vignette.
 
 **NeedsCompilation**: no
 
-**Packaged**: 2016-04-27 22:19:09 UTC; Davies
+**Packaged**: 2016-08-01 20:49:44 UTC; Davies
 
-**Built**: R 3.2.5; ; 2016-04-29 00:49:44 UTC; unix
+**Built**: R 3.2.5; ; 2016-08-01 20:49:44 UTC; unix
 
 
 
