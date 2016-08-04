@@ -2,7 +2,7 @@ Package: blkbox
 Type: Package
 Title: Data Exploration with Multiple Machine Learning Algorithms
 Version: 1.0
-Date: 2016-01-28
+Date: 2016-08-05
 Author: Zachary Davies, Boris Guennewig
 Maintainer: Boris Guennewig <b.guennewig@garvan.org.au>
 Description: Allows data to be processed by multiple machine learning algorithms
