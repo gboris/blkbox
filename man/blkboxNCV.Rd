@@ -26,6 +26,10 @@ blkboxNCV(data, labels, outerfolds = 5, innerfolds = 5, ntrees, mTry,
 
 \item{Gamma}{Advanced parameter, defines the distance of which a single training example reaches. Low gamma will produce a SVM with softer boundaries, as Gamma increases the boundaries will eventually become restricted to their singular support vector. default is 1/(ncol - 1).}
 
+\item{max.depth}{the maximum depth of the tree in xgboost model, default is sqrt(ncol(data)).}
+
+\item{xgtype}{either "binary:logistic" or "reg:linear" for logistic regression or linear regression respectively.}
+
 \item{exclude}{removes certain algorithms from analysis - to exclude random forest which you would set exclude = "randomforest". The algorithms each have their own numeric identifier. randomforest = "randomforest", knn = "kknn", bartmachine = "bartmachine", party = "party", glmnet = "GLM", pam = "PamR, nnet = "nnet", svm = "SVM", xgboost = "xgboost".}
 
 \item{inn.exclude}{removes certain algorithms from after feature selection analysis. similar to 'exclude'. Defaults to exclude all but Method.}

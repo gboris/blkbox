@@ -112,8 +112,6 @@ shinyServer(function(input, output) {
     toggle("exclude_opts")
     toggle("hide_div")
     hide("code_well")
-    delay(ms = 10000, hide("xxx"))
-    delay(ms = 10000, show("xxx2"))
   })
 
   observeEvent(input$model_on, {
@@ -143,16 +141,13 @@ shinyServer(function(input, output) {
 
   # Performance Output of Model -----------------------------------------------------------
 
-  output$temp_plot = renderPlot({
-    plot(iris)
-  })
 
-  output$temp_plot2 = renderPlot({
+  output$temp_plot= renderPlot({
     ggplot() +
-      geom_text(aes(x = 1, y = 1, label = "Boris Smells"), size = 8) +
+      geom_text(aes(x = 1, y = 1, label = "Coming Soon"), size = 8) +
       theme_bw() +
-      ylab("Got him!") +
-      xlab("Funny Jokes")
+      ylab("") +
+      xlab("")
   })
 
   # Coming Soon

@@ -26,6 +26,10 @@ blkbox(data, labels, holdout, holdout.labels, ntrees, mTry, Kernel, Gamma,
 
 \item{exclude}{removes certain algorithms from analysis - to exclude random forest which you would set exclude = "randomforest". The algorithms each have their own numeric identifier. randomforest = "randomforest", knn = "kknn", bartmachine = "bartmachine", party = "party", glmnet = "GLM", pam = "PamR, nnet = "nnet", svm = "SVM", xgboost = "xgboost".}
 
+\item{max.depth}{the maximum depth of the tree in xgboost model, default is sqrt(ncol(data)).}
+
+\item{xgtype}{either "binary:logistic" or "reg:linear" for logistic regression or linear regression respectively.}
+
 \item{seed}{Sets the seed for the bartMachine model.}
 }
 \description{

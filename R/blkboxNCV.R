@@ -16,6 +16,8 @@
 #' @param AUC Area under the curve selection measure. The relative importance of features is calculated and then ranked. The features responsible for the most importance are therefore desired, the AUC value is the percentile in which to keep features above. 0.5 keeps the highest ranked features responsible for 50 percent of the cumulative importance. default = 0.5. Will Change to 1.0 default when Method = "xgboost".
 #' @param metric A character string to determine which performance metric will be passed on to the Performance() function. Refer to Performance() documentation. default = c("ERR", "AUROC", "ACC", "MCC", "F-1")
 #' @param seed A single numeric value that will determine all subsequent seeds set in NCV.
+#' @param max.depth the maximum depth of the tree in xgboost model, default is sqrt(ncol(data)).
+#' @param xgtype either "binary:logistic" or "reg:linear" for logistic regression or linear regression respectively.
 #' @examples
 #'\donttest{
 #'blkboxNCV(data = my_data,
@@ -257,15 +259,15 @@ blkboxNCV <- function(data, labels, outerfolds = 5, innerfolds = 5, ntrees, mTry
     y <- tibble::rownames_to_column(y, var = "feature") %>%
       dplyr::mutate(algorithm = names_c[X]) %>%
       tidyr::gather_("Holdout", "Importance", c(paste0("Holdout_", c(1:outerfolds)))) %>%
-      dplyr::mutate(Holdout = gsub("Holdout_", "", Holdout),
-             Importance = Importance / max(Importance, na.rm = T))
+      dplyr::mutate_(Holdout = "gsub('Holdout_', '', Holdout)",
+                     Importance = "Importance / max(Importance, na.rm = T)")
     return(y)
   })
 
   list_tabs <- Reduce(rbind, list_tabs)
   list_tabs_summarised <- list_tabs %>%
     dplyr::group_by_("algorithm", "feature") %>%
-    dplyr::summarise(Importance = mean(Importance, na.rm = T))
+    dplyr::summarise_(Importance = "mean(Importance, na.rm = T)")
 
   endTime <- Sys.time()
   elapsedTime <- endTime - startTime

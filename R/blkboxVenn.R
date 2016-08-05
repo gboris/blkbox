@@ -43,6 +43,7 @@ ncv.venn <- function(results){
 #'\donttest{
 #' cv.venn(blkboxCV(..., Method = c("randomforest", "SVM"), AUC = 0.50))
 #'}
+#' @importFrom graphics plot
 #' @export
 #cv venn plot function
 cv.venn <- function(results){
