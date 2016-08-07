@@ -28,7 +28,7 @@ Details of how to use this package, please see the vignette.
 
 **Title**: Data exploration with multiple machine learning algorithms
 
-**Version**: 1.01
+**Version**: 1.0.1
 
 **Date**: 2016-08-05
 
