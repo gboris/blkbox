@@ -6,7 +6,6 @@ library(shinyjs)
 #       - find those objects with class blkbox
 #   - "Performance"
 #   - "ROC Curve"
-#   - "Venn Diagrams"
 #   - "Feature Importance Curves"
 #       - Option to show where AUC line is? [Extra]
 #   -
@@ -32,34 +31,23 @@ shinyUI(fluidPage( theme = "style.css",
                 choices = c("-- Select Model Type --" = 0,
                 "Training & Testing" = 1,
                 "Cross-fold Validation" = 2,
-                "Nested Cross-fold Validation" = 3))),
+                "Nested Cross-fold Validation" = 3)),
+    # Name output ---------------------------------------------------------------------------
+    textInput("model_name", "Output Name:", width = "240px", placeholder = "e.g. blkbox_results", value = "blkbox_results")),
     #----------------------------------------------------------------------------------------
     # When View pane is toggeled on
     hidden(
       wellPanel(id = "visualis_opts",
                 uiOutput("results_vis"),
                 selectInput("vis_type", label = "Visualisation:", width = "240px",
-                            choices = c("Model Performance", # has option to be ROC // BAR // BOX
-                                        "Venn-Diagrams",
-                                        "Feature Importance")),
+                            choices = c("--Choose Visualisation--",
+                                        "Model Performance")),
                 hidden(
-                  selectInput("perf_vis_opts", label = "Options:", width = "240px",
-                              choices = c("ROC Curve",
-                                          "barplot",
-                                          "boxplot")),
-                  selectInput("feat_vis_opts", label = "Algorithm:", width = "240px",
-                              choices = c("temp_alg1", # has option to be ROC // BAR // BOX
-                                          "temp_alg2",
-                                          "temp_alg3"))
-
+                  uiOutput("perf_vis_opts")
                 )
         )
     ),
     #----------------------------------------------------------------------------------------
-    # Welcome Screen  -----------------------------------------------------------------------
-    conditionalPanel(condition = "input.model_type == 0"#,
-                     #h3("readme")
-                     ),
     # Training & Testing --------------------------------------------------------------------
     conditionalPanel(condition = "input.model_type == 1",
                      wellPanel(id = "TT",
@@ -212,13 +200,9 @@ shinyUI(fluidPage( theme = "style.css",
     div(id = "viewpane",
          wellPanel(id ="xxx",
            plotOutput("temp_plot")
-         ),
-        hidden(
-          wellPanel(id ="xxx2",
-                         plotOutput("temp_plot2")
-          )
+         )
         )
-    ))
+    )
     )
     )
 

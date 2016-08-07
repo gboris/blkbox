@@ -1,5 +1,6 @@
 library(shiny)
 library(shinyjs)
+library(ggplot2)
 
 
 fetch_obj_names <- function(class, compliment = F){
@@ -32,11 +33,18 @@ shinyServer(function(input, output) {
   output$results_vis = renderUI({
     selectInput("results_vis", label = "Model Results:", choices = fetch_obj_names("data.frame", T), width = "240px")
   })
+  # model result options
+  output$perf_vis_opts = renderUI({
+    selectInput("perf_vis_opts", label = "Options:", width = "240px",
+                choices = c("ROC Curve",
+                            "plot"))
+
+    })
   # Run Model -----------------------------------------------------------------------------
   observeEvent(input$submit_model, {
     print("Model Submitted")
     print(code_str)
-    blkbox_model <- eval(parse(text = code_str))
+    eval(parse(text = code_str))
   })
 
   # Get Code Output -----------------------------------------------------------------------
@@ -44,7 +52,7 @@ shinyServer(function(input, output) {
 
     if (input$model_type == 1){
       # Training & Testing ------------------------------------------------------------------
-      code_str <<- paste0("blkbox(data = Partition(",
+      code_str <<- paste0(input$model_name, " <- blkbox(data = Partition(",
                           input$data_selection, ", ", input$label_selection, ", ",
                           "size = ", input$partition_slider,
                           ifelse(is.na(input$partition_seed) || input$partition_seed_ask == F, "", paste0(", seed = ", input$partition_seed)),")",
@@ -59,7 +67,7 @@ shinyServer(function(input, output) {
 
     } else if (input$model_type == 2){
       # Cross-fold Validation ---------------------------------------------------------------
-      code_str <<- paste0("blkboxCV(data = ", input$data_selection,
+      code_str <<- paste0(input$model_name, " <- blkboxCV(data = ", input$data_selection,
                           ", labels = ", input$label_selection,
                           ifelse(input$fold_number == 10, "", paste0(",\n       folds = ", input$fold_number)),
                           ifelse(input$cv_repeat_number == 1, "", paste0(",\n       repeats = ", input$cv_repeat_number)),
@@ -76,7 +84,7 @@ shinyServer(function(input, output) {
 
     } else if (input$model_type ==3 ){
       # Nested Cross-fold Validation -------------------------------------------------------
-      code_str <<- paste0("blkboxNCV(data = ", input$data_selection,
+      code_str <<- paste0(input$model_name, " <- blkboxNCV(data = ", input$data_selection,
                           ", labels = ", input$label_selection,
                           ifelse(input$inner_folds == 10, "", paste0(",\n       folds = ", input$fold_number)),
                           ifelse(input$outer_folds == 10, "", paste0(",\n       folds = ", input$fold_number)),
@@ -98,7 +106,7 @@ shinyServer(function(input, output) {
   })
 
   observeEvent(input$viewpane_on, {
-    toggle("viewpane")
+    show("viewpane")
     toggle("top_panel")
     toggle("visualis_opts")
     toggle("viewpane_on")
@@ -112,10 +120,11 @@ shinyServer(function(input, output) {
     toggle("exclude_opts")
     toggle("hide_div")
     hide("code_well")
+    hide("perf_vis_opts")
   })
 
   observeEvent(input$model_on, {
-    toggle("viewpane")
+    hide("viewpane")
     toggle("top_panel")
     toggle("visualis_opts")
     toggle("model_on")
@@ -135,22 +144,46 @@ shinyServer(function(input, output) {
     toggle("code_well")
   })
 
-  observeEvent(input$vis_type == "Model Performance", {
-    toggle("perf_vis_opts")
+  observeEvent(input$vis_type, {
+    if(input$vis_type == "Model Performance"){
+      show("perf_vis_opts")
+    } else {
+      hide("perf_vis_opts")
+    }
   })
+  observeEvent(input$vis_type, {
+    if(input$vis_type != "--Choose Visualisation--"){
+      show("xxx")
+    } else {
+      hide("xxx")
+    }
+  })
+
 
   # Performance Output of Model -----------------------------------------------------------
 
 
-  output$temp_plot= renderPlot({
-    ggplot() +
-      geom_text(aes(x = 1, y = 1, label = "Coming Soon"), size = 8) +
-      theme_bw() +
-      ylab("") +
-      xlab("")
+  output$temp_plot = renderPlot({
+    if (input$vis_type == "Model Performance"){
+      if (input$perf_vis_opts == "ROC Curve"){
+        if(length(input$results_vis) < 6){
+          vis <- eval(parse(text = paste0("blkboxROC(Performance(", input$results_vis, "))")))
+        } else {
+          vis <- eval(parse(text = paste0("blkboxROC(", input$results_vis, ")")))
+        }
+      } else {
+        if(eval(parse(text = paste("length(", input$results_vis, ")"))) < 6){
+          vis <- eval(parse(text = paste0("cv.plot(", input$results_vis, ", metric = 'AUROC')")))
+        } else {
+          vis <- eval(parse(text = paste0("ncv.plot(", input$results_vis, ")")))
+        }
+      }
+      vis
+    }
   })
 
-  # Coming Soon
+  # Coming Soon ---------------------------------------------------------------------------
 
   # ---------------------------------------------------------------------------------------
+
 })

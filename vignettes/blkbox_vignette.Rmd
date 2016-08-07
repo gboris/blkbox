@@ -168,40 +168,6 @@ ncv.plot(model_3, metric = "AUROC", title = "NCV Performance Boxplot")
 ````
 ![](ncv_boxplot.png)
 
-
-### Venn Diagrams
-
-When comparing multiple algorithms it can be insightful to visualise the overlap between them, therefore `cv.venn` and `ncv.venn` allow comparison of what features were found to be important in each algorithm.
-
-
-`cv.venn` can be used if more than one `Method` and a singular `AUC` were specified when generating a `blkboxCV` model. `cv.venn` will compare and intersect the features that survived the `AUC` cutoff in the specific algorithms (`Methods`).
-
-```{r eval=FALSE}
-# same model as before, now with feature selection after cross-fold validation
-model_2x <- blkboxCV(data = my_data, 
-                    labels = my_labels,
-                    Method = c("randomforest", "SVM"),
-                    AUC = 0.5)
-
-cv.venn(model_2x)
-
-````
-![](cv_venn.png)
-
-**note:** *the image above is not generated from the iris dataset this code example uses as the number of features is too low*
-
-`ncv.venn` varies from `cv.venn` in a major way, it doesnt directly compare algorithms but compares the features used in each holdout of `blkboxNCV`. This can be a measure of feature stability and be informative to adjustments made on the `AUC` and other parameters. 
-
-```{r eval=FALSE}
-# simply wrap the output of blkboxNCV in the ncv.venn function
-ncv.venn(model_3)
-
-````
-![](ncv_venn.png)
-
-**note:** *the image above is not generated from the iris dataset*
-
-
 ## Shiny Interface
 
 blkbox provides a shiny interface that will enable a "code-free" approach. To begin using the shiny interface run `blkboxUI`.

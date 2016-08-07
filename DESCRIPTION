@@ -11,16 +11,14 @@ Description: Allows data to be processed by multiple machine learning algorithms
     nested cross validation.
 License: GPL (>= 2)
 LazyData: TRUE
-Depends: R (>= 3.2.2), methods
+Depends: R (>= 3.0.0), methods
 Imports: dplyr, plyr, tidyr, magrittr, caret, ggplot2, glmnet,
         bartMachine, reshape2, randomForest, kknn, pamr, nnet, party,
-        rJava, e1071, pROC, stringr, xgboost, Vennerable, bigrf, RBGL,
-        graph, parallel, knitr, rmarkdown, shiny, shinyjs, reshape,
-        gtools, tibble
+        rJava, e1071, pROC, stringr, xgboost, parallel, knitr,
+        rmarkdown, shiny, shinyjs, reshape, gtools, tibble
+Suggests: bigrf
 RoxygenNote: 5.0.1
 NeedsCompilation: no
-Packaged: 2016-08-05 00:07:40 UTC; Davies
+Packaged: 2016-08-07 13:30:00 UTC; Davies
 VignetteBuilder: knitr
-Additional_repositories: http://zacdav.github.io/bigrf-repo/,
-        http://R-Forge.R-project.org
-biocViews:
+Additional_repositories: http://zacdav.github.io/drat/

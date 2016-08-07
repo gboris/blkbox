@@ -7,6 +7,10 @@ body {
   color: #FFF;
 }
 
+div#xxx {
+    width: 400px;
+}
+
 #header {
   color: #FFF;
 }
