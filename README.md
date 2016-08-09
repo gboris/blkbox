@@ -5,7 +5,7 @@
 ###Introduction
 
 Machine learning (ML) is a powerful tool to create supervised models that can distinguish between classes and facilitate biomarker selection in high-dimensional datasets, including RNA Sequencing (RNA-Seq). However, identifying the best performing ML algorithm(s) for a specific dataset is time consuming. blkbox is a software package including a shiny frontend, that integrates nine ML algorithms to select the best performing classifier for a specific dataset. blkbox accepts a simple abundance matrix as input, includes extensive visualization, and also provides an easy to use feature selection step to enable convenient and rapid potential biomarker selection, all without requiring parameter optimization. 
-Results: Feature selection makes blkbox computationally inexpensive while multi-functionality, including nested cross-fold validation (NCV), ensures robust results. blkbox identifies algorithms outperforming prior published ML results. Applying NCV identifies features which are utilized to gain high accuracy. 
+**Results:** Feature selection makes blkbox computationally inexpensive while multi-functionality, including nested cross-fold validation (NCV), ensures robust results. blkbox identifies algorithms outperforming prior published ML results. Applying NCV identifies features which are utilized to gain high accuracy. 
 Availability: The code is available as a CRAN R package and github (https://github.com/gboris/blkbox).
 
 
