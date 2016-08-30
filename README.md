@@ -1,4 +1,4 @@
-# blkbox http://www.r-pkg.org/badges/version/blkbox  http://cranlogs.r-pkg.org/badges/grand-total/blkbox
+# blkbox ![](http://www.r-pkg.org/badges/version/blkbox) ![](http://cranlogs.r-pkg.org/badges/grand-total/blkbox) 
 
 ##Data Exploration with Multiple Machine Learning Algorithms 
 
