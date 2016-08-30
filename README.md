@@ -20,7 +20,7 @@ After installation, the package can be loaded into R.
 
     library(blkbox)
 
-Details of how to use this package, please see the vignette.
+Details of how to use this package, please see the vignette (https://github.com/gboris/blkbox/blob/master/vignettes/blkbox_vignette.Rmd).
 
 **Package**: blkbox
 
