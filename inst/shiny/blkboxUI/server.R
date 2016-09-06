@@ -62,7 +62,7 @@ shinyServer(function(input, output) {
                           ifelse(!is.na(input$svm_gamma) && input$options == T, paste0(",\n       Gamma = ", input$svm_gamma), ""),
                           ifelse(!is.na(input$max_depth) && input$options == T, paste0(",\n       max.depth = ", input$max_depth), ""),
                           ifelse(input$exclude_alg == "0" && length(input$exclude_alg) == 1, "",
-                                 paste0(",\n       exclude = c(", toString(paste0("'", input$exclude_alg[-which(input$exclude_alg %in% "0")])),")")),
+                                 paste0(",\n       exclude = c(", toString(paste0("'", input$exclude_alg[-which(input$exclude_alg %in% "0")], "'")),")")),
                           ifelse(is.na(input$seed) || input$seed_ask == F, "", paste0(",\n       seed = ", input$seed)),")")
 
     } else if (input$model_type == 2){
@@ -79,7 +79,7 @@ shinyServer(function(input, output) {
                           ifelse(!is.na(input$svm_gamma) && input$options == T, paste0(",\n       Gamma = ", input$svm_gamma), ""),
                           ifelse(!is.na(input$max_depth) && input$options == T, paste0(",\n       max.depth = ", input$max_depth), ""),
                           ifelse(input$exclude_alg == "0" && length(input$exclude_alg) == 1, "",
-                                 paste0(",\n       exclude = c(", toString(paste0("'", input$exclude_alg[-which(input$exclude_alg %in% "0")])),")")),
+                                 paste0(",\n       exclude = c(", toString(paste0("'", input$exclude_alg[-which(input$exclude_alg %in% "0")], "'")),")")),
                           ifelse(is.na(input$seed) || input$seed_ask == F, "", paste0(",\n       seed = ", input$seed)),")")
 
     } else if (input$model_type ==3 ){
@@ -97,7 +97,7 @@ shinyServer(function(input, output) {
                           ifelse(!is.na(input$svm_gamma) && input$options == T, paste0(",\n       Gamma = ", input$svm_gamma), ""),
                           ifelse(!is.na(input$max_depth) && input$options == T, paste0(",\n       max.depth = ", input$max_depth), ""),
                           ifelse(input$exclude_alg == "0" && length(input$exclude_alg) == 1, "",
-                                 paste0(",\n       exclude = c(", toString(paste0("'", input$exclude_alg[-which(input$exclude_alg %in% "0")])),")")),
+                                 paste0(",\n       exclude = c(", toString(paste0("'", input$exclude_alg[-which(input$exclude_alg %in% "0")], "'")),")")),
                           ifelse(is.na(input$seed) || input$seed_ask == F, "", paste0(",\n       seed = ", input$seed)),")")
     }
 
