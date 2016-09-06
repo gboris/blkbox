@@ -52,7 +52,7 @@ shinyServer(function(input, output) {
 
     if (input$model_type == 1){
       # Training & Testing ------------------------------------------------------------------
-      code_str <<- paste0(input$model_name, " <- blkbox(data = Partition(",
+      code_str <<- paste0(input$model_name, " <<- blkbox(data = Partition(",
                           input$data_selection, ", ", input$label_selection, ", ",
                           "size = ", input$partition_slider,
                           ifelse(is.na(input$partition_seed) || input$partition_seed_ask == F, "", paste0(", seed = ", input$partition_seed)),")",
@@ -67,7 +67,7 @@ shinyServer(function(input, output) {
 
     } else if (input$model_type == 2){
       # Cross-fold Validation ---------------------------------------------------------------
-      code_str <<- paste0(input$model_name, " <- blkboxCV(data = ", input$data_selection,
+      code_str <<- paste0(input$model_name, " <<- blkboxCV(data = ", input$data_selection,
                           ", labels = ", input$label_selection,
                           ifelse(input$fold_number == 10, "", paste0(",\n       folds = ", input$fold_number)),
                           ifelse(input$cv_repeat_number == 1, "", paste0(",\n       repeats = ", input$cv_repeat_number)),
@@ -84,7 +84,7 @@ shinyServer(function(input, output) {
 
     } else if (input$model_type ==3 ){
       # Nested Cross-fold Validation -------------------------------------------------------
-      code_str <<- paste0(input$model_name, " <- blkboxNCV(data = ", input$data_selection,
+      code_str <<- paste0(input$model_name, " <<- blkboxNCV(data = ", input$data_selection,
                           ", labels = ", input$label_selection,
                           ifelse(input$inner_folds == 10, "", paste0(",\n       folds = ", input$fold_number)),
                           ifelse(input$outer_folds == 10, "", paste0(",\n       folds = ", input$fold_number)),
