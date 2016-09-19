@@ -3,14 +3,14 @@
 #' @author Zachary Davies, Boris Guennewig
 #' @description Determines the performance of each model within the blkbox or blkboxCV output. Can choose from a range of performance metrics.
 #' @param object the blkboxCV or blkbox output
-#' @param metric Which metric will be used for performance. Area under the Receiver operating curve = "AUROC", Accuracy = "ACC", Error rate = "ERR", Matthews correlation coefficient = "MCC", F-1 score = "F-1". default = "AUROC".
+#' @param metric Which metric will be used for performance. Area under the Receiver operating curve = "AUROC", Accuracy = "ACC", Error rate = "ERR", Matthews correlation coefficient = "MCC", F-1 score = "F-1", Sensitivity or True Positive Rate = "TPR", Specificity or True Negative Rate = "TNR". default = "AUROC".
 #' @param consensus if the process was repeated it will calculate the consensus vote for each sample across the repititons before then calculating the performance across all samples. Default is False.
 #' @examples
 #'\donttest{
 #' Performance(blkbox(...), metric = "AUROC")
 #' Performance(blkboxCV(...), metric = "ERR")
 #'}
-#' @keywords performance, blkbox, AUROC, F-1, ERR, MCC, ACC.
+#' @keywords performance, blkbox, AUROC, F-1, ERR, MCC, ACC, TPR, TNR.
 #' @export
 Performance <- function(object, metric = "AUROC", consensus = FALSE){
 
@@ -62,6 +62,10 @@ Performance <- function(object, metric = "AUROC", consensus = FALSE){
             performance[q] <- (TP + TN) / (P + N)
           } else if (metric[m] == "MCC"){
             performance[q] <- (TP * TN - FP * FN) / sqrt( (TP + FP) * (TP + FN) * (TN + FP) * (TN + FN))
+          } else if (metric[m] == "TPR"){
+            performance[q] <- TP / (TP + FN)
+          } else if (metric[m] == "TNR"){
+            performance[q] <- TN / (FN + TN)
           } else if (metric[m] == "F-1"){
             performance[q] <- (2 * TP) / ( (2 * TP) + FP + FN)
           } else if (metric[m] == "ERR"){
