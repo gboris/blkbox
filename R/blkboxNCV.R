@@ -14,7 +14,7 @@
 #' @param inn.exclude removes certain algorithms from after feature selection analysis. similar to 'exclude'. Defaults to exclude all but Method.
 #' @param Method The algorithm used to feature select the data. Uses the feature importance from the algorithms to rank and remove anything below the AUC threshold. Defaults to "GLM", therefore the inner folds will use "GLM" only unless specified otherwise.
 #' @param AUC Area under the curve selection measure. The relative importance of features is calculated and then ranked. The features responsible for the most importance are therefore desired, the AUC value is the percentile in which to keep features above. 0.5 keeps the highest ranked features responsible for 50 percent of the cumulative importance. default = 0.5. Will Change to 1.0 default when Method = "xgboost".
-#' @param metric A character string to determine which performance metric will be passed on to the Performance() function. Refer to Performance() documentation. default = c("ERR", "AUROC", "ACC", "MCC", "F-1")
+#' @param metric A character string to determine which performance metric will be passed on to the Performance() function. Refer to Performance() documentation. default = c("ERR", "AUROC", "ACC", "MCC", "F-1", "TPR", "TNR")
 #' @param seed A single numeric value that will determine all subsequent seeds set in NCV.
 #' @param max.depth the maximum depth of the tree in xgboost model, default is sqrt(ncol(data)).
 #' @param xgtype either "binary:logistic" or "reg:linear" for logistic regression or linear regression respectively.
@@ -31,7 +31,7 @@
 #' @importFrom stats predict
 #' @import ggplot2
 #' @export
-blkboxNCV <- function(data, labels, outerfolds = 5, innerfolds = 5, ntrees, mTry, Kernel, Gamma, max.depth, xgtype = "binary:logistic", exclude = c(0), inn.exclude, Method = "GLM", AUC = 0.5, metric = c("ERR", "AUROC", "ACC", "MCC", "F-1"), seed){
+blkboxNCV <- function(data, labels, outerfolds = 5, innerfolds = 5, ntrees, mTry, Kernel, Gamma, max.depth, xgtype = "binary:logistic", exclude = c(0), inn.exclude, Method = "GLM", AUC = 0.5, metric = c("ERR", "AUROC", "ACC", "MCC", "F-1", "TPR", "TNR"), seed){
 
   . <- "cheeky"
 
