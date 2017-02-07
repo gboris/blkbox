@@ -69,7 +69,7 @@
 
 #BARTMACHINE HIDDEN MODULE
 .BB_BARTM <- function(cv.train, cv.test, nTrees, seed){
-  BartM = bartMachine::build_bart_machine(X=cv.train[,-ncol(cv.train)],y=as.factor(cv.train$y), seed = seed, verbose = FALSE)
+  BartM = bartMachine::build_bart_machine(X=cv.train[,-ncol(cv.train)],y=as.factor(cv.train$y), seed = seed, num_trees = nTrees, verbose = FALSE)
   BartMP = bartMachine::bart_predict_for_test_data(BartM, cv.test[,-ncol(cv.test)], as.factor(cv.test$y))
   sink(file = .get_null_sink()); BartM_imp = bartMachine::investigate_var_importance(BartM, plot = F); sink();
   BartM_imp2 = data.frame(AvgImp = BartM_imp$avg_var_props)
