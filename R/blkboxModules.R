@@ -46,7 +46,7 @@
                     nround = nround,
                     objective = objective,
                     verbose = 0)
-  pred <- data.frame(xgboost::predict(xg_test, as.matrix(cv.test)) + 1)
+  pred <- data.frame(predict(xg_test, as.matrix(cv.test)) + 1)
   rownames(pred) = rownames(cv.test)
   colnames(pred) = NULL
   ximp = xgboost::xgb.importance(colnames(cv.test), model = xg_test)
