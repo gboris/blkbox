@@ -127,6 +127,7 @@ blkboxROC(perf)
 
 ````
 ![](roc_cv.png)
+
 *please note that the image is not reflective of the iris examples results*
 
 If repeatitions were run with `blkboxCV` for the models then the plot becomes faceted by repeat number. Similiarly when running `blkboxNCV` the plot can be generated for holdouts individually or combined, the former is faceted whilst the later is a singular ROC curve.
@@ -145,6 +146,7 @@ blkboxROC(perf_2r)
 
 ````
 ![](roc_repeats_cv.png)
+
 *please note that the image is not reflective of the iris examples results*
 
 ### Performance Measures
