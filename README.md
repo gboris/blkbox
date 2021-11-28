@@ -34,7 +34,7 @@ Details of how to use this package, please see the [vignette](https://github.com
 
 **Author**: Zachary Davies, Boris Guennewig
 
-**Maintainer**: Boris Guennewig <b.guennewig@garvan.org.au>
+**Maintainer**: Boris Guennewig <boris.guennewig@sydney.edu.au>
 
 **Description**: Allows data to be processed by multiple machine learning algorithms at the same time, enables feature selection of data by single a algorithm or combinations of multiple. Easy to use tool for k-fold cross validation and nested cross validation.
 
